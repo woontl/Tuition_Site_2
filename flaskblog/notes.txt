@@ -153,3 +153,9 @@ NGINX
 13) sudo touch /var/log/flaskblog/flaskblog.err.log
 14) sudo touch /var/log/flaskblog/flaskblog.out.log
 15) sudo supervisorctl reload
+
+
+How to link venv with github
+1) activate venv and cd Tuition_Site_2
+2) git clone https://github.com/woontl/Tuition_Site_2.git
+3) 
