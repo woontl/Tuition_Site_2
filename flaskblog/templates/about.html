@@ -1,0 +1,17 @@
+{% extends "layout.html" %} <!--inherit from parent html-->
+{% block javaScript %}
+
+{% endblock %}
+{% block content %} <!--block content here replaces block content in parent-->
+    <div class="content-section">
+        <div class="media">
+            {% for image in images %} 
+            <img class="rounded-circle account-img" src="{{ url_for('static', filename='questionbank/' + image.img) }}">
+            {% endfor %}
+            <div class="media-body">
+                <h2>About</h2>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

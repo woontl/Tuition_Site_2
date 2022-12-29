@@ -1,0 +1,221 @@
+{% extends "layout.html" %} <!--inherit from parent html-->
+{% block javaScript %}
+    <script src="{{ url_for('static', filename='javascripts/calc_answer.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='javascripts/whiteboard.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='javascripts/MQ_ans.js') }}" defer></script>
+{% endblock %}
+{% block content %} <!--block content here replaces block content in parent-->
+    <div class="content-section">
+        <form method="POST" action=""> <!--post form via the route created-->
+            {{ form.hidden_tag() }} <!--important, just add lol-->
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">{{ legend }}</legend>
+                <div class="media mb-2">
+                    <img class="img-fluid mx-auto" src="{{ url_for('static', filename='questionbank/' + question.qn_img) }}">
+                </div> 
+                <div class="form-group" id="canvas_parent">
+                    {{ form.workings.label() }}
+                    {{ form.workings(class="form-control form-control-lg") }}
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#canvas-grid" aria-expanded="false" aria-controls="canvas-grid">
+                        <i class="fa-solid fa-pencil"></i></button>
+                    <div class="collapse" id="canvas-grid">
+                        <div class="canvas-buttons">
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle font-btn" type="button" id="dropdownMenuButton-font" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Font
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton-font">
+                                    <button type="button" id="canvas-small-font-btn" class="btn-xs btn-secondary">S</button>
+                                    <button type="button" id="canvas-medium-font-btn" class="btn-sm btn-secondary">M</button>
+                                    <button type="button" id="canvas-large-font-btn" class="btn-lg btn-secondary">L</button>
+                                </div>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle color-btn" type="button" id="dropdownMenuButton-color" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Colours
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton-color">
+                                <button type="button" id="canvas-black-color-btn" class="btn btn-dark"></button>
+                                <button type="button" id="canvas-red-color-btn" class="btn btn-danger"></button>
+                                <button type="button" id="canvas-blue-color-btn" class="btn btn-primary"></button>
+                                <button type="button" id="canvas-green-color-btn" class="btn btn-success"></button>
+                                <button type="button" id="canvas-yellow-color-btn" class="btn btn-warning"></button>
+                                </div>
+                            </div>
+                            <button type="button" id="canvas-eraser-btn" class="btn"><i class="fa-solid fa-eraser"></i></button>
+                            <button type="button" id="canvas-clear-btn" class="btn btn-info">Clear</button>
+                            <!--{% if final_ans %}
+                                <button id="canvas-save-btn" type="refresh" name="refresh" value="save" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i></button>
+                                <button id="canvas-refresh-btn" type="submit" name="refresh" value="refresh" class="btn btn-success"><i class="fa-solid fa-rotate"></i></button>
+                            {% endif %}-->
+                        </div>
+                        
+                        <canvas class="mt-1" id="canvas"></canvas>
+                    </div>
+                </div>
+                <div class="form-group" id="sub-answer">
+                    {{ form.answer.label(class="form-control-label") }}
+                    {% set count = namespace(value=1) %}
+                    {% set ans_count = namespace(value=0) %}
+                    {% for main_ans in ['A','B','C','D','E','F'] %}
+                        {% if ans[(count.value-1)*7] != '' %}
+                            <div class="row justify-content-center align-items-center" id="main-answer-{{count.value}}" style="">
+                                <div class="col-lg-2 col-md-4 col-sm-6 mx-0">
+                                    <p class="d-flex justify-content-around align-items-center form-control-label">
+                                        {% if right_wrong %}
+                                            {% if (right_wrong[ans_count.value]) == '1' or (right_wrong[ans_count.value]) == '' %}
+                                                <i class="fa-solid fa-xmark" style="color: red"></i>
+                                            {% elif (final_ans[ans_count.value]) == "" %}
+                                                <i class="fa-solid fa-xmark" style="color: white"></i>
+                                            {% elif (right_wrong[ans_count.value]) == '0' %}
+                                                <i class="fa-solid fa-check" style="color: green"></i>
+                                            {% endif %}
+                                        {% endif %}
+                                        Part {{main_ans}}:
+                                    </p>
+                                </div>
+                                <div class="col-lg-10 col-md-8 col-sm-6 mx-0">
+                                    <div contenteditable="true" class="form-control form-control-lg mb-2" id="MQ-field-{{count.value}}" style="min-height: 50px;">
+                                            {% if (right_wrong[ans_count.value]) == '1' %}
+                                                <span id='MQ_span'>{{ans[ans_count.value]}}</span>
+                                            {% else %}
+                                                <span id='MQ_span'>{{final_ans[ans_count.value]}}</span>
+                                            {% endif %}
+                                        {% set ans_count.value = ans_count.value + 1 %}
+                                    </div>
+                                </div>
+                                {% for roman in ["i", "ii", "iii", "iv", "v", "vi"] %}
+                                    <div class="container" id="sub-answer-{{count.value}}-{{roman}}" style="display: none">
+                                        <div class="row justify-content-end align-items-center">
+                                            <div class="col-lg-4 col-md-6 col-sm-6 mx-0">
+                                                <p class="form-control-label text-right">Part {{roman}}:</p>
+                                            </div>
+                                            <div class="col-lg-8 col-md-6 col-sm-6 mx-0">
+                                                <div contenteditable="true" class="form-control form-control-lg mb-2" id="MQ-field-{{count.value}}-{{roman}}" style="min-height: 50px;">
+                                                    {% if (right_wrong[ans_count.value]) == '1' %}
+                                                        <span id='MQ_span'>{{ans[ans_count.value]}}</span>
+                                                    {% else %}
+                                                        <span id='MQ_span'>{{final_ans[ans_count.value]}}</span>
+                                                    {% endif %}
+                                                    {% set ans_count.value = ans_count.value + 1 %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% elif ans[(count.value-1)*7] == '' and ans[(count.value-1)*7+1] != ''%}
+                            <div class="row justify-content-center align-items-center" id="main-answer-{{count.value}}" style="">
+                                <div class="col-lg-2 col-md-4 col-sm-6 mx-0">
+                                    <p class="d-flex justify-content-around align-items-center form-control-label">
+                                        {% if right_wrong %}
+                                            {% if (right_wrong[ans_count.value]) == '1' or (right_wrong[ans_count.value]) == '' %}
+                                                <i class="fa-solid fa-xmark" style="color: red"></i>
+                                            {% elif (final_ans[ans_count.value]) == "" %}
+                                                <i class="fa-solid fa-xmark" style="color: white"></i>
+                                            {% elif (right_wrong[ans_count.value]) == '0' %}
+                                                <i class="fa-solid fa-check" style="color: green"></i>
+                                            {% endif %}
+                                        {% endif %}
+                                        Part {{main_ans}}:
+                                    </p>
+                                </div>
+                                <div class="col-lg-10 col-md-8 col-sm-6 mx-0">
+                                    <div contenteditable="true" class="form-control form-control-lg mb-2" id="MQ-field-{{count.value}}" style="min-height: 50px; display: none">
+                                        {% if (right_wrong[ans_count.value]) == '1' %}
+                                            <span id='MQ_span'>{{ans[ans_count.value]}}</span>
+                                        {% else %}
+                                            <span id='MQ_span'>{{final_ans[ans_count.value]}}</span>
+                                        {% endif %}
+                                        {% set ans_count.value = ans_count.value + 1 %}
+                                    </div>
+                                </div>
+                                {% set roman_count = namespace(value=1) %}
+                                {% for roman in ["i", "ii", "iii", "iv", "v", "vi"] %}
+                                    {% if ans[(count.value-1)*7 + roman_count.value] != '' %}
+                                        <div class="container" id="sub-answer-{{count.value}}-{{roman}}" style="display: block">
+                                            <div class="row justify-content-end align-items-center">
+                                                <div class="col-lg-4 col-md-6 col-sm-6 mx-0">
+                                                    <p class="form-control-label text-right">
+                                                        {% if right_wrong %}
+                                                            {% if (right_wrong[ans_count.value]) == '1' or (right_wrong[ans_count.value]) == '' %}
+                                                                <i class="fa-solid fa-xmark" style="color: red"></i>
+                                                            {% elif (final_ans[ans_count.value]) == "" %}
+                                                                <i class="fa-solid fa-xmark" style="color: white"></i>
+                                                            {% elif (right_wrong[ans_count.value]) == '0' %}
+                                                                <i class="fa-solid fa-check" style="color: green"></i>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                        Part {{roman}}:
+                                                    </p>
+                                                </div>
+                                                <div class="col-lg-8 col-md-6 col-sm-6 mx-0">
+                                                    <div contenteditable="true" class="form-control form-control-lg mb-2" id="MQ-field-{{count.value}}-{{roman}}" style="min-height: 50px;">
+                                                        {% if (right_wrong[ans_count.value]) == '1' %}
+                                                            <span id='MQ_span'>{{ans[ans_count.value]}}</span>
+                                                        {% else %}
+                                                            <span id='MQ_span'>{{final_ans[ans_count.value]}}</span>
+                                                        {% endif %}
+                                                        {% set ans_count.value = ans_count.value + 1 %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="container" id="sub-answer-{{count.value}}-{{roman}}" style="display: none">
+                                            <div class="row justify-content-end align-items-center">
+                                                <div class="col-lg-4 col-md-6 col-sm-6 mx-0">
+                                                    <p class="form-control-label text-right">Part {{roman}}:</p>
+                                                </div>
+                                                <div class="col-lg-8 col-md-6 col-sm-6 mx-0">
+                                                    <div contenteditable="true" class="form-control form-control-lg mb-2" id="MQ-field-{{count.value}}-{{roman}}" style="min-height: 50px;">
+                                                        {% if (right_wrong[ans_count.value]) == '1' %}
+                                                            <span id='MQ_span'>{{ans[ans_count.value]}}</span>
+                                                        {% else %}
+                                                            <span id='MQ_span'>{{final_ans[ans_count.value]}}</span>
+                                                        {% endif %}
+                                                        {% set ans_count.value = ans_count.value + 1 %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% set roman_count.value = roman_count.value + 1 %}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="row justify-content-center align-items-center" id="main-answer-{{count.value}}" style="display: none">
+                                <div class="col-lg-2 col-md-4 col-sm-6 mx-0">
+                                    <p class="d-flex justify-content-around align-items-center form-control-label">
+                                        Part {{main_ans}}:
+                                    </p>
+                                </div>
+                                <div class="col-lg-10 col-md-8 col-sm-6 mx-0">
+                                    <div contenteditable="true" class="form-control form-control-lg mb-2" id="MQ-field-{{count.value}}" style="min-height: 50px">
+                                    </div>
+                                </div>
+                                {% for roman in ["i", "ii", "iii", "iv", "v", "vi"] %}
+                                    <div class="container" id="sub-answer-{{count.value}}-{{roman}}" style="display: none">
+                                        <div class="row justify-content-end align-items-center">
+                                            <div class="col-lg-4 col-md-6 col-sm-6 mx-0">
+                                                <p class="form-control-label text-right">Part {{roman}}:</p>
+                                            </div>
+                                            <div class="col-lg-8 col-md-6 col-sm-6 mx-0">
+                                                <div contenteditable="true" class="form-control form-control-lg mb-2" id="MQ-field-{{count.value}}-{{roman}}" style="min-height: 50px;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% set count.value = count.value + 1 %}
+                    {% endfor %}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                <button onclick="calc_ans()" type="submit" class="btn btn-outline-info" type="reset" id="ans" name="action" value="">Submit/Save</button>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

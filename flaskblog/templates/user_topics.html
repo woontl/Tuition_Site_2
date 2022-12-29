@@ -1,0 +1,48 @@
+{% extends "layout.html" %} <!--inherit from parent html-->
+{% block javaScript %}
+    <script src="{{ url_for('static', filename='javascripts/topic_fields.js') }}" defer></script>
+{% endblock %}
+{% block content %} <!--block content here replaces block content in parent-->
+    <div class="content-section">
+        <form method="POST" action=""novalidate> <!--post form via the route created-->
+            {{ form.hidden_tag() }} <!--important, just add lol-->
+            <fieldset class="form-group" id="topic_fields">
+                <div class="d-flex flex-row">
+                    <legend class="border-bottom-mb-4">Topics</legend>
+                    <button onclick="add_topic()" type="button" class="btn btn-link"><i class="fa-solid fa-square-plus"></i></button>
+                    <button onclick="del_topic()" type="button" class="btn btn-link" style="color: red"><i class="fa-solid fa-square-minus"></i></button>
+                </div>
+                {% if topics_arr %}
+                    {% for topic in topics_arr%}
+                        <div class="row my-2" id="topic_row_{{ loop.index }}">
+                            <div class="col-2 mx-0">
+                                <p class="form-control-label mt-1">Topic {{ loop.index }}:</p>
+                            </div>
+                            <div class="d-flex col-10 mx-0">
+                                <input class="mr-4 form-control" id="topic_field_{{ loop.index }}" name="topics" required type="text" value={{ topics_arr[loop.index-1] }}>
+                                {% if checks_arr[ loop.index-1 ] == '1' %}
+                                    <input checked id="checkbox_{{ loop.index }}" type="checkbox">
+                                {% else %}
+                                    <input id="checkbox_{{ loop.index }}" type="checkbox">          
+                                {% endif %} 
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="row my-2" id="topic_row_1">
+                        <div class="col-2 mx-0">
+                            <p class="form-control-label mt-1">Topic 1:</p>
+                        </div>
+                        <div class="d-flex col-10 mx-0">
+                            <input class="mr-4 form-control" id="topic_field_1" name="topics" required type="text" value="">
+                            <input id="checkbox_1" type="checkbox">
+                        </div>
+                    </div>
+                {% endif %}
+            </fieldset>
+            <div class="form-group">
+                <button onclick="topics_merged()" type="submit" class="btn btn-outline-info" type="reset" id="ans" name="action" value="">Update</button>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

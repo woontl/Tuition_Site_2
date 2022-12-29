@@ -1,0 +1,53 @@
+{% extends "layout.html" %} <!--inherit from parent html-->
+{% block content %} <!--block content here replaces block content in parent-->
+    <div class="content-section text-center" style="min-height:50vh">
+        <h3 class="mt-5">IGCSE Resources</h3>
+        <div class="container-fluid">
+            <div class="row justify-content-center align-items-center" style="min-height:50vh">
+                <div class="card-deck justify-content-center align-items-center">
+                    <div class="col-lg-3 col-md-6 mx-0">
+                        <div class="card align-items-center">
+                            <img class="card-img-top rounded-circle article-img mt-3" src="{{ url_for('static', filename='icons/' + 'icons8-checklist-96.png') }}" alt="Checklist icon">
+                            <div class="card-body">
+                                <h5 class="card-title">Topical Questions</h5>
+                                <p class="card-text">Question bank, ranging from easy to difficult questions.</p>
+                                <a href="{{ url_for('resources.IGCSE_topical_questions') }}" class="btn btn-primary">Let's Go!</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mx-0">
+                        <div class="card align-items-center">
+                            <img class="card-img-top rounded-circle article-img mt-3" src="{{ url_for('static', filename='icons/' + 'icons8-lightbulb-64.png') }}" alt="Lightbulb icon">
+                            <div class="card-body">
+                                <h5 class="card-title">Key Concepts</h5>
+                                <p class="card-text">Essential concepts broken down for easy understanding.</p>
+                                <a href="{{ url_for('resources.IGCSE_key_concepts') }}" class="btn btn-primary">Let's Go!</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mx-0">
+                        <div class="card align-items-center">
+                            <img class="card-img-top rounded-circle article-img mt-3" src="{{ url_for('static', filename='icons/' + 'icons8-video-64.png') }}" alt="Video icon">
+                            <div class="card-body">
+                                <h5 class="card-title">Tutorial Videos</h5>
+                                <p class="card-text">More of a visual learner? Watch pre-recorded videos.</p>
+                                <a href="{{ url_for('resources.IGCSE_tutorial_videos') }}" class="btn btn-primary">Let's Go!</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mx-0">
+                        <div class="card align-items-center">
+                            <img class="card-img-top rounded-circle article-img mt-3" src="{{ url_for('static', filename='icons/' + 'icons8-pencil-96.png') }}" alt="Pencil icon">
+                            <div class="card-body">
+                                <h5 class="card-title">Practice Papers</h5>
+                                <p class="card-text">Are your exams coming soon? Practice makes perfect.</p>
+                                <a href="{{ url_for('resources.IGCSE_practice_papers') }}" class="btn btn-primary">Let's Go!</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

@@ -1,0 +1,31 @@
+{% extends "layout.html" %} <!--inherit from parent html-->
+{% block content %} <!--block content here replaces block content in parent-->
+    <div class="content-section">
+        <h3 class="mt-5 mb-3 text-center">Edit Tags</h3>
+        <div class="container-fluid text-center">
+            <form method="POST" action=""novalidate>
+                <div class="form-inline">
+                    <div class="form-group mb-2">
+                        {{ form.new_tag.label(class="form-control-label") }}
+                    </div>
+                    <div class="form-group mx-sm-3 mb-2">
+                        {{ form.new_tag(class="form-control form-control-lg") }}
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-2" name="tag" value="add_tag">Add</button>
+                </div>
+            </form>
+            {% if tags %}
+                <ul class="list-group">
+                    {% for tag in tags %}
+                        <li class="list-group-item">
+                            <div class="d-flex align-items-center">
+                                <a type="button" class="btn btn-link" style="color:red" href="{{ url_for('homeworks.delete_tag',tag_id=tag.id) }}"><i class="fa-solid fa-trash-can"></i></a>
+                                <h5 class="">{{tag.tag}}</h5>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+{% endblock content %}
