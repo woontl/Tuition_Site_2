@@ -139,7 +139,11 @@ window.addEventListener('load', ()=> {
             startPosition
         }
     });
-    canvas.addEventListener('touchmove', draw);
+    canvas.addEventListener('touchmove', function (e){
+        if (e.touches.length==1){
+            draw
+        }
+    });
     canvas.addEventListener('touchend', finishedPosition);
     // canvas.addEventListener('touchcancel', finishedPosition);
 
