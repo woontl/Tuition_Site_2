@@ -134,7 +134,11 @@ window.addEventListener('load', ()=> {
     canvas.addEventListener('pointerout', finishedPosition);
     canvas.addEventListener('pointermove', draw);
 
-    canvas.addEventListener('touchstart', startPosition);
+    canvas.addEventListener('touchstart', function (e){
+        if (e.touches.length=1){
+            startPosition
+        }
+    });
     canvas.addEventListener('touchmove', draw);
     canvas.addEventListener('touchend', finishedPosition);
     // canvas.addEventListener('touchcancel', finishedPosition);

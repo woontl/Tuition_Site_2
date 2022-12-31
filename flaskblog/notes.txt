@@ -188,4 +188,5 @@ Git
   > git branch -d abc
   > git branch -a
   > git push origin --delete abc
-16) 
+16) git fetch origin
+git reset --hard origin/master
