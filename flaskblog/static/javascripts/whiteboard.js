@@ -135,7 +135,7 @@ window.addEventListener('load', ()=> {
     canvas.addEventListener('pointermove', draw);
 
     canvas.addEventListener('touchstart', function (e){
-        if (e.touches.length=1){
+        if (e.touches.length==1){
             startPosition
         }
     });
