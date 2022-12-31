@@ -134,10 +134,10 @@ window.addEventListener('load', ()=> {
     canvas.addEventListener('pointerout', finishedPosition);
     canvas.addEventListener('pointermove', draw);
 
-    // canvas.addEventListener('touchstart', startPosition);
-    // canvas.addEventListener('touchend', finishedPosition);
+    canvas.addEventListener('touchstart', startPosition);
+    canvas.addEventListener('touchmove', draw);
+    canvas.addEventListener('touchend', finishedPosition);
     // canvas.addEventListener('touchcancel', finishedPosition);
-    // canvas.addEventListener('touchmove', draw);
 
     //onclick buttons
     clearBtn.on('click', clearBoard);

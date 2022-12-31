@@ -124,19 +124,3 @@ body {
     border: 1px solid black;
     touch-action: none;
   }
-
-  [id^='canvas_sheet']{
-    border: 1px solid black;
-    touch-action: none;
-  }
-
-  .fraction {
-    display:inline-flex;
-    flex-direction:column;
-    vertical-align:middle;
-    text-align: center;
-  }
-
-  .fraction-denominator {
-    border-top:1px solid
-  }

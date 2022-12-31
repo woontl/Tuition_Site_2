@@ -172,3 +172,20 @@ Git
 5) to add all files to staging area, git add -A
 6) git reset to remove all files from staging area
 7) to commit, git commit -m "gitignore"
+8) git log, to see log
+9) git pull origin master 
+10) git push origin master
+11) create branch, git branch abc
+12) switch branch, git checkout abc
+13) git commit -m "", git push -u origin abc
+14) to merge branch with master
+  > git checkout master
+  > git pull origin master
+  > git branch --merged
+  > git merge abc
+  > git push origin master
+15) to delete branch
+  > git branch -d abc
+  > git branch -a
+  > git push origin --delete abc
+16) 
