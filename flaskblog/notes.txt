@@ -156,6 +156,19 @@ NGINX
 
 
 How to link venv with github
-1) activate venv and cd Tuition_Site_2
-2) git clone https://github.com/woontl/Tuition_Site_2.git
-3) 
+1) cd Tuition_Site_2
+2) git remote -v check if origin points to github account
+3) if not, git remote remove myOrigin
+4) git remote add origin https://github.com/woontl/Tuition_Site_2.git
+5) git clone https://github.com/woontl/Tuition_Site_2.git
+
+Git
+1) git config --list, check name and email
+  > git config --global user.name "Tian Li"
+  > git config --global user.email "woontl96@gmail.com"
+2) initialize with git init, check if theres a .git with ls -la
+3) to stop git tracking, remove with rm -rf .git 
+4) to ignore files, touch .gitignore
+5) to add all files to staging area, git add -A
+6) git reset to remove all files from staging area
+7) to commit, git commit -m "gitignore"
