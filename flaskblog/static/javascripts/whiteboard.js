@@ -113,15 +113,17 @@ window.addEventListener('load', ()=> {
     };
 
     function draw(e, currentcolor){
-        if (!painting) return;
-        ctx.strokeStyle = currentcolor;
-        ctx.lineWidth = currentfont;
-        ctx.lineCap = "round";
-        
-        ctx.lineTo(e.offsetX, e.offsetY);
-        ctx.stroke();
-        ctx.beginpath();
-        ctx.moveTo(e.offsetX, e.offsetY);
+        if (pointerCount == 1) {
+            if (!painting) return;
+                ctx.strokeStyle = currentcolor;
+                ctx.lineWidth = currentfont;
+                ctx.lineCap = "round";
+                
+                ctx.lineTo(e.offsetX, e.offsetY);
+                ctx.stroke();
+                ctx.beginpath();
+                ctx.moveTo(e.offsetX, e.offsetY);
+        }
     }
 
     function clearBoard() {
