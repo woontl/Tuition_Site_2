@@ -43,17 +43,23 @@ window.addEventListener('load', ()=> {
     var smallfontBtn = $('#canvas-small-font-btn');
     var mediumfontBtn = $('#canvas-medium-font-btn');
     var largefontBtn = $('#canvas-large-font-btn');
+    var pointerCount = 0
 
     //functions
     function startPosition(e){
-        painting = true;
-        draw(e, currentcolor)
+        pointerCount+=1
+        if (pointerCount==1){
+            painting = true;
+            draw(e, currentcolor)
+        }
     }
 
     function finishedPosition(){
+        pointerCount=0
         painting = false;
         ctx.beginPath();
     }
+
     function eraseBoard() {
         if (eraser_state == false) {
             temp_color = currentcolor
@@ -128,27 +134,46 @@ window.addEventListener('load', ()=> {
         document.getElementById('workings').value = dataURL;
     }
     
-    //EventListeners
-    canvas.addEventListener('pointerdown', function(e){
-        if (e.touches.length==1){
-            startPosition
-        }
-    });
-    canvas.addEventListener('pointerup', function(e){
-        if (e.touches.length==1){
-            finishedPosition
-        }
-    });
-    canvas.addEventListener('pointerout', function(e){
-        if (e.touches.length==1){
-            finishedPosition
-        }
-    });
-    canvas.addEventListener('pointermove', function(e){
-        if (e.touches.length==1){
-            draw
-        }
-    });
+    // EventListeners
+    // canvas.addEventListener('mousedown', startPosition);
+    // canvas.addEventListener('mouseup', finishedPosition);
+    // canvas.addEventListener('mouseout', finishedPosition);
+    // canvas.addEventListener('mousemove', draw);
+    // canvas.addEventListener('touchstart', function(e){
+    //     console.log(123)
+    //     startPosition()
+    // });
+    // canvas.addEventListener('touchend', function(e){
+    //     finishedPosition()
+    // });
+    // canvas.addEventListener('touchmove', function(e){
+    //     draw()
+    // });
+    canvas.addEventListener('pointerdown', startPosition);
+    canvas.addEventListener('pointerup', finishedPosition);
+    canvas.addEventListener('pointerout', finishedPosition);
+    canvas.addEventListener('pointermove', draw);
+    // canvas.addEventListener('pointerdown', function(e){
+    //     if (e.touches.length==1){
+    //         startPosition
+    //     }
+    // });
+    // canvas.addEventListener('pointerup', function(e){
+    //     if (e.touches.length==1){
+    //         finishedPosition
+    //     }
+    // });
+    // canvas.addEventListener('pointerout', function(e){
+    //     if (e.touches.length==1){
+    //         finishedPosition
+    //     }
+    // });
+    // canvas.addEventListener('pointermove', function(e){
+    //     if (e.touches.length==1){
+    //         draw
+    //     }
+    // });
+
     // canvas.addEventListener('touchstart', function (e){
     //     if (e.touches.length==1){
     //         startPosition
