@@ -129,22 +129,37 @@ window.addEventListener('load', ()=> {
     }
     
     //EventListeners
-    canvas.addEventListener('pointerdown', startPosition);
-    canvas.addEventListener('pointerup', finishedPosition);
-    canvas.addEventListener('pointerout', finishedPosition);
-    canvas.addEventListener('pointermove', draw);
-
-    canvas.addEventListener('touchstart', function (e){
+    canvas.addEventListener('pointerdown', function(e){
         if (e.touches.length==1){
             startPosition
         }
     });
-    canvas.addEventListener('touchmove', function (e){
+    canvas.addEventListener('pointerup', function(e){
+        if (e.touches.length==1){
+            finishedPosition
+        }
+    });
+    canvas.addEventListener('pointerout', function(e){
+        if (e.touches.length==1){
+            finishedPosition
+        }
+    });
+    canvas.addEventListener('pointermove', function(e){
         if (e.touches.length==1){
             draw
         }
     });
-    canvas.addEventListener('touchend', finishedPosition);
+    // canvas.addEventListener('touchstart', function (e){
+    //     if (e.touches.length==1){
+    //         startPosition
+    //     }
+    // });
+    // canvas.addEventListener('touchmove', function (e){
+    //     if (e.touches.length==1){
+    //         draw
+    //     }
+    // });
+    // canvas.addEventListener('touchend', finishedPosition);
     // canvas.addEventListener('touchcancel', finishedPosition);
 
     //onclick buttons
