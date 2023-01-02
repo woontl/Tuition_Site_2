@@ -1,3 +1,12 @@
+window.addEventListener('load', ()=> {
+    function onResize() {
+        canvas.height = window.innerHeight;
+        canvas.width = canvas_parent.offsetWidth;
+    };
+    window.addEventListener('resize', onResize);
+    onResize();
+})
+
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 
