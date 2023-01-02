@@ -1,8 +1,9 @@
 {% extends "layout.html" %} <!--inherit from parent html-->
 {% block javaScript %}
-
+    <script src="{{ url_for('static', filename='javascripts/whiteboard.js') }}" defer></script> 
 {% endblock %}
 {% block content %} <!--block content here replaces block content in parent-->
+    <canvas class="mt-1" id="canvas"></canvas>
     <div class="content-section">
         <div class="media">
             {% for image in images %} 
