@@ -1,207 +1,144 @@
 
-window.addEventListener('load', ()=> {
-    var canvas = document.querySelector("#canvas");
-    var ctx = canvas.getContext('2d')
-    const canvas_parent = document.querySelector("#canvas_parent")
+const canvas_parent = document.querySelector("#canvas_parent")
+function onResize() {
+    canvas.height = window.innerHeight;
+    canvas.width = canvas_parent.offsetWidth;
+};
 
-    //reload canvas with dataURL
-    var url = document.getElementById('workings').value;
-    var img = new Image()
-    img.src = url
-    img.onload = () => { ctx.drawImage(img, 0, 0); };
-    img.src = url
+window.addEventListener('resize', onResize);
+onResize();
 
-
-    //Resizing
-    function onResize() {
-        canvas.height = window.innerHeight;
-        canvas.width = canvas_parent.offsetWidth;
+(function() {
+    window.requestAnimFrame = (function(callback) {
+      return window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimaitonFrame ||
+        function(callback) {
+          window.setTimeout(callback, 1000 / 60);
+        };
+    })();
+  
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+    ctx.strokeStyle = "#222222";
+    ctx.lineWidth = 2;
+  
+    var drawing = false;
+    var mousePos = {
+      x: 0,
+      y: 0
     };
-
-
-    //variables
-    let painting = false;
-    var eraser_state = false;
-    let temp_color = ''
-    let temp_font = ''
-    var submitBtn = $('#ans');
-    var clearBtn = $('#canvas-clear-btn');
-    var saveBtn = $('#canvas-save-btn');
-    var refreshBtn = $('#canvas-refresh-btn');
-    var eraserBtn = $('#canvas-eraser-btn');
-    var colorBtn = $('.color-btn');
-    colorBtn.css('border', '1px solid ' + 'black');  
-    colorBtn.css('background-color', 'black');
-    var blackcolorBtn = $('#canvas-black-color-btn');
-    var redcolorBtn = $('#canvas-red-color-btn');
-    var bluecolorBtn = $('#canvas-blue-color-btn');
-    var greencolorBtn = $('#canvas-green-color-btn');
-    var yellowcolorBtn = $('#canvas-yellow-color-btn');
-    var currentcolor = 'black';
-    var currentfont = 1;
-    var fontBtn = $('.font-btn');
-    var smallfontBtn = $('#canvas-small-font-btn');
-    var mediumfontBtn = $('#canvas-medium-font-btn');
-    var largefontBtn = $('#canvas-large-font-btn');
-    var pointerCount = 0
-
-    //functions
-    function startPosition(e){
-        pointerCount+=1
-        if (pointerCount==1){
-            painting = true;
-            draw(e, currentcolor)
-        }
+    var lastPos = mousePos;
+  
+    canvas.addEventListener("mousedown", function(e) {
+      drawing = true;
+      lastPos = getMousePos(canvas, e);
+    }, false);
+  
+    canvas.addEventListener("mouseup", function(e) {
+      drawing = false;
+    }, false);
+  
+    canvas.addEventListener("mousemove", function(e) {
+      mousePos = getMousePos(canvas, e);
+    }, false);
+  
+    // Add touch event support for mobile
+    canvas.addEventListener("touchstart", function(e) {
+  
+    }, false);
+  
+    canvas.addEventListener("touchmove", function(e) {
+      var touch = e.touches[0];
+      var me = new MouseEvent("mousemove", {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+      });
+      canvas.dispatchEvent(me);
+    }, false);
+  
+    canvas.addEventListener("touchstart", function(e) {
+      mousePos = getTouchPos(canvas, e);
+      var touch = e.touches[0];
+      var me = new MouseEvent("mousedown", {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+      });
+      canvas.dispatchEvent(me);
+    }, false);
+  
+    canvas.addEventListener("touchend", function(e) {
+      var me = new MouseEvent("mouseup", {});
+      canvas.dispatchEvent(me);
+    }, false);
+  
+    function getMousePos(canvasDom, mouseEvent) {
+      var rect = canvasDom.getBoundingClientRect();
+      return {
+        x: mouseEvent.clientX - rect.left,
+        y: mouseEvent.clientY - rect.top
+      }
     }
-
-    function finishedPosition(){
-        pointerCount=0
-        painting = false;
-        ctx.beginPath();
+  
+    function getTouchPos(canvasDom, touchEvent) {
+      var rect = canvasDom.getBoundingClientRect();
+      return {
+        x: touchEvent.touches[0].clientX - rect.left,
+        y: touchEvent.touches[0].clientY - rect.top
+      }
     }
-
-    function eraseBoard() {
-        if (eraser_state == false) {
-            temp_color = currentcolor
-            temp_font = currentfont
-            currentcolor = 'white';
-            currentfont = 5;
-            eraserBtn.css('border', '1px solid ' + 'blue');  
-            eraserBtn.css('background-color', 'blue');
-            eraser_state = true;
-        } else if (eraser_state == true) {
-            currentcolor = temp_color;
-            currentfont = temp_font;
-            eraserBtn.css('border', '1px solid ' + 'white');  
-            eraserBtn.css('background-color', 'white');
-            eraser_state = false;
-        } 
-    };
-    function changeblackColor() {
-        currentcolor = 'black';
-        colorBtn.css('border', '1px solid ' + currentcolor);  
-        colorBtn.css('background-color', currentcolor);
-    };
-    function changeredColor() {
-        currentcolor = 'red';
-        colorBtn.css('border', '1px solid ' + currentcolor);  
-        colorBtn.css('background-color', currentcolor);
-    };
-    function changeblueColor() {
-        currentcolor = 'blue';
-        colorBtn.css('border', '1px solid ' + currentcolor);  
-        colorBtn.css('background-color', currentcolor);
-    };
-    function changegreenColor() {
-        currentcolor = 'green';
-        colorBtn.css('border', '1px solid ' + currentcolor);  
-        colorBtn.css('background-color', currentcolor);
-    };
-    function changeyellowColor() {
-        currentcolor = 'yellow';
-        colorBtn.css('border', '1px solid ' + currentcolor);  
-        colorBtn.css('background-color', currentcolor);
-    };
-    function changesmallfont() {
-        currentfont = 1
-    };
-    function changemediumfont() {
-        currentfont = 5
-    };
-    function changelargefont() {
-        currentfont = 10
-    };
-
-    function draw(e, currentcolor){
-        if (!painting) return;
-        ctx.strokeStyle = currentcolor;
-        ctx.lineWidth = currentfont;
-        ctx.lineCap = "round";
-        
-        ctx.lineTo(e.offsetX, e.offsetY);
+  
+    function renderCanvas() {
+      if (drawing) {
+        ctx.moveTo(lastPos.x, lastPos.y);
+        ctx.lineTo(mousePos.x, mousePos.y);
         ctx.stroke();
-        ctx.beginpath();
-        ctx.moveTo(e.offsetX, e.offsetY);
+        lastPos = mousePos;
+      }
     }
-
-    function clearBoard() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    };
-
-    function saveURL() {
-        var canvas_out = document.querySelector("#canvas");
-        var dataURL = canvas_out.toDataURL('image/png');
-        document.getElementById('workings').value = dataURL;
+  
+    // Prevent scrolling when touching the canvas
+    document.body.addEventListener("touchstart", function(e) {
+      if (e.target == canvas) {
+        e.preventDefault();
+      }
+    }, false);
+    document.body.addEventListener("touchend", function(e) {
+      if (e.target == canvas) {
+        e.preventDefault();
+      }
+    }, false);
+    document.body.addEventListener("touchmove", function(e) {
+      if (e.target == canvas) {
+        e.preventDefault();
+      }
+    }, false);
+  
+    (function drawLoop() {
+      requestAnimFrame(drawLoop);
+      renderCanvas();
+    })();
+  
+    function clearCanvas() {
+      canvas.width = canvas.width;
     }
-    
-    // EventListeners
-    // canvas.addEventListener('mousedown', startPosition);
-    // canvas.addEventListener('mouseup', finishedPosition);
-    // canvas.addEventListener('mouseout', finishedPosition);
-    // canvas.addEventListener('mousemove', draw);
-    // canvas.addEventListener('touchstart', function(e){
-    //     console.log(123)
-    //     startPosition()
-    // });
-    // canvas.addEventListener('touchend', function(e){
-    //     finishedPosition()
-    // });
-    // canvas.addEventListener('touchmove', function(e){
-    //     draw()
-    // });
-    canvas.addEventListener('pointerdown', startPosition);
-    canvas.addEventListener('pointerup', finishedPosition);
-    canvas.addEventListener('pointerout', finishedPosition);
-    canvas.addEventListener('pointermove', draw);
-    // canvas.addEventListener('pointerdown', function(e){
-    //     if (e.touches.length==1){
-    //         startPosition
-    //     }
-    // });
-    // canvas.addEventListener('pointerup', function(e){
-    //     if (e.touches.length==1){
-    //         finishedPosition
-    //     }
-    // });
-    // canvas.addEventListener('pointerout', function(e){
-    //     if (e.touches.length==1){
-    //         finishedPosition
-    //     }
-    // });
-    // canvas.addEventListener('pointermove', function(e){
-    //     if (e.touches.length==1){
-    //         draw
-    //     }
-    // });
-
-    // canvas.addEventListener('touchstart', function (e){
-    //     if (e.touches.length==1){
-    //         startPosition
-    //     }
-    // });
-    // canvas.addEventListener('touchmove', function (e){
-    //     if (e.touches.length==1){
-    //         draw
-    //     }
-    // });
-    // canvas.addEventListener('touchend', finishedPosition);
-    // canvas.addEventListener('touchcancel', finishedPosition);
-
-    //onclick buttons
-    clearBtn.on('click', clearBoard);
-    refreshBtn.on('click', saveURL);
-    saveBtn.on('click', saveURL);
-    eraserBtn.on('click', eraseBoard);
-    blackcolorBtn.on('click', changeblackColor);
-    redcolorBtn.on('click', changeredColor);
-    bluecolorBtn.on('click', changeblueColor);
-    greencolorBtn.on('click', changegreenColor);
-    yellowcolorBtn.on('click', changeyellowColor);
-    smallfontBtn.on('click', changesmallfont);
-    mediumfontBtn.on('click', changemediumfont);
-    largefontBtn.on('click', changelargefont);
-    submitBtn.on('click', saveURL);
-
-    window.addEventListener('resize', onResize);
-    onResize();
-});
+  
+    // Set up the UI
+    var sigText = document.getElementById("sig-dataUrl");
+    var sigImage = document.getElementById("sig-image");
+    var clearBtn = document.getElementById("sig-clearBtn");
+    var submitBtn = document.getElementById("sig-submitBtn");
+    clearBtn.addEventListener("click", function(e) {
+      clearCanvas();
+      sigText.innerHTML = "Data URL for your signature will go here!";
+      sigImage.setAttribute("src", "");
+    }, false);
+    submitBtn.addEventListener("click", function(e) {
+      var dataUrl = canvas.toDataURL();
+      sigText.innerHTML = dataUrl;
+      sigImage.setAttribute("src", dataUrl);
+    }, false);
+  
+  })();
