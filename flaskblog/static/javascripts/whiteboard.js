@@ -4,8 +4,6 @@ function onResize() {
     canvas.height = window.innerHeight;
     canvas.width = canvas_parent.offsetWidth;
 };
-
-window.addEventListener('resize', onResize);
 onResize();
 
 (function() {
