@@ -1,10 +1,4 @@
 
-const canvas_parent = document.querySelector("#canvas_parent")
-// function onResize() {
-//     canvas.height = window.innerHeight;
-//     canvas.width = canvas_parent.offsetWidth;
-// };
-// onResize();
 
 (function() {
     window.requestAnimFrame = (function(callback) {

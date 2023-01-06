@@ -190,3 +190,6 @@ Git
   > git push origin --delete abc
 16) git fetch origin
 git reset --hard origin/master
+
+How to delete directory and all files
+1) rm -rf directoryname
