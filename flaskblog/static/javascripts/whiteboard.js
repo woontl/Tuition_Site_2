@@ -195,21 +195,18 @@
         eraser_state = false;
         eraserBtn.style.backgroundColor = "white"
         eraserBtn.style.border = "1px solid white"
-        currentcolor = temp_color
     };
     function changemediumfont() {
         currentfont = 5
         eraser_state = false;
         eraserBtn.style.backgroundColor = "white"
         eraserBtn.style.border = "1px solid white"
-        currentcolor = temp_color
     };
     function changelargefont() {
         currentfont = 10
         eraser_state = false;
         eraserBtn.style.backgroundColor = "white"
         eraserBtn.style.border = "1px solid white"
-        currentcolor = temp_color
     };
 
     function prevpg(){
