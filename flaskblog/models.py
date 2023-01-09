@@ -103,6 +103,8 @@ class Working(db.Model):
     homework_id = db.Column(db.Integer, db.ForeignKey('homework.id'), nullable=False)
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
     workings = db.Column(db.Text)
+    workings2 = db.Column(db.Text)
+    workings3 = db.Column(db.Text)
     final_ans = db.Column(db.Text, nullable=False)
     point = db.Column(db.Integer)
     right_wrong = db.Column(db.String(200))

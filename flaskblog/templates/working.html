@@ -2,18 +2,20 @@
 {% block javaScript %}
     <script src="{{ url_for('static', filename='javascripts/calc_answer.js') }}" defer></script>
     <script src="{{ url_for('static', filename='javascripts/whiteboard.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='javascripts/whiteboard2.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='javascripts/whiteboard3.js') }}" defer></script>
     <script src="{{ url_for('static', filename='javascripts/MQ_ans.js') }}" defer></script>
 {% endblock %}
 {% block content %} <!--block content here replaces block content in parent-->
     <div class="content-section">
         <form method="POST" action=""> <!--post form via the route created-->
             {{ form.hidden_tag() }} <!--important, just add lol-->
-            <fieldset class="form-group">
+            <fieldset class="form-group" id="canvas_parent">
                 <legend class="border-bottom mb-4">{{ legend }}</legend>
                 <div class="media mb-2">
                     <img class="img-fluid mx-auto" src="{{ url_for('static', filename='questionbank/' + question.qn_img) }}">
                 </div> 
-                <div class="form-group" id="canvas_parent">
+                <div class="form-group">
                     {{ form.workings.label() }}
                     {{ form.workings(class="form-control form-control-lg") }}
                     <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#canvas-grid" aria-expanded="false" aria-controls="canvas-grid">
@@ -44,13 +46,26 @@
                             </div>
                             <button type="button" id="canvas-eraser-btn" class="btn"><i class="fa-solid fa-eraser"></i></button>
                             <button type="button" id="canvas-clear-btn" class="btn btn-info">Clear</button>
+                            <button type="button" id="canvas-prev-btn" href="#carouselExampleIndicators" class="btn btn-secondary" data-slide="prev">Prev</button>
+                            <button type="button" id="canvas-next-btn" href="#carouselExampleIndicators" class="btn btn-secondary" data-slide="next">Next</button>
                             <!--{% if final_ans %}
                                 <button id="canvas-save-btn" type="refresh" name="refresh" value="save" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i></button>
                                 <button id="canvas-refresh-btn" type="submit" name="refresh" value="refresh" class="btn btn-success"><i class="fa-solid fa-rotate"></i></button>
                             {% endif %}-->
                         </div>
-                        
-                        <canvas class="mt-1" id="canvas"></canvas>
+                        <div id="carouselExampleIndicators" class="carousel slide" data-interval="false">
+                            <div class="carousel-inner">
+                               <div class="carousel-item active">
+                                    <canvas class="mt-1" id="canvas1"></canvas>
+                               </div>
+                               <div class="carousel-item">
+                                    <canvas class="mt-1" id="canvas2"></canvas>
+                               </div>
+                               <div class="carousel-item">
+                                    <canvas class="mt-1" id="canvas3"></canvas>
+                               </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group" id="sub-answer">

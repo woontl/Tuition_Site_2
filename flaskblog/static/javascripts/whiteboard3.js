@@ -10,9 +10,10 @@
         };
     })();
   
-    var canvas = document.getElementById("canvas1");
-    var ctx1 = canvas.getContext("2d");
+    var canvas3 = document.getElementById("canvas3");
+    var ctx3 = canvas3.getContext("2d");
 
+  
     var drawing = false;
     var mousePos = {
       x: 0,
@@ -20,46 +21,46 @@
     };
     var lastPos = mousePos;
   
-    canvas.addEventListener("mousedown", function(e) {
+    canvas3.addEventListener("mousedown", function(e) {
       drawing = true;
-      lastPos = getMousePos(canvas, e);
+      lastPos = getMousePos(canvas3, e);
     }, false);
   
-    canvas.addEventListener("mouseup", function(e) {
+    canvas3.addEventListener("mouseup", function(e) {
       drawing = false;
     }, false);
   
-    canvas.addEventListener("mousemove", function(e) {
-      mousePos = getMousePos(canvas, e);
+    canvas3.addEventListener("mousemove", function(e) {
+      mousePos = getMousePos(canvas3, e);
     }, false);
   
     // Add touch event support for mobile
-    canvas.addEventListener("touchstart", function(e) {
+    canvas3.addEventListener("touchstart", function(e) {
   
     }, false);
   
-    canvas.addEventListener("touchmove", function(e) {
+    canvas3.addEventListener("touchmove", function(e) {
       var touch = e.touches[0];
       var me = new MouseEvent("mousemove", {
         clientX: touch.clientX,
         clientY: touch.clientY
       });
-      canvas.dispatchEvent(me);
+      canvas3.dispatchEvent(me);
     }, false);
   
-    canvas.addEventListener("touchstart", function(e) {
-      mousePos = getTouchPos(canvas, e);
+    canvas3.addEventListener("touchstart", function(e) {
+      mousePos = getTouchPos(canvas3, e);
       var touch = e.touches[0];
       var me = new MouseEvent("mousedown", {
         clientX: touch.clientX,
         clientY: touch.clientY
       });
-      canvas.dispatchEvent(me);
+      canvas3.dispatchEvent(me);
     }, false);
   
-    canvas.addEventListener("touchend", function(e) {
+    canvas3.addEventListener("touchend", function(e) {
       var me = new MouseEvent("mouseup", {});
-      canvas.dispatchEvent(me);
+      canvas3.dispatchEvent(me);
     }, false);
   
     function getMousePos(canvasDom, mouseEvent) {
@@ -80,29 +81,29 @@
   
     function renderCanvas() {
       if (drawing) {
-        ctx1.strokeStyle = currentcolor
-        ctx1.lineWidth = currentfont
-        ctx1.moveTo(lastPos.x, lastPos.y);
-        ctx1.lineTo(mousePos.x, mousePos.y);
-        ctx1.stroke();
-        ctx1.beginPath()
+        ctx3.strokeStyle = currentcolor
+        ctx3.lineWidth = currentfont
+        ctx3.moveTo(lastPos.x, lastPos.y);
+        ctx3.lineTo(mousePos.x, mousePos.y);
+        ctx3.stroke();
+        ctx3.beginPath()
         lastPos = mousePos;
       }
     }
   
     // Prevent scrolling when touching the canvas
     document.body.addEventListener("touchstart", function(e) {
-      if (e.target == canvas) {
+      if (e.target == canvas3) {
         e.preventDefault();
       }
     }, false);
     document.body.addEventListener("touchend", function(e) {
-      if (e.target == canvas) {
+      if (e.target == canvas3) {
         e.preventDefault();
       }
     }, false);
     document.body.addEventListener("touchmove", function(e) {
-      if (e.target == canvas) {
+      if (e.target == canvas3) {
         e.preventDefault();
       }
     }, false);
@@ -113,22 +114,10 @@
     })();  
 
     function clearBoard() {
-        if (pgnum==1) {
-          ctx1.clearRect(0, 0, canvas.width, canvas.height);
-        }
-    };
-
-    function saveURL() {
-        var canvas_out1 = document.querySelector("#canvas1");
-        var canvas_out2 = document.querySelector("#canvas2");
-        var canvas_out3 = document.querySelector("#canvas3");
-        var dataURL1 = canvas_out1.toDataURL('image/png');
-        var dataURL2 = canvas_out2.toDataURL('image/png');
-        var dataURL3 = canvas_out3.toDataURL('image/png');
-        var dataURL_arr = [dataURL1,dataURL2,dataURL3]
-        document.getElementById('workings').value = dataURL_arr.join('@@@@');
-    }
-
+      if (pgnum==3) {
+        ctx3.clearRect(0, 0, canvas3.width, canvas3.height);
+      }
+  };
     function eraseBoard() {
         if (eraser_state == false) {
             temp_color = currentcolor
@@ -191,52 +180,52 @@
     };
 
     function changesmallfont() {
-        currentfont = 1
-        eraser_state = false;
-        eraserBtn.style.backgroundColor = "white"
-        eraserBtn.style.border = "1px solid white"
-        currentcolor = temp_color
-    };
-    function changemediumfont() {
-        currentfont = 5
-        eraser_state = false;
-        eraserBtn.style.backgroundColor = "white"
-        eraserBtn.style.border = "1px solid white"
-        currentcolor = temp_color
-    };
-    function changelargefont() {
-        currentfont = 10
-        eraser_state = false;
-        eraserBtn.style.backgroundColor = "white"
-        eraserBtn.style.border = "1px solid white"
-        currentcolor = temp_color
-    };
+      currentfont = 1
+      eraser_state = false;
+      eraserBtn.style.backgroundColor = "white"
+      eraserBtn.style.border = "1px solid white"
+      currentcolor = temp_color
+  };
+  function changemediumfont() {
+      currentfont = 5
+      eraser_state = false;
+      eraserBtn.style.backgroundColor = "white"
+      eraserBtn.style.border = "1px solid white"
+      currentcolor = temp_color
+  };
+  function changelargefont() {
+      currentfont = 10
+      eraser_state = false;
+      eraserBtn.style.backgroundColor = "white"
+      eraserBtn.style.border = "1px solid white"
+      currentcolor = temp_color
+  };
 
-    function prevpg(){
-      if (pgnum==1){
-        pgnum+=2
-      } else if (pgnum==2){
-        pgnum-=1
-      } else if (pgnum==3){
-        pgnum-=1
-      }
+  function prevpg(){
+    if (pgnum==1){
+      pgnum+=2
+    } else if (pgnum==2){
+      pgnum-=1
+    } else if (pgnum==3){
+      pgnum-=1
     }
+  }
 
-    function nextpg(){
-      if (pgnum==1){
-        pgnum+=1
-      } else if (pgnum==2){
-        pgnum+=1
-      } else if (pgnum==3){
-        pgnum-=2
-      }
+  function nextpg(){
+    if (pgnum==1){
+      pgnum+=1
+    } else if (pgnum==2){
+      pgnum+=1
+    } else if (pgnum==3){
+      pgnum-=2
     }
+  }
 
     //reload canvas with dataURL
-    var url = JSON.parse(document.getElementById('workings').value).workings1;
+    var url = JSON.parse(document.getElementById('workings').value).workings3;
     var img = new Image()
     img.src = url
-    img.onload = () => { ctx1.drawImage(img, 0, 0); };
+    img.onload = () => { ctx3.drawImage(img, 0, 0); };
     img.src = url
 
     // Set up the UI
@@ -245,7 +234,6 @@
     var clearBtn = document.getElementById("canvas-clear-btn");
     var prevBtn = document.getElementById("canvas-prev-btn");
     var nextBtn = document.getElementById("canvas-next-btn");
-    var submitBtn = document.getElementById("ans");
     let temp_color = ''
     let temp_font = ''
     var saveBtn = document.getElementById("canvas-save-btn");
@@ -267,7 +255,6 @@
     clearBtn.addEventListener("click", clearBoard)
     prevBtn.addEventListener("click", prevpg)
     nextBtn.addEventListener("click", nextpg)
-    submitBtn.addEventListener("click", saveURL)
     eraserBtn.addEventListener("click", eraseBoard)
     blackcolorBtn.addEventListener("click", changeblackColor)
     redcolorBtn.addEventListener("click", changeredColor)
@@ -281,8 +268,8 @@
     // resizing
     const canvas_parent = document.querySelector("#canvas_parent")
     function onResize() {
-        canvas.height = window.innerHeight;
-        canvas.width = canvas_parent.offsetWidth*0.999;
+        canvas3.height = window.innerHeight;
+        canvas3.width = canvas_parent.offsetWidth*0.999;
     };
     onResize();
 

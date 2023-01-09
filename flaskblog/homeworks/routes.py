@@ -447,7 +447,9 @@ def solve_question(homework_id, question_id):
             right_wrong = []
             final_ans = re.sub('static\'(.*?)\'','(\\\\MathQuillMathField{})',question.qn_answer).split(';')
         else:
-            form.workings.data = working.workings
+            form.workings.data = json.dumps({"workings1": working.workings,
+                                  "workings2": working.workings2,
+                                  "workings3": working.workings3})
             final_ans = working.final_ans.split(';')
             right_wrong = working.right_wrong.split(';')
 
@@ -472,7 +474,8 @@ def solve_question(homework_id, question_id):
                         point.append(1)
                 right_wrong = ';'.join(map(str,point))
                 final_ans = (request.form['action'])
-                working = Working(workings=form.workings.data, final_ans=final_ans, homework_id=homework_id, question_id=question_id, point=sum(point),right_wrong=right_wrong)
+                workings_arr = form.workings.data.split('@@@@')
+                working = Working(workings=workings_arr[0], workings2=workings_arr[1], workings3=workings_arr[2], final_ans=final_ans, homework_id=homework_id, question_id=question_id, point=sum(point),right_wrong=right_wrong)
                 date_now = datetime.datetime.now()
                 activity = Activity(description=question.title+ " has been attempted in "+homework.title+"!", student_id = homework.student_id, 
                                     author=current_user, date_posted = date_now)
@@ -494,7 +497,10 @@ def solve_question(homework_id, question_id):
                     else:
                         point.append(1)
                 right_wrong = ';'.join(map(str,point))
-                working.workings = form.workings.data
+                workings_arr = form.workings.data.split('@@@@')
+                working.workings = workings_arr[0]
+                working.workings2 = workings_arr[1]
+                working.workings3 = workings_arr[2]
                 final_ans = (request.form['action'])
                 working.final_ans = final_ans
                 working.point = sum(point)

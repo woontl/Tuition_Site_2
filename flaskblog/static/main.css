@@ -120,7 +120,17 @@ body {
     grid-column: span 2;
   }
 
-  #canvas{
+  #canvas3{
+    border: 1px solid black;
+    touch-action: none;
+  }
+
+  #canvas1{
+    border: 1px solid black;
+    touch-action: none;
+  }
+
+  #canvas2{
     border: 1px solid black;
     touch-action: none;
   }
