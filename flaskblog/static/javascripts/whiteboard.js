@@ -234,10 +234,12 @@
 
     //reload canvas with dataURL
     var url = JSON.parse(document.getElementById('workings').value).workings1;
-    var img = new Image()
-    img.src = url
-    img.onload = () => { ctx1.drawImage(img, 0, 0); };
-    img.src = url
+    if (url!=""){
+      var img = new Image()
+      img.src = url
+      img.onload = () => { ctx1.drawImage(img, 0, 0); };
+      img.src = url
+    }
 
     // Set up the UI
     var eraser_state = false;

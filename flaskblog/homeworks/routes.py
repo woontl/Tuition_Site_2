@@ -444,6 +444,9 @@ def solve_question(homework_id, question_id):
     check_ans = MQ_formatter(question.qn_answer).split(';')
     if request.method == 'GET':
         if working is None:
+            form.workings.data = json.dumps({"workings1": "",
+                                  "workings2": "",
+                                  "workings3": ""})
             right_wrong = []
             final_ans = re.sub('static\'(.*?)\'','(\\\\MathQuillMathField{})',question.qn_answer).split(';')
         else:
