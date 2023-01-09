@@ -226,7 +226,7 @@
     if (url!=""){
       var img = new Image()
       img.src = url
-      img.onload = () => { ctx1.drawImage(img, 0, 0); };
+      img.onload = () => { ctx3.drawImage(img, 0, 0); };
       img.src = url
     }
 
