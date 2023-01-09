@@ -271,7 +271,7 @@
     const canvas_parent = document.querySelector("#canvas_parent")
     function onResize() {
         canvas3.height = window.innerHeight;
-        canvas3.width = canvas_parent.offsetWidth*0.999;
+        canvas3.width = canvas_parent.offsetWidth*0.99;
     };
     onResize();
 
