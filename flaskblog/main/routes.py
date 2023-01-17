@@ -1,6 +1,8 @@
-from flask import render_template, Blueprint, url_for
+from flask import render_template, Blueprint, url_for, flash, redirect, request
 from flask_login import login_required, current_user
-from flaskblog.models import Homework, Question, Working, Note, Activity
+from flaskblog import db
+from flaskblog.models import Homework, Question, Working, Note, Activity, Changelog
+from flaskblog.main.forms import ChangelogForm
 import pandas as pd
 import datetime as datetime
 
@@ -67,7 +69,40 @@ def home():
     return render_template('home.html', image_file=image_file, homework=homework, note=note, activities=activities, 
                            activities_date_arr=activities_date_arr,df=df, topics=topics, checks=checks) 
 
-@main.route("/about") #Creating a second route
+@main.route("/about")
 @login_required
 def about():
-    return render_template('about.html', title='About')
+    page = request.args.get('page', 1, type = int)
+    changelogs = Changelog.query.order_by(Changelog.date_posted.desc()).paginate(per_page=5, page=page)
+    return render_template('about.html', changelogs=changelogs)
+
+@main.route("/new_changelog", methods=['GET', 'POST']) #Creating a second route
+@login_required
+def new_changelog():
+    form = ChangelogForm()
+    if form.validate_on_submit():
+        changelog = Changelog(version=form.version.data, description=form.description.data, author=current_user)
+        db.session.add(changelog)
+        db.session.commit()
+        flash('Your changelog has been created!', 'success')
+        return redirect(url_for('main.about'))
+    return render_template('create_changelog.html', title='New Changelog',
+                           form=form, legend='New Changelog')
+
+@main.route("/update_changelog/<int:changelog_id>", methods=['GET', 'POST']) #route based on changelog id
+@login_required
+def update_changelog(changelog_id):
+    changelog = Changelog.query.get_or_404(changelog_id)
+    form = ChangelogForm()
+    if form.validate_on_submit(): #if valid, display all these DB data on webpage
+        changelog.version = form.version.data
+        changelog.description = form.description.data
+        db.session.commit()
+        flash('Your changelog has been updated!', 'success')
+        return redirect(url_for('main.about'))
+    elif request.method == 'GET':
+        form.version.data = changelog.version
+        form.description.data = changelog.description
+
+    return render_template('create_changelog.html', title='New Changelog',
+                           form=form, legend='New Changelog')

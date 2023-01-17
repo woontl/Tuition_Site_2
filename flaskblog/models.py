@@ -20,6 +20,7 @@ class User(db.Model, UserMixin): #Creating user table in DB
     notes = db.relationship('Note', backref='author', lazy=True)
     homeworks = db.relationship('Homework', backref='author', lazy=True)
     activities = db.relationship('Activity', backref='author', lazy=True)
+    changelogs = db.relationship('Changelog', backref='author', lazy=True)
     topics = db.Column(db.String(1000))
     topics_check = db.Column(db.String(1000))
     description1 = db.Column(db.String(1000))
@@ -132,3 +133,13 @@ class Activity(db.Model):
 
     def __repr__(self):
         return f"Activity('{self.id}')"
+    
+class Changelog(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    version = db.Column(db.String(1000), nullable=False)
+    date_posted = db.Column(db.DateTime, nullable=False, default = datetime.now)
+    description = db.Column(db.String(99999), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) #foreign key links to User table
+    
+    def __repr__(self):
+        return f"Changelog('{self.id}')"
