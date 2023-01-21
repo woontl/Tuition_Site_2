@@ -5,6 +5,11 @@
     <script src="{{ url_for('static', filename='javascripts/whiteboard2.js') }}" defer></script>
     <script src="{{ url_for('static', filename='javascripts/whiteboard3.js') }}" defer></script>
     <script src="{{ url_for('static', filename='javascripts/MQ_ans.js') }}" defer></script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
 {% endblock %}
 {% block content %} <!--block content here replaces block content in parent-->
     <div class="content-section">
@@ -70,6 +75,18 @@
                 </div>
                 <div class="form-group" id="sub-answer">
                     {{ form.answer.label(class="form-control-label") }}
+                    <button type="button" class="btn btn-link" data-toggle="tooltip" data-placement="bottom" data-html="true" title="
+                    <p style='text-align:left'>
+                        Keyboard Shortcuts: <br>
+                        / = fraction <br>
+                        ^ = Superscript <br>
+                        _ = Subscript <br>
+                        \times = × <br>
+                        \divide = ÷ <br>
+                        \sqrt = √ <br>
+                        \pi = π 
+                    </p>
+                    "><i class="fa-solid fa-circle-info"></i></button>
                     {% set count = namespace(value=1) %}
                     {% set ans_count = namespace(value=0) %}
                     {% for main_ans in ['A','B','C','D','E','F'] %}
@@ -228,6 +245,9 @@
                     {% endfor %}
                 </div>
             </fieldset>
+            <div>
+                <button class="btn" id="pi_btn" type="button">Pi</button>
+            </div>
             <div class="form-group">
                 <button onclick="calc_ans()" type="submit" class="btn btn-outline-info" type="reset" id="ans" name="action" value="">Submit/Save</button>
             </div>

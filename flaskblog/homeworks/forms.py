@@ -12,14 +12,14 @@ class HomeworkForm(FlaskForm):
 
 class QuestionForm(FlaskForm):
     title = StringField('Title')
-    grade = SelectField('Grade', choices = ['ALL','IGCSE', 'IB'], validators=[DataRequired()])
+    grade = SelectField('Grade', choices = ['ALL','IGCSE/O-Levels', 'IB/A-Levels'], validators=[DataRequired()])
     tags = SelectField('Tags', coerce=str, validators=[DataRequired()])
     difficulty = SelectField('Difficulty', choices = ['ALL','Easy','Moderate','Hard','Extreme'], validators=[DataRequired()])
     load_questions = SubmitField('Load Questions')
     submit = SubmitField('Post')
 
 class QuestionBankForm(FlaskForm):
-    grade = SelectField('Grade', choices = ['IGCSE', 'IB'], validators=[DataRequired()])
+    grade = SelectField('Grade', choices = ['IGCSE/O-Levels', 'IB/A-Levels'], validators=[DataRequired()])
     tags = SelectMultipleField('Tags', coerce=str, validators=[DataRequired()])
     difficulty = SelectField('Difficulty', choices = ['Easy','Moderate','Hard','Extreme'], validators=[DataRequired()])
     answer = StringField('Answer', validators=[DataRequired()])
