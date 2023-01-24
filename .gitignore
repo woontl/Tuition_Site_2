@@ -1,1 +1,2 @@
-site.db
+flaskblog/site.db
+flaskblog/static/questionbank/
