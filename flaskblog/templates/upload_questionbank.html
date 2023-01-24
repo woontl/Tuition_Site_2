@@ -75,7 +75,7 @@
                         {% set ans_count = namespace(value=0) %}
                         {% for main_ans in ['A','B','C','D','E','F'] %}
                             {% if ans[(count.value-1)*7] != '' %}
-                                <div class="row justify-content-center align-items-center" id="main-answer-{{count.value}}" style="">
+                                <div class="row justify-content-start align-items-center" id="main-answer-{{count.value}}" style="">
                                     <div class="col-lg-2 col-md-4 col-sm-6 mx-0">
                                         <p class="d-flex justify-content-around align-items-center form-control-label">
                                             <button onclick="add_sub_answer({{count.value}})" type="button" class="btn btn-link"><i class="fa-solid fa-square-plus"></i></button>
@@ -102,7 +102,7 @@
                                     {% endfor %}
                                 </div>
                             {% elif ans[(count.value-1)*7] == '' and ans[(count.value-1)*7+1] != ''%}
-                                <div class="row justify-content-center align-items-center" id="main-answer-{{count.value}}" style="">
+                                <div class="row justify-content-start align-items-center" id="main-answer-{{count.value}}" style="">
                                     <div class="col-lg-2 col-md-4 col-sm-6 mx-0">
                                         <p class="d-flex justify-content-around align-items-center form-control-label">
                                             <button onclick="add_sub_answer({{count.value}})" type="button" class="btn btn-link"><i class="fa-solid fa-square-plus"></i></button>
@@ -145,7 +145,7 @@
                                     {% endfor %}
                                 </div>
                             {% else %}
-                                <div class="row justify-content-center align-items-center" id="main-answer-{{count.value}}" style="display: none">
+                                <div class="row justify-content-start align-items-center" id="main-answer-{{count.value}}" style="display: none">
                                     <div class="col-lg-2 col-md-4 col-sm-6 mx-0">
                                         <p class="d-flex justify-content-around align-items-center form-control-label">
                                             <button onclick="add_sub_answer({{count.value}})" type="button" class="btn btn-link"><i class="fa-solid fa-square-plus"></i></button>
