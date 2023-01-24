@@ -83,24 +83,20 @@
                                             Part {{main_ans}}:
                                         </p>
                                     </div>
-                                    <div class="col-lg-10 col-md-8 col-sm-6 mx-0">
-                                        <div contenteditable="true" class="form-control form-control-lg mb-2" id="MQ-field-{{count.value}}" style="min-height: 50px;">
-                                            <span id='MQ_span'>{{ans[ans_count.value]}}</span>
-                                            {% set ans_count.value = ans_count.value + 1 %}
-                                        </div>
+                                    <div id="MQ-field-{{count.value}}" contenteditable="true" class="col-lg-10 col-md-8 col-sm-6 mx-0 form-control form-control-lg mb-2 math-field" style="min-height: 50px;">
+                                        {{ans[ans_count.value]}}
                                     </div>
+                                    {% set ans_count.value = ans_count.value + 1 %}
                                     {% for roman in ["i", "ii", "iii", "iv", "v", "vi"] %}
                                         <div class="container" id="sub-answer-{{count.value}}-{{roman}}" style="display: none">
                                             <div class="row justify-content-end align-items-center">
                                                 <div class="col-lg-4 col-md-6 col-sm-6 mx-0">
                                                     <p class="form-control-label text-right">Part {{roman}}:</p>
                                                 </div>
-                                                <div class="col-lg-8 col-md-6 col-sm-6 mx-0">
-                                                    <div contenteditable="true" class="form-control form-control-lg mb-2" id="MQ-field-{{count.value}}-{{roman}}" style="min-height: 50px;">
-                                                        <span id='MQ_span'>{{ans[ans_count.value]}}</span>
-                                                        {% set ans_count.value = ans_count.value + 1 %}
-                                                    </div>
+                                                <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2 math-field" style="min-height: 50px;">
+                                                    {{ans[ans_count.value]}}
                                                 </div>
+                                                {% set ans_count.value = ans_count.value + 1 %}
                                             </div>
                                         </div>
                                     {% endfor %}
@@ -114,12 +110,10 @@
                                             Part {{main_ans}}:
                                         </p>
                                     </div>
-                                    <div class="col-lg-10 col-md-8 col-sm-6 mx-0">
-                                        <div contenteditable="true" class="form-control form-control-lg mb-2" id="MQ-field-{{count.value}}" style="min-height: 50px; display: none">
-                                            <span id='MQ_span'>{{ans[ans_count.value]}}</span>
-                                            {% set ans_count.value = ans_count.value + 1 %}
-                                        </div>
+                                    <div id="MQ-field-{{count.value}}" contenteditable="true" class="col-lg-10 col-md-8 col-sm-6 mx-0 form-control form-control-lg mb-2 math-field" style="min-height: 50px; display: none">
+                                        {{ans[ans_count.value]}}
                                     </div>
+                                    {% set ans_count.value = ans_count.value + 1 %}
                                     {% set roman_count = namespace(value=1) %}
                                     {% for roman in ["i", "ii", "iii", "iv", "v", "vi"] %}
                                         {% if ans[(count.value-1)*7 + roman_count.value] != '' %}
@@ -128,12 +122,10 @@
                                                     <div class="col-lg-4 col-md-6 col-sm-6 mx-0">
                                                         <p class="form-control-label text-right">Part {{roman}}:</p>
                                                     </div>
-                                                    <div class="col-lg-8 col-md-6 col-sm-6 mx-0">
-                                                        <div contenteditable="true" class="form-control form-control-lg mb-2" id="MQ-field-{{count.value}}-{{roman}}" style="min-height: 50px;">
-                                                            <span id='MQ_span'>{{ans[ans_count.value]}}</span>
-                                                            {% set ans_count.value = ans_count.value + 1 %}
-                                                        </div>
+                                                    <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2 math-field" style="min-height: 50px;">
+                                                        {{ans[ans_count.value]}}
                                                     </div>
+                                                    {% set ans_count.value = ans_count.value + 1 %}
                                                 </div>
                                             </div>
                                         {% else %}
@@ -142,12 +134,10 @@
                                                     <div class="col-lg-4 col-md-6 col-sm-6 mx-0">
                                                         <p class="form-control-label text-right">Part {{roman}}:</p>
                                                     </div>
-                                                    <div class="col-lg-8 col-md-6 col-sm-6 mx-0">
-                                                        <div contenteditable="true" class="form-control form-control-lg mb-2" id="MQ-field-{{count.value}}-{{roman}}" style="min-height: 50px;">
-                                                            <span id='MQ_span'>{{ans[ans_count.value]}}</span>
-                                                            {% set ans_count.value = ans_count.value + 1 %}
-                                                        </div>
+                                                    <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2 math-field" style="min-height: 50px;">
+                                                        {{ans[ans_count.value]}}
                                                     </div>
+                                                    {% set ans_count.value = ans_count.value + 1 %}
                                                 </div>
                                             </div>
                                         {% endif %}
@@ -163,24 +153,20 @@
                                             Part {{main_ans}}:
                                         </p>
                                     </div>
-                                    <div class="col-lg-10 col-md-8 col-sm-6 mx-0">
-                                        <div contenteditable="true" class="form-control form-control-lg mb-2" id="MQ-field-{{count.value}}" style="min-height: 50px">
-                                            <span id='MQ_span'>{{ans[ans_count.value]}}</span>
-                                            {% set ans_count.value = ans_count.value + 1 %}
-                                        </div>
+                                    <div id="MQ-field-{{count.value}}" contenteditable="true" class="col-lg-10 col-md-8 col-sm-6 mx-0 form-control form-control-lg mb-2 math-field" style="min-height: 50px;">
+                                        {{ans[ans_count.value]}}
                                     </div>
+                                    {% set ans_count.value = ans_count.value + 1 %}
                                     {% for roman in ["i", "ii", "iii", "iv", "v", "vi"] %}
                                         <div class="container" id="sub-answer-{{count.value}}-{{roman}}" style="display: none">
                                             <div class="row justify-content-end align-items-center">
                                                 <div class="col-lg-4 col-md-6 col-sm-6 mx-0">
                                                     <p class="form-control-label text-right">Part {{roman}}:</p>
                                                 </div>
-                                                <div class="col-lg-8 col-md-6 col-sm-6 mx-0">
-                                                    <div contenteditable="true" class="form-control form-control-lg mb-2" id="MQ-field-{{count.value}}-{{roman}}" style="min-height: 50px;">
-                                                        <span id='MQ_span'>{{ans[ans_count.value]}}</span>
-                                                        {% set ans_count.value = ans_count.value + 1 %}
-                                                    </div>
+                                                <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2 math-field" style="min-height: 50px;">
+                                                    {{ans[ans_count.value]}}
                                                 </div>
+                                                {% set ans_count.value = ans_count.value + 1 %}
                                             </div>
                                         </div>
                                     {% endfor %}
@@ -191,7 +177,7 @@
                     {% else %}
                         <button onclick="add_main_answer()" type="button" class="btn btn-link"><i class="fa-solid fa-square-plus"></i></button>
                         <button onclick="del_main_answer()" type="button" class="btn btn-link" style="color: red"><i class="fa-solid fa-trash-can"></i></button>
-                        <div class="row justify-content-center align-items-center" id="main-answer-1" style="">
+                        <div class="row justify-content-start  align-items-center" id="main-answer-1" style="">
                             <div class="col-lg-2 col-md-4 col-sm-6 mx-0">
                                 <p class="d-flex justify-content-around align-items-center form-control-label">
                                     <button onclick="add_sub_answer(1)" type="button" class="btn btn-link"><i class="fa-solid fa-square-plus"></i></button>
@@ -199,9 +185,7 @@
                                     Part A:
                                 </p>
                             </div>
-                            <div class="col-lg-10 col-md-8 col-sm-6 mx-0">
-                                <div contenteditable="true" class="form-control form-control-lg mb-2" id="MQ-field-1" style="min-height: 50px;">
-                                </div>
+                            <div contenteditable="true" class="col-lg-10 col-md-8 col-sm-6 mx-0 form-control form-control-lg mb-2 mathfield" id="MQ-field-1" style="min-height: 50px;">
                             </div>
                             {% for roman in ["i", "ii", "iii", "iv", "v", "vi"] %}
                             <div class="container" id="sub-answer-1-{{roman}}" style="display: none">
@@ -209,9 +193,7 @@
                                     <div class="col-lg-4 col-md-6 col-sm-6 mx-0">
                                         <p class="form-control-label text-right">Part {{roman}}:</p>
                                     </div>
-                                    <div class="col-lg-8 col-md-6 col-sm-6 mx-0">
-                                        <div contenteditable="true" class="form-control form-control-lg mb-2" id="MQ-field-1-{{roman}}" style="min-height: 50px;">
-                                        </div>
+                                    <div contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2 mathfield" id="MQ-field-1-{{roman}}" style="min-height: 50px;">
                                     </div>
                                 </div>
                             </div>
@@ -219,7 +201,7 @@
                         </div>
                         {% set count = namespace(value=2) %}
                         {% for letter in 'BCDEF' %}
-                            <div class="row justify-content-center align-items-center" id="main-answer-{{count.value}}" style="display: none">
+                            <div class="row justify-content-start align-items-center" id="main-answer-{{count.value}}" style="display: none">
                                 <div class="col-lg-2 col-md-4 col-sm-6 mx-0">
                                     <p class="d-flex justify-content-around align-items-center form-control-label">
                                         <button onclick="add_sub_answer({{count.value}})" type="button" class="btn btn-link"><i class="fa-solid fa-square-plus"></i></button>
@@ -227,9 +209,7 @@
                                         Part {{letter}}:
                                     </p>
                                 </div>
-                                <div class="col-lg-10 col-md-8 col-sm-6 mx-0">
-                                    <div contenteditable="true" class="form-control form-control-lg mb-2" id="MQ-field-{{count.value}}" style="min-height: 50px;">
-                                    </div>
+                                <div contenteditable="true" class="col-lg-10 col-md-8 col-sm-6 mx-0 form-control form-control-lg mb-2 mathfield" id="MQ-field-{{count.value}}" style="min-height: 50px;">
                                 </div>
                                 {% for roman in ["i", "ii", "iii", "iv", "v", "vi"] %}
                                     <div class="container" id="sub-answer-{{count.value}}-{{roman}}" style="display: none">
@@ -237,9 +217,7 @@
                                             <div class="col-lg-4 col-md-6 col-sm-6 mx-0">
                                                 <p class="form-control-label text-right">Part {{roman}}:</p>
                                             </div>
-                                            <div class="col-lg-8 col-md-6 col-sm-6 mx-0">
-                                                <div contenteditable="true" class="form-control form-control-lg mb-2" id="MQ-field-{{count.value}}-{{roman}}" style="min-height: 50px;">
-                                                </div>
+                                            <div contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2 mathfield" id="MQ-field-{{count.value}}-{{roman}}" style="min-height: 50px;">
                                             </div>
                                         </div>
                                     </div>
@@ -248,6 +226,20 @@
                         {% set count.value = count.value + 1 %}
                         {% endfor %}
                     {% endif %}
+                </div>
+                <div class="form-group">
+                    <button class="btn" type="button" id="calc_button_plus">+</button>
+                    <button class="btn" type="button" id="calc_button_minus">-</button>
+                    <button class="btn" type="button" id="calc_button_times">x</button>
+                    <button class="btn" type="button" id="calc_button_divide">÷</button>
+                    <button class="btn" type="button" id="calc_button_sqrt">√</button>
+                    <button class="btn" type="button" id="calc_button_superscript">aˣ</button>
+                    <button class="btn" type="button" id="calc_button_subscript">aₓ</button>
+                    <button class="btn" type="button" id="calc_button_less"><</button>
+                    <button class="btn" type="button" id="calc_button_less_equal">≤</button>
+                    <button class="btn" type="button" id="calc_button_more">></button>
+                    <button class="btn" type="button" id="calc_button_more_equal">≥</button>
+                    <button class="btn" type="button" id="calc_button_pi">π</button>
                 </div>
                 <div class="form-group">
                     <button onclick="calc_ans()" type="submit" class="btn btn-outline-info" id="ans" name="action" value="">Upload</button>
