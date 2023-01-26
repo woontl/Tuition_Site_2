@@ -440,22 +440,22 @@ def solve_question(homework_id, question_id):
     working = Working.query.filter(Working.homework_id==homework_id, Working.question_id==question_id).first()
     form = WorkingForm()
     question = Question.query.filter(Question.id==question_id, Question.homework_id==homework_id).first()
-    correct_ans = re.sub('static\'(.*?)\'','(\\\\MathQuillMathField{})',question.qn_answer).split(';')
+    correct_ans = re.sub('【(.*?)】','\\\\MathQuillMathField{}',question.qn_answer).split(';')
     check_ans = MQ_formatter(question.qn_answer).split(';')
+    print(check_ans)
     if request.method == 'GET':
         if working is None:
             form.workings.data = json.dumps({"workings1": "",
                                   "workings2": "",
                                   "workings3": ""})
             right_wrong = []
-            final_ans = re.sub('static\'(.*?)\'','(\\\\MathQuillMathField{})',question.qn_answer).split(';')
+            final_ans = re.sub('【(.*?)】','\\\\MathQuillMathField{}',question.qn_answer).split(';')
         else:
             form.workings.data = json.dumps({"workings1": working.workings,
                                   "workings2": working.workings2,
                                   "workings3": working.workings3})
             final_ans = working.final_ans.split(';')
             right_wrong = working.right_wrong.split(';')
-
     elif request.method == 'POST':
         try:
             if request.form['refresh'] == "refresh":
@@ -493,6 +493,7 @@ def solve_question(homework_id, question_id):
                     return redirect(url_for('homeworks.homework', homework_id=homework.id))
             else:
                 final_ans = MQ_formatter(request.form['action'])
+                print(final_ans)
                 point = []
                 for i,j in zip((final_ans.split(';')),(check_ans)):
                     if i == j:

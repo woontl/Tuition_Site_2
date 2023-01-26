@@ -1,10 +1,10 @@
 {% extends "layout.html" %} <!--inherit from parent html-->
 {% block javaScript %}
-    <script src="{{ url_for('static', filename='javascripts/calc_answer.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='javascripts/calc_solve_answer.js') }}" defer></script>
     <script src="{{ url_for('static', filename='javascripts/whiteboard.js') }}" defer></script>
     <script src="{{ url_for('static', filename='javascripts/whiteboard2.js') }}" defer></script>
     <script src="{{ url_for('static', filename='javascripts/whiteboard3.js') }}" defer></script>
-    <script src="{{ url_for('static', filename='javascripts/MQ_ans.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='javascripts/MQ_solve.js') }}" defer></script>
     <script>
         $(function () {
             $('[data-toggle="tooltip"]').tooltip()
@@ -107,11 +107,11 @@
                                     </p>
                                 </div>
                                 {% if (right_wrong[ans_count.value]) == '1' %}
-                                    <div id="MQ-field-{{count.value}}" contenteditable="true" class="col-lg-10 col-md-8 col-sm-6 mx-0 form-control form-control-lg mb-2 math-field" style="min-height: 50px;">
-                                        {{ans[ans_count.value]}}
+                                    <div id="MQ-field-{{count.value}}" contenteditable="true" class="col-lg-10 col-md-8 col-sm-6 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
+                                        {{ans[ans_count.value]}} 
                                     </div>
                                 {% else %}
-                                    <div id="MQ-field-{{count.value}}" contenteditable="true" class="col-lg-10 col-md-8 col-sm-6 mx-0 form-control form-control-lg mb-2 math-field" style="min-height: 50px;">
+                                    <div id="MQ-field-{{count.value}}" contenteditable="true" class="col-lg-10 col-md-8 col-sm-6 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
                                         {{final_ans[ans_count.value]}}
                                     </div>
                                 {% endif %}
@@ -123,11 +123,11 @@
                                                 <p class="form-control-label text-right">Part {{roman}}:</p>
                                             </div>
                                             {% if (right_wrong[ans_count.value]) == '1' %}
-                                                <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2 math-field" style="min-height: 50px;">
+                                                <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
                                                     {{ans[ans_count.value]}}
                                                 </div>
                                             {% else %}
-                                                <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2 math-field" style="min-height: 50px;">
+                                                <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
                                                     {{final_ans[ans_count.value]}}
                                                 </div>
                                             {% endif %}
@@ -153,11 +153,11 @@
                                     </p>
                                 </div>
                                 {% if (right_wrong[ans_count.value]) == '1' %}
-                                    <div id="MQ-field-{{count.value}}" contenteditable="true" class="col-lg-10 col-md-8 col-sm-6 mx-0 form-control form-control-lg mb-2 math-field" style="min-height: 50px; display: none">
+                                    <div id="MQ-field-{{count.value}}" contenteditable="true" class="col-lg-10 col-md-8 col-sm-6 mx-0 form-control form-control-lg mb-2" style="min-height: 50px; display: none">
                                         {{ans[ans_count.value]}}
                                     </div>
                                 {% else %}
-                                    <div id="MQ-field-{{count.value}}" contenteditable="true" class="col-lg-10 col-md-8 col-sm-6 mx-0 form-control form-control-lg mb-2 math-field" style="min-height: 50px; display: none">
+                                    <div id="MQ-field-{{count.value}}" contenteditable="true" class="col-lg-10 col-md-8 col-sm-6 mx-0 form-control form-control-lg mb-2" style="min-height: 50px; display: none">
                                         {{final_ans[ans_count.value]}}
                                     </div>
                                 {% endif %}
@@ -182,11 +182,11 @@
                                                     </p>
                                                 </div>
                                                 {% if (right_wrong[ans_count.value]) == '1' %}
-                                                    <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2 math-field" style="min-height: 50px;">
+                                                    <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
                                                         {{ans[ans_count.value]}}
                                                     </div>
                                                 {% else %}
-                                                    <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2 math-field" style="min-height: 50px;">
+                                                    <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
                                                         {{final_ans[ans_count.value]}}
                                                     </div>
                                                 {% endif %}
@@ -200,11 +200,11 @@
                                                     <p class="form-control-label text-right">Part {{roman}}:</p>
                                                 </div>
                                                 {% if (right_wrong[ans_count.value]) == '1' %}
-                                                    <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2 math-field" style="min-height: 50px;">
+                                                    <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
                                                         {{ans[ans_count.value]}}
                                                     </div>
                                                 {% else %}
-                                                    <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2 math-field" style="min-height: 50px;">
+                                                    <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
                                                         {{final_ans[ans_count.value]}}
                                                     </div>
                                                 {% endif %}

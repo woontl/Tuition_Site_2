@@ -18,12 +18,11 @@ def save_qn_picture(form_picture):
     return picture_fn
 
 def MQ_formatter(MQ):
-    MQ = re.sub('static','',MQ)
-    MQ = re.sub('\\\\left','',MQ)
-    MQ = re.sub('\\\\right','',MQ)
     MQ = re.sub('\(','',MQ)
     MQ = re.sub('\)','',MQ)
+    MQ = re.sub('【','',MQ)
+    MQ = re.sub('】','',MQ)
+    MQ = re.sub('\'','',MQ)
     MQ = re.sub('\{','',MQ)
     MQ = re.sub('\}','',MQ)
-    MQ = re.sub('\'','',MQ)
     return MQ
