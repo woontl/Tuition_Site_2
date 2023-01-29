@@ -3,21 +3,14 @@ let lastClickedMathField;
 
 mathFields.forEach(function(mathField) {
   let mathFieldInstance = MQ.StaticMath(mathField);
-    
-  mathField.addEventListener("click", function() {
-    lastClickedMathField = mathFieldInstance;
+  mathField.addEventListener("click", function(event) {
+    let innerField = event.target;
+    let innerField_id = innerField.getAttribute('mathquill-block-id')
+    let index = mathFieldInstance.innerFields.findIndex(obj => obj.id == innerField_id);
+    lastClickedMathField = mathFieldInstance.innerFields[index];
   });
 });
 
-let ans_mathFields = document.querySelectorAll(".mq-editable-field");
-
-ans_mathFields.forEach(function(ans_mathField) {
-  let mathFieldInstance = MQ.MathField(ans_mathField);
-    
-  ans_mathField.addEventListener("click", function() {
-    lastClickedMathField = mathFieldInstance;
-  });
-});
 
 document.getElementById("calc_button_plus").addEventListener("click", function() {
   lastClickedMathField.cmd("+");

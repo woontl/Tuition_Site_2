@@ -202,3 +202,8 @@ git reset --hard origin/master
 
 How to delete directory and all files
 1) rm -rf Tuition_Site_2
+
+To update production with changed config files
+1) go to venv, git pull
+2) sudo reboot
+3) venv, sudo systemctl restart nginx

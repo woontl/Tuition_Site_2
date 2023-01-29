@@ -9,15 +9,6 @@ mathFields.forEach(function(mathField) {
   });
 });
 
-let ans_mathFields = document.querySelectorAll(".mq-editable-field");
-
-ans_mathFields.forEach(function(ans_mathField) {
-  let mathFieldInstance = MQ.MathField(ans_mathField);
-    
-  ans_mathField.addEventListener("click", function() {
-    lastClickedMathField = mathFieldInstance;
-  });
-});
 
 document.getElementById("calc_button_plus").addEventListener("click", function() {
   lastClickedMathField.cmd("+");
