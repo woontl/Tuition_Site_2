@@ -527,4 +527,4 @@ def solve_question(homework_id, question_id):
                 else:
                     flash('Your answer is correct!', 'success')
                     return redirect(url_for('homeworks.homework', homework_id=homework.id))
-    return render_template('working.html', title='Solve Question', form=form, legend = "Solve Question", question=question, ans=correct_ans, final_ans=final_ans, right_wrong=right_wrong)
+    return render_template('working.html', title='Solve Question', form=form, legend = "Solve Question", question=question, ans=correct_ans, final_ans=final_ans, right_wrong=right_wrong, checked=checked, check_ans=check_ans)
