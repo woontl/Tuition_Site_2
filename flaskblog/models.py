@@ -73,6 +73,7 @@ class Questionbank(db.Model):
     tags = db.Column(db.String(200), nullable=False)
     difficulty = db.Column(db.String(100), nullable=False)
     answer = db.Column(db.String(200), nullable=False)
+    checked = db.Column(db.String(200), nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default = datetime.now)
 
     def __repr__(self):
@@ -95,6 +96,7 @@ class Question(db.Model):
     difficulty = db.Column(db.String(200), nullable=False)
     qn_img = db.Column(db.Text, nullable=False)
     qn_answer = db.Column(db.String(200), nullable=False)
+    checked = db.Column(db.String(200), nullable=False)
 
     def __repr__(self):
         return f"Question('{self.id}', '{self.title}')"

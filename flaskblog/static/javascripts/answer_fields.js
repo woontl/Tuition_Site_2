@@ -1,6 +1,9 @@
 function add_sub_answer(count) {
   var main_ans = document.getElementById('MQ-field-'+count)
   main_ans.style.display='none'
+  var main_ans_openended = document.getElementById('open-ended-MQ-field-'+count)
+  main_ans_openended.classList.remove("d-flex");
+  main_ans_openended.classList.add("d-none");
   var sub_ans_arr = document.querySelectorAll('[id^=sub-answer-'+count+']')
   for (var i=0; i<sub_ans_arr.length; i++){
     if (sub_ans_arr[i].style.display=='none'){
@@ -21,6 +24,9 @@ function del_sub_answer(count) {
       if (sub_ans_arr[0].style.display=='none'){
         var main_ans = document.getElementById('MQ-field-'+count)
         main_ans.style.display='block'
+        var main_ans_openended = document.getElementById('open-ended-MQ-field-'+count)
+        main_ans_openended.classList.remove("d-none");
+        main_ans_openended.classList.add("d-flex");
       }
       MQ.MathField(sub_ans).latex("")
       break;

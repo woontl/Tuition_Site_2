@@ -76,15 +76,23 @@
                         {% for main_ans in ['A','B','C','D','E','F'] %}
                             {% if ans[(count.value-1)*7] != '' %}
                                 <div class="row justify-content-start align-items-center" id="main-answer-{{count.value}}" style="">
-                                    <div class="col-lg-2 col-md-4 col-sm-6 mx-0">
+                                    <div class="col-lg-2 col-md-3 col-sm-4 mx-0">
                                         <p class="d-flex justify-content-around align-items-center form-control-label">
                                             <button onclick="add_sub_answer({{count.value}})" type="button" class="btn btn-link"><i class="fa-solid fa-square-plus"></i></button>
                                             <button onclick="del_sub_answer({{count.value}})" type="button" class="btn btn-link" style="color: red"><i class="fa-solid fa-square-minus"></i></button>
                                             Part {{main_ans}}:
                                         </p>
                                     </div>
-                                    <div id="MQ-field-{{count.value}}" contenteditable="true" class="col-lg-10 col-md-8 col-sm-6 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
+                                    <div id="MQ-field-{{count.value}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-4 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
                                         {{ans[ans_count.value]}}
+                                    </div>
+                                    <div class="col-lg-2 col-md-3 col-sm-4 mx-0 d-flex justify-content-around" id="open-ended-MQ-field-{{count.value}}">
+                                        Open-Ended?
+                                        {% if checked[ans_count.value] == '1' %} 
+                                            <input class="checkbox" type="checkbox" checked>
+                                        {% else %}
+                                            <input class="checkbox" type="checkbox">
+                                        {% endif %}
                                     </div>
                                     {% set ans_count.value = ans_count.value + 1 %}
                                     {% for roman in ["i", "ii", "iii", "iv", "v", "vi"] %}
@@ -93,8 +101,16 @@
                                                 <div class="col-lg-4 col-md-6 col-sm-6 mx-0">
                                                     <p class="form-control-label text-right">Part {{roman}}:</p>
                                                 </div>
-                                                <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
+                                                <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-6 col-md-3 col-sm-2 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
                                                     {{ans[ans_count.value]}}
+                                                </div>
+                                                <div class="col-lg-2 col-md-3 col-sm-4 mx-0 d-flex justify-content-around" id="open-ended-MQ-field-{{count.value}}-{{roman}}">
+                                                    Open-Ended?
+                                                    {% if checked[ans_count.value] == '1' %} 
+                                                        <input class="checkbox" type="checkbox" checked>
+                                                    {% else %}
+                                                        <input class="checkbox" type="checkbox">
+                                                    {% endif %}
                                                 </div>
                                                 {% set ans_count.value = ans_count.value + 1 %}
                                             </div>
@@ -103,15 +119,23 @@
                                 </div>
                             {% elif ans[(count.value-1)*7] == '' and ans[(count.value-1)*7+1] != ''%}
                                 <div class="row justify-content-start align-items-center" id="main-answer-{{count.value}}" style="">
-                                    <div class="col-lg-2 col-md-4 col-sm-6 mx-0">
+                                    <div class="col-lg-2 col-md-3 col-sm-4 mx-0">
                                         <p class="d-flex justify-content-around align-items-center form-control-label">
                                             <button onclick="add_sub_answer({{count.value}})" type="button" class="btn btn-link"><i class="fa-solid fa-square-plus"></i></button>
                                             <button onclick="del_sub_answer({{count.value}})" type="button" class="btn btn-link" style="color: red"><i class="fa-solid fa-square-minus"></i></button>
                                             Part {{main_ans}}:
                                         </p>
                                     </div>
-                                    <div id="MQ-field-{{count.value}}" contenteditable="true" class="col-lg-10 col-md-8 col-sm-6 mx-0 form-control form-control-lg mb-2" style="min-height: 50px; display: none">
+                                    <div id="MQ-field-{{count.value}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-4 mx-0 form-control form-control-lg mb-2" style="min-height: 50px; display: none">
                                         {{ans[ans_count.value]}}
+                                    </div>
+                                    <div class="col-lg-2 col-md-3 col-sm-4 mx-0 justify-content-around" id="open-ended-MQ-field-{{count.value}}" style="display: none">
+                                        Open-Ended?
+                                        {% if checked[ans_count.value] == '1' %} 
+                                            <input class="checkbox" type="checkbox" checked>
+                                        {% else %}
+                                            <input class="checkbox" type="checkbox">
+                                        {% endif %}
                                     </div>
                                     {% set ans_count.value = ans_count.value + 1 %}
                                     {% set roman_count = namespace(value=1) %}
@@ -122,8 +146,16 @@
                                                     <div class="col-lg-4 col-md-6 col-sm-6 mx-0">
                                                         <p class="form-control-label text-right">Part {{roman}}:</p>
                                                     </div>
-                                                    <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
+                                                    <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-6 col-md-3 col-sm-2 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
                                                         {{ans[ans_count.value]}}
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-3 col-sm-4 mx-0 d-flex justify-content-around" id="open-ended-MQ-field-{{count.value}}-{{roman}}">
+                                                        Open-Ended?
+                                                        {% if checked[ans_count.value] == '1' %} 
+                                                            <input class="checkbox" type="checkbox" checked>
+                                                        {% else %}
+                                                            <input class="checkbox" type="checkbox">
+                                                        {% endif %}
                                                     </div>
                                                     {% set ans_count.value = ans_count.value + 1 %}
                                                 </div>
@@ -134,8 +166,16 @@
                                                     <div class="col-lg-4 col-md-6 col-sm-6 mx-0">
                                                         <p class="form-control-label text-right">Part {{roman}}:</p>
                                                     </div>
-                                                    <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
+                                                    <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-6 col-md-3 col-sm-2 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
                                                         {{ans[ans_count.value]}}
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-3 col-sm-4 mx-0 d-flex justify-content-around" id="open-ended-MQ-field-{{count.value}}-{{roman}}">
+                                                        Open-Ended?
+                                                        {% if checked[ans_count.value] == '1' %} 
+                                                            <input class="checkbox" type="checkbox" checked>
+                                                        {% else %}
+                                                            <input class="checkbox" type="checkbox">
+                                                        {% endif %}
                                                     </div>
                                                     {% set ans_count.value = ans_count.value + 1 %}
                                                 </div>
@@ -146,15 +186,23 @@
                                 </div>
                             {% else %}
                                 <div class="row justify-content-start align-items-center" id="main-answer-{{count.value}}" style="display: none">
-                                    <div class="col-lg-2 col-md-4 col-sm-6 mx-0">
+                                    <div class="col-lg-2 col-md-3 col-sm-4 mx-0">
                                         <p class="d-flex justify-content-around align-items-center form-control-label">
                                             <button onclick="add_sub_answer({{count.value}})" type="button" class="btn btn-link"><i class="fa-solid fa-square-plus"></i></button>
                                             <button onclick="del_sub_answer({{count.value}})" type="button" class="btn btn-link" style="color: red"><i class="fa-solid fa-square-minus"></i></button>
                                             Part {{main_ans}}:
                                         </p>
                                     </div>
-                                    <div id="MQ-field-{{count.value}}" contenteditable="true" class="col-lg-10 col-md-8 col-sm-6 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
+                                    <div id="MQ-field-{{count.value}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-4 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
                                         {{ans[ans_count.value]}}
+                                    </div>
+                                    <div class="col-lg-2 col-md-3 col-sm-4 mx-0 d-flex justify-content-around" id="open-ended-MQ-field-{{count.value}}">
+                                        Open-Ended?
+                                        {% if checked[ans_count.value] == '1' %} 
+                                            <input class="checkbox" type="checkbox" checked>
+                                        {% else %}
+                                            <input class="checkbox" type="checkbox">
+                                        {% endif %}
                                     </div>
                                     {% set ans_count.value = ans_count.value + 1 %}
                                     {% for roman in ["i", "ii", "iii", "iv", "v", "vi"] %}
@@ -163,8 +211,16 @@
                                                 <div class="col-lg-4 col-md-6 col-sm-6 mx-0">
                                                     <p class="form-control-label text-right">Part {{roman}}:</p>
                                                 </div>
-                                                <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
+                                                <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-6 col-md-3 col-sm-2 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
                                                     {{ans[ans_count.value]}}
+                                                </div>
+                                                <div class="col-lg-2 col-md-3 col-sm-4 mx-0 d-flex justify-content-around" id="open-ended-MQ-field-{{count.value}}-{{roman}}">
+                                                    Open-Ended?
+                                                    {% if checked[ans_count.value] == '1' %} 
+                                                        <input class="checkbox" type="checkbox" checked>
+                                                    {% else %}
+                                                        <input class="checkbox" type="checkbox">
+                                                    {% endif %}
                                                 </div>
                                                 {% set ans_count.value = ans_count.value + 1 %}
                                             </div>
@@ -177,15 +233,18 @@
                     {% else %}
                         <button onclick="add_main_answer()" type="button" class="btn btn-link"><i class="fa-solid fa-square-plus"></i></button>
                         <button onclick="del_main_answer()" type="button" class="btn btn-link" style="color: red"><i class="fa-solid fa-trash-can"></i></button>
-                        <div class="row justify-content-start  align-items-center" id="main-answer-1" style="">
-                            <div class="col-lg-2 col-md-4 col-sm-6 mx-0">
+                        <div class="row justify-content-start align-items-center" id="main-answer-1">
+                            <div class="col-lg-2 col-md-3 col-sm-4 mx-0">
                                 <p class="d-flex justify-content-around align-items-center form-control-label">
                                     <button onclick="add_sub_answer(1)" type="button" class="btn btn-link"><i class="fa-solid fa-square-plus"></i></button>
                                     <button onclick="del_sub_answer(1)" type="button" class="btn btn-link" style="color: red"><i class="fa-solid fa-square-minus"></i></button>
                                     Part A:
                                 </p>
                             </div>
-                            <div contenteditable="true" class="col-lg-10 col-md-8 col-sm-6 mx-0 form-control form-control-lg mb-2 mathfield" id="MQ-field-1" style="min-height: 50px;">
+                            <div contenteditable="true" class="col-lg-8 col-md-6 col-sm-4 mx-0 form-control form-control-lg mb-2 mathfield" id="MQ-field-1" style="min-height: 50px;">                               
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-sm-4 mx-0 d-flex justify-content-around" id="open-ended-MQ-field-1">
+                                Open-Ended? <input class="checkbox" type="checkbox">
                             </div>
                             {% for roman in ["i", "ii", "iii", "iv", "v", "vi"] %}
                             <div class="container" id="sub-answer-1-{{roman}}" style="display: none">
@@ -193,7 +252,10 @@
                                     <div class="col-lg-4 col-md-6 col-sm-6 mx-0">
                                         <p class="form-control-label text-right">Part {{roman}}:</p>
                                     </div>
-                                    <div contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2 mathfield" id="MQ-field-1-{{roman}}" style="min-height: 50px;">
+                                    <div contenteditable="true" class="col-lg-6 col-md-3 col-sm-2 mx-0 form-control form-control-lg mb-2 mathfield" id="MQ-field-1-{{roman}}" style="min-height: 50px;">
+                                    </div>
+                                    <div class="col-lg-2 col-md-3 col-sm-4 mx-0 d-flex justify-content-around" id="open-ended-MQ-field-1-{{roman}}">
+                                        Open-Ended? <input class="checkbox" type="checkbox">
                                     </div>
                                 </div>
                             </div>
@@ -202,14 +264,17 @@
                         {% set count = namespace(value=2) %}
                         {% for letter in 'BCDEF' %}
                             <div class="row justify-content-start align-items-center" id="main-answer-{{count.value}}" style="display: none">
-                                <div class="col-lg-2 col-md-4 col-sm-6 mx-0">
+                                <div class="col-lg-2 col-md-3 col-sm-4 mx-0">
                                     <p class="d-flex justify-content-around align-items-center form-control-label">
                                         <button onclick="add_sub_answer({{count.value}})" type="button" class="btn btn-link"><i class="fa-solid fa-square-plus"></i></button>
                                         <button onclick="del_sub_answer({{count.value}})" type="button" class="btn btn-link" style="color: red"><i class="fa-solid fa-square-minus"></i></button>
                                         Part {{letter}}:
                                     </p>
                                 </div>
-                                <div contenteditable="true" class="col-lg-10 col-md-8 col-sm-6 mx-0 form-control form-control-lg mb-2 mathfield" id="MQ-field-{{count.value}}" style="min-height: 50px;">
+                                <div contenteditable="true" class="col-lg-8 col-md-6 col-sm-4 mx-0 form-control form-control-lg mb-2 mathfield" id="MQ-field-{{count.value}}" style="min-height: 50px;">
+                                </div>
+                                <div class="col-lg-2 col-md-3 col-sm-4 mx-0 d-flex justify-content-around" id="open-ended-MQ-field-{{count.value}}">
+                                    Open-Ended? <input class="checkbox" type="checkbox">
                                 </div>
                                 {% for roman in ["i", "ii", "iii", "iv", "v", "vi"] %}
                                     <div class="container" id="sub-answer-{{count.value}}-{{roman}}" style="display: none">
@@ -217,7 +282,10 @@
                                             <div class="col-lg-4 col-md-6 col-sm-6 mx-0">
                                                 <p class="form-control-label text-right">Part {{roman}}:</p>
                                             </div>
-                                            <div contenteditable="true" class="col-lg-8 col-md-6 col-sm-6 mx-0 form-control form-control-lg mb-2 mathfield" id="MQ-field-{{count.value}}-{{roman}}" style="min-height: 50px;">
+                                            <div contenteditable="true" class="col-lg-6 col-md-3 col-sm-2 mx-0 form-control form-control-lg mb-2 mathfield" id="MQ-field-{{count.value}}-{{roman}}" style="min-height: 50px;">
+                                            </div>
+                                            <div class="col-lg-2 col-md-3 col-sm-4 mx-0 d-flex justify-content-around" id="open-ended-MQ-field-{{count.value}}-{{roman}}">
+                                                Open-Ended? <input class="checkbox" type="checkbox">
                                             </div>
                                         </div>
                                     </div>

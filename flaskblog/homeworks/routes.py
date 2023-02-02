@@ -210,9 +210,10 @@ def upload_questionbank():
             return redirect(url_for('homeworks.upload_questionbank'))
         img = save_qn_picture(form.img.data)
         tags_str = ','.join(form.tags.data)
-        ans = (request.form['action'])
+        ans = (json.loads(request.form['action']))['ans_merged']
+        checked = (json.loads(request.form['action']))['open_ended_checked']
         questionbank = Questionbank(grade=form.grade.data, tags=tags_str, img=img,
-                                     difficulty=form.difficulty.data, answer=ans)
+                                     difficulty=form.difficulty.data, answer=ans, checked=checked)
         db.session.add(questionbank)
         db.session.commit()
         flash('Your question has been added to the Question Bank!', 'success')
@@ -258,17 +259,19 @@ def update_questionbank(questionbank_id):
         form.difficulty.data = qb.difficulty
         ans=qb.answer.split(';')
         img_preview = qb.img
+        checked=qb.checked.split(';')
         
     elif request.method == "POST":
         qb.grade = form.grade.data
         qb.tags = ','.join(form.tags.data)
         qb.difficulty = form.difficulty.data
-        qb.answer = (request.form['action'])
+        qb.answer = (json.loads(request.form['action']))['ans_merged']
+        qb.checked = (json.loads(request.form['action']))['open_ended_checked']
         db.session.commit()
         flash('Your question has been updated in the Question Bank!', 'success')
         return redirect(url_for('homeworks.questionbank', grade="ALL",tags="ALL",difficulty="ALL"))
     return render_template('upload_questionbank.html', title='Update Questionbank', form=form,
-                        legend='Update Questionbank', img_preview=img_preview, ans=ans)
+                        legend='Update Questionbank', img_preview=img_preview, ans=ans, checked=checked)
 
 @homeworks.route("/questionbank/<int:questionbank_id>/delete", methods=['GET','POST'])
 @login_required
@@ -334,6 +337,7 @@ def update_question(homework_id, question_id, grade="ALL",tags="ALL",difficulty=
                 question.difficulty = qb.difficulty
                 question.questionbank_id = qb.id
                 question.qn_answer=qb.answer
+                question.checked=qb.checked
                 db.session.commit()
                 flash('Your question has been updated!', 'success')
                 return redirect(url_for('homeworks.homework', homework_id=homework.id))      
@@ -411,7 +415,7 @@ def new_question(homework_id, grade="ALL",tags="ALL",difficulty="ALL"):
             else:
                 default_title = form.title.data
             question = Question(title=default_title, questionbank_id=qb.id, homework_id=homework_id, grade=qb.grade, qn_img=img_id, qn_answer=qb.answer,
-                             tags=qb.tags, difficulty=qb.difficulty)
+                             tags=qb.tags, difficulty=qb.difficulty, checked=qb.checked)
             db.session.add(question)
             db.session.commit()
             flash('Your question has been added!', 'success')
@@ -442,6 +446,7 @@ def solve_question(homework_id, question_id):
     question = Question.query.filter(Question.id==question_id, Question.homework_id==homework_id).first()
     correct_ans = re.sub('【(.*?)】','\\\\MathQuillMathField{}',question.qn_answer).split(';')
     check_ans = MQ_formatter(question.qn_answer).split(';')
+    checked = question.checked.split(';')
     if request.method == 'GET':
         if working is None:
             form.workings.data = json.dumps({"workings1": "",
@@ -469,8 +474,10 @@ def solve_question(homework_id, question_id):
             if working is None:
                 final_ans = MQ_formatter(request.form['action'])                
                 point = []
-                for i,j in zip((final_ans.split(';')),(check_ans)):
-                    if i == j:
+                for i,j,k in zip((final_ans.split(';')),(check_ans),checked):
+                    if k == '1':
+                        point.append(0)
+                    elif i == j:
                         point.append(0)
                     else:
                         point.append(1)
@@ -493,8 +500,10 @@ def solve_question(homework_id, question_id):
             else:
                 final_ans = MQ_formatter(request.form['action'])
                 point = []
-                for i,j in zip((final_ans.split(';')),(check_ans)):
-                    if i == j:
+                for i,j,k in zip((final_ans.split(';')),(check_ans),checked):
+                    if k == '1':
+                        point.append(0)
+                    elif i == j:
                         point.append(0)
                     else:
                         point.append(1)
