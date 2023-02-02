@@ -5,6 +5,12 @@ mathFields.forEach(function(mathField) {
   let mathFieldInstance = MQ.StaticMath(mathField);
   mathField.addEventListener("click", function(event) {
     let innerField = event.target;
+    console.log(innerField)
+    if (innerField.classList.contains("mq-root-block")) {
+      innerField = innerField
+    } else {
+      innerField = innerField.parentNode
+    }
     let innerField_id = innerField.getAttribute('mathquill-block-id')
     let index = mathFieldInstance.innerFields.findIndex(obj => obj.id == innerField_id);
     lastClickedMathField = mathFieldInstance.innerFields[index];
