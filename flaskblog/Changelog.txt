@@ -1,0 +1,23 @@
+Version 1.0.0
+3 Feb 2023
+Beta launch
+
+New Features:
+1) Homework
+- Homework can be assigned to each student, with auto-grading, progress tracker and deadline
+- Homework questions can be selected from the questionbank
+- Questions in each homework comes with their own whiteboards for workings, and pre-filled template answers
+
+2) Questionbank
+- Questionbank can be populated questions based on grade, topical tag and difficulty level
+- Each question can have its answers sub-divided into multiple parts, where pre-filled template answers can be defined
+
+3) Student Access
+- Dashboard shows latest homework due, and track latest activities
+- Keep track of exam dates and syllabus on the side bar
+
+4) Admin Access
+- Dashboard shows activities from all students
+- Edit student account rights and information
+- Differentiated view and access as compared to student accounts
+- Student filter view given to Admin, to differentiate between each student 
