@@ -18,7 +18,9 @@
                     <div class="article-metadata text-left">
                         <a class="mr-2">Version {{ changelog.version }}</a> 
                         <small class="text-muted">Date Posted: {{ changelog.date_posted.strftime('%Y-%m-%d') }}</small>
-                        <a class="btn btn-link btn-sm mt-1 mb-1" href="{{ url_for('main.update_changelog',changelog_id=changelog.id) }}"><i class="fa-solid fa-pen-to-square"></i></a>
+                        {% if current_user.account_type == 'Admin' %}
+                            <a class="btn btn-link btn-sm mt-1 mb-1" href="{{ url_for('main.update_changelog',changelog_id=changelog.id) }}"><i class="fa-solid fa-pen-to-square"></i></a>
+                        {% endif %}
                     </div>
                     <a class="article-title">
                         <div class="row mt-3">
