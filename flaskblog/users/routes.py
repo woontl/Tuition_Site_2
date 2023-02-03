@@ -76,16 +76,31 @@ def delete_user(user_id):
     user = User.query.filter_by(id=user_id).first()
     name = user.username
     homework = Homework.query.filter_by(student_id=user_id).first()
-    delete_working = Working.__table__.delete().where(Working.homework_id==homework.id)
-    db.session.execute(delete_working)
-    delete_qn = Question.__table__.delete().where(Question.homework_id==homework.id)
-    db.session.execute(delete_qn)
-    delete_activity = Activity.__table__.delete().where(Activity.student_id==user_id)
-    db.session.execute(delete_activity)
-    delete_hw = Homework.__table__.delete().where(Homework.student_id==user_id)
-    db.session.execute(delete_hw)
-    delete_user = User.__table__.delete().where(User.id == user_id)
-    db.session.execute(delete_user)
+    try:
+        delete_working = Working.__table__.delete().where(Working.homework_id==homework.id)
+        db.session.execute(delete_working)
+    except:
+        pass
+    try:
+        delete_qn = Question.__table__.delete().where(Question.homework_id==homework.id)
+        db.session.execute(delete_qn)
+    except:
+        pass
+    try:
+        delete_activity = Activity.__table__.delete().where(Activity.student_id==user_id)
+        db.session.execute(delete_activity)
+    except:
+        pass
+    try:
+        delete_hw = Homework.__table__.delete().where(Homework.student_id==user_id)
+        db.session.execute(delete_hw)
+    except:
+        pass
+    try:
+        delete_user = User.__table__.delete().where(User.id == user_id)
+        db.session.execute(delete_user)
+    except:
+        pass
     db.session.commit()
     flash(name + ' has been deleted!', 'success')
     return redirect(url_for('users.admin'))
