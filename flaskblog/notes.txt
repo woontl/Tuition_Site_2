@@ -198,6 +198,7 @@ Git
   > git branch -a
   > git push origin --delete abc
 16) git fetch origin
+reset all local changes
 git reset --hard origin/master
 
 How to delete directory and all files

@@ -85,7 +85,7 @@ def new_changelog():
         db.session.add(changelog)
         db.session.commit()
         flash('Your changelog has been created!', 'success')
-        return redirect(url_for('main.about'))
+        return redirect(url_for('main.changelog'))
     return render_template('create_changelog.html', title='New Changelog',
                            form=form, legend='New Changelog')
 
@@ -99,7 +99,7 @@ def update_changelog(changelog_id):
         changelog.description = form.description.data
         db.session.commit()
         flash('Your changelog has been updated!', 'success')
-        return redirect(url_for('main.about'))
+        return redirect(url_for('main.changelog'))
     elif request.method == 'GET':
         form.version.data = changelog.version
         form.description.data = changelog.description
