@@ -1,0 +1,52 @@
+{% extends "layout.html" %} <!--inherit from parent html-->
+{% block javaScript %}
+
+{% endblock %}
+{% block content %} <!--block content here replaces block content in parent-->
+    <div class="content-section" style="min-height:50vh">
+        <h3 class="mt-5 text-center">Bugs</h3>
+        <div class="container-fluid text-center">
+            <a class="btn btn-primary btn-sm mt-1 mb-1" href="{{ url_for('main.new_bug') }}">New bug <i class="fa-solid fa-square-plus"></i></a>
+        </div> 
+        {% for bug in bugs.items %}
+        <div class="col w-100 my-3">
+            <article class="media content-section">
+                <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + bug.author.image_file) }}">
+                <div class="media-body">
+                    <div class="article-metadata text-left">
+                        <a class="mr-2">Issue: {{ bug.issue }}</a> 
+                        <small class="text-muted">Date Posted: {{ bug.date_posted.strftime('%Y-%m-%d') }}</small>
+                        <a class="btn btn-link btn-sm mt-1 mb-1" href="{{ url_for('main.update_bug',bug_id=bug.id) }}"><i class="fa-solid fa-pen-to-square"></i></a>
+                        {% if bug['status']=='Open' %}
+                            <medium><span class="badge badge-pill badge-danger float-right mt-2">Open</span></medium>
+                        {% elif bug['status']=='In Progress' %}
+                            <medium><span class="badge badge-pill badge-warning float-right mt-2">In Progress</span></medium>
+                        {% else %}
+                            <medium><span class="badge badge-pill badge-success float-right mt-2">Closed</span></medium>
+                        {% endif %}
+                    </div>
+                    <a class="article-title">
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <p style="white-space: pre-wrap">{{bug.description}}</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </article>
+        </div>
+        {% endfor %}
+        {% for page_num in bugs.iter_pages(left_edge=1, right_edge=1, left_current = 1, right_current=2) %} <!--define how many pages to show on bottom both sides-->
+            {% if page_num %}
+                {% if bugs.page==page_num %} <!--different style for current page button-->
+                    <a class="btn btn-info mb-4" href="{{ url_for('main.all_bugs', page=page_num) }}">{{ page_num }}</a>
+                {% else %}
+                    <a class="btn btn-outline-info mb-4" href="{{ url_for('main.all_bugs', page=page_num) }}">{{ page_num }}</a>
+                {% endif %}
+            {% else %}
+                ...
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+{% endblock content %}

@@ -208,3 +208,6 @@ To update production with changed config files
 2) sudo reboot
 3) sudo supervisorctl stop all
 3) venv, sudo systemctl restart nginx
+
+How to download file from remote to local?
+1) scp woontl@172.104.185.89:Tuition_Site_2/flaskblog/site.db /Users/tianli.woon/Documents
