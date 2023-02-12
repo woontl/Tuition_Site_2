@@ -62,8 +62,10 @@
                         <div class="media align-items-center">
                             <img class="w-75 rounded" src="{{ url_for('static', filename='questionbank/' + image.img) }}">
                             <div class="text-center media-body">
-                                <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('homeworks.update_questionbank',questionbank_id=image.id) }}">Update <i class="fa-solid fa-pen-to-square"></i></a>
-                                <a class="btn btn-danger btn-sm mt-1 mb-1" href="{{ url_for('homeworks.delete_questionbank',questionbank_id=image.id) }}">Delete <i class="fa-solid fa-trash-can"></i></a>
+                                {% if current_user.account_type == 'Admin' %}
+                                    <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('homeworks.update_questionbank',questionbank_id=image.id) }}">Update <i class="fa-solid fa-pen-to-square"></i></a>
+                                    <a class="btn btn-danger btn-sm mt-1 mb-1" href="{{ url_for('homeworks.delete_questionbank',questionbank_id=image.id) }}">Delete <i class="fa-solid fa-trash-can"></i></a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

@@ -76,7 +76,8 @@ def new_homework():
     users_arr = []
     for i in users:
         users_arr.append(i.username)
-    form.deadline.data = date.today() + timedelta(days=7)
+    if request.method == 'GET':
+        form.deadline.data = date.today() + timedelta(days=7)
     form.student.choices = users_arr
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.student.data).first()

@@ -30,6 +30,7 @@
                         {% endif %}
                         <button type ="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#DeleteUser{{user.id}}">Delete <i class="fa-solid fa-user-minus"></i></button>
                         {% if user.account_type == "User" %}
+                            <a href="{{ url_for('users.HW_alert', username=user.username) }}" class="btn btn-warning btn-sm m-1" style="color: white">HW Alert <i class="fa-solid fa-bell" style="color: white"></i></a>
                             <a class="btn btn-secondary btn-sm m-1" href="{{ url_for('users.user_dates', username=user.username) }}">Dates <i class="fa-solid fa-calendar-days"></i></a>
                             <a class="btn btn-dark btn-sm m-1" href="{{ url_for('users.user_topics', username=user.username) }}">Topics <i class="fa-solid fa-file"></i></a>
                         {% endif %}

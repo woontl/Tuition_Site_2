@@ -46,7 +46,9 @@
               <div class="navbar-nav mr-auto">
                 <a class="nav-item nav-link" href="{{ url_for('main.home') }}">Home</a>
                 <div class="dropdown">
+                  {% if current_user.is_authenticated %}
                   <a class="nav-item nav-link">Practice <i class="fas fa-caret-down"></i></a>
+                  {% endif %}
                   <div class="dropdown-content">
                     <a class="nav-item nav-link" href="{{ url_for('homeworks.homework_all', student='ALL') }}">Homework</a>
                     <!--<a class="nav-item nav-link" href="{{ url_for('notes.notes_all', student='ALL') }}">Lesson Notes</a>-->

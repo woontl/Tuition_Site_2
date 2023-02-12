@@ -28,3 +28,11 @@ def send_reset_email(user):
 If you did not make this request then simply ignore this email and no changes will be made.
 '''
     mail.send(msg)
+    
+def send_HW_alert(user):
+    msg = Message('New Homework Assignment',
+                  sender='noreply@demo.com',
+                  recipients=[user.email])
+    msg.body = f'''Hi '''+str(user.username)+'''! A new homework assignment has been posted. Visit the following link: '''+\
+    str(url_for('main.home', _external=True))
+    mail.send(msg)

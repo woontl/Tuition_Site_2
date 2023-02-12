@@ -4,7 +4,7 @@ from flaskblog import db, bcrypt
 from flaskblog.models import User, Homework, Activity, Question, Working
 from flaskblog.users.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
                                    RequestResetForm, ResetPasswordForm, UserDateForm, UserTopicsForm)
-from flaskblog.users.utils import save_picture, send_reset_email
+from flaskblog.users.utils import save_picture, send_reset_email, send_HW_alert
 from datetime import datetime
 
 users = Blueprint('users', __name__) #creating an instance, to be imported
@@ -212,3 +212,11 @@ def user_topics(username):
         flash(f'Your topics have been updated!', 'success')
         return redirect(url_for('main.home'))
     return render_template('user_topics.html', title='Dates', form=form, topics_arr=topics_arr, checks_arr=checks_arr)
+
+@users.route("/HW_alert/<string:username>", methods=['GET', 'POST'])
+@login_required
+def HW_alert(username):
+    user = User.query.filter_by(username=username).first()
+    send_HW_alert(user)
+    flash(f'HW alert has been sent to ' + user.username +'!', 'success')
+    return redirect(url_for('users.admin'))
