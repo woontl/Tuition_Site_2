@@ -218,3 +218,6 @@ How to download folder from remote to local?
 
 How to upload file from local to remove?
 1) scp site.db woontl@172.104.185.89:Tuition_Site_2/flaskblog/
+
+How to upload folder from local to remove?
+1) scp -r questionbank/ woontl@172.104.185.89:Tuition_Site_2/flaskblog/static

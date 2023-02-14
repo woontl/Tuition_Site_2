@@ -77,7 +77,7 @@
                     </button>
                 </div> 
             {% endfor %}
-            {% for page_num in images.iter_pages(left_edge=5, right_edge=5, left_current = 1, right_current=2) %} <!--define how many pages to show on bottom both sides-->
+            {% for page_num in images.iter_pages() %} <!--define how many pages to show on bottom both sides-->
                 {% if page_num %}
                     {% if images.page==page_num %} <!--different style for current page button-->
                         <a class="btn btn-info mb-4" href="{{ url_for('homeworks.update_question', homework_id=homework_id, question_id=question_id, page=page_num, grade=form.grade.data, load='loaded', tags=form.tags.data, difficulty = form.difficulty.data) }}">{{ page_num }}</a> 

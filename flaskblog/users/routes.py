@@ -1,13 +1,17 @@
-from flask import render_template, url_for, flash, redirect, request, Blueprint
+from flask import render_template as real_render_template, url_for, flash, redirect, request, Blueprint
 from flask_login import login_user, current_user, logout_user, login_required
 from flaskblog import db, bcrypt
-from flaskblog.models import User, Homework, Activity, Question, Working
+from flaskblog.models import User, Homework, Activity, Question, Working, Changelog
 from flaskblog.users.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
                                    RequestResetForm, ResetPasswordForm, UserDateForm, UserTopicsForm)
 from flaskblog.users.utils import save_picture, send_reset_email, send_HW_alert
 from datetime import datetime
 
 users = Blueprint('users', __name__) #creating an instance, to be imported
+
+def render_template(*args, **kwargs):
+    version = Changelog.query.order_by(Changelog.id.desc()).first()
+    return real_render_template(*args, **kwargs, version=version.version)
 
 @users.route("/register", methods=['GET', 'POST']) #Need to define methods here 
 def register():

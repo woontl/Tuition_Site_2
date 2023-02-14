@@ -1,4 +1,4 @@
-from flask import render_template, Blueprint, url_for, flash, redirect, request
+from flask import render_template as real_render_template, Blueprint, url_for, flash, redirect, request
 from flask_login import login_required, current_user
 from flaskblog import db
 from flaskblog.models import Homework, Question, Working, Note, Activity, Changelog, Bug
@@ -7,6 +7,10 @@ import pandas as pd
 import datetime as datetime
 
 main = Blueprint('main', __name__) #creating an instance, to be imported
+
+def render_template(*args, **kwargs):
+    version = Changelog.query.order_by(Changelog.id.desc()).first()
+    return real_render_template(*args, **kwargs, version=version.version)
 
 @main.route("/") #Routes are created bring our browers to different pages. "/" represents the root or home page
 @main.route("/home") #Both routes bring to the same page

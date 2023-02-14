@@ -13,6 +13,7 @@
                     <button onclick="del_topic()" type="button" class="btn btn-link" style="color: red"><i class="fa-solid fa-square-minus"></i></button>
                 </div>
                 {% if topics_arr %}
+                    {% set count = namespace(value=1) %}
                     {% for topic in topics_arr%}
                         <div class="row my-2" id="topic_row_{{ loop.index }}">
                             <div class="col-2 mx-0">
@@ -27,17 +28,43 @@
                                 {% endif %} 
                             </div>
                         </div>
+                        {% set count.value = count.value + 1 %}
+                    {% endfor %}
+                    {% for i in range(count.value, 21) %}
+                        <div class="row my-2" id="topic_row_{{i}}" style="display: none">
+                            <div class="col-2 mx-0">
+                                <p class="form-control-label mt-1">Topic {{i}}:</p>
+                            </div>
+                            <div class="d-flex col-10 mx-0">
+                                <input class="mr-4 form-control" id="topic_field_{{i}}" name="topics" required type="text" value="">
+                                <input id="checkbox_{{i}}" type="checkbox">
+                            </div>
+                        </div>
                     {% endfor %}
                 {% else %}
-                    <div class="row my-2" id="topic_row_1">
-                        <div class="col-2 mx-0">
-                            <p class="form-control-label mt-1">Topic 1:</p>
-                        </div>
-                        <div class="d-flex col-10 mx-0">
-                            <input class="mr-4 form-control" id="topic_field_1" name="topics" required type="text" value="">
-                            <input id="checkbox_1" type="checkbox">
-                        </div>
-                    </div>
+                    {% for i in range(1, 21) %}
+                        {% if i == 1 %}
+                            <div class="row my-2" id="topic_row_{{i}}" style="">
+                                <div class="col-2 mx-0">
+                                    <p class="form-control-label mt-1">Topic {{i}}:</p>
+                                </div>
+                                <div class="d-flex col-10 mx-0">
+                                    <input class="mr-4 form-control" id="topic_field_{{i}}" name="topics" required type="text" value="">
+                                    <input id="checkbox_{{i}}" type="checkbox">
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="row my-2" id="topic_row_{{i}}" style="display: none">
+                                <div class="col-2 mx-0">
+                                    <p class="form-control-label mt-1">Topic {{i}}:</p>
+                                </div>
+                                <div class="d-flex col-10 mx-0">
+                                    <input class="mr-4 form-control" id="topic_field_{{i}}" name="topics" required type="text" value="">
+                                    <input id="checkbox_{{i}}" type="checkbox">
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
                 {% endif %}
             </fieldset>
             <div class="form-group">

@@ -1,7 +1,7 @@
-from flask import render_template, Blueprint, flash, redirect, url_for, request, abort, current_app
+from flask import render_template as real_render_template, Blueprint, flash, redirect, url_for, request, abort, current_app
 from flask_login import current_user, login_required
 from flaskblog import db
-from flaskblog.models import Homework, Questionbank, Question, Working, User, Activity, TagsList
+from flaskblog.models import Homework, Questionbank, Question, Working, User, Activity, TagsList, Changelog
 from flaskblog.homeworks.forms import HomeworkForm, QuestionBankForm, QuestionForm, WorkingForm, HomeworkFilterForm, TagForm
 from flaskblog.homeworks.utils import save_qn_picture, MQ_formatter
 import pandas as pd
@@ -12,6 +12,10 @@ from datetime import date, timedelta
 import datetime as datetime
 
 homeworks = Blueprint('homeworks', __name__) #creating an instance, to be imported
+
+def render_template(*args, **kwargs):
+    version = Changelog.query.order_by(Changelog.id.desc()).first()
+    return real_render_template(*args, **kwargs, version=version.version)
 
 # Homework Routes
 @homeworks.route("/homework_all/<string:student>", methods=['GET', 'POST'])
@@ -420,7 +424,7 @@ def new_question(homework_id, grade="ALL",tags="ALL",difficulty="ALL"):
             db.session.add(question)
             db.session.commit()
             flash('Your question has been added!', 'success')
-            return render_template('new_question.html',homework_id=homework.id,images=images,title='New Question', form=form, legend = "New Question")
+            return redirect(url_for('homeworks.new_question',homework_id=homework.id, grade=form.grade.data, tags=form.tags.data, difficulty = form.difficulty.data, page=page)) #redirect back to homework page after updating
         grade = form.grade.data
         tags = form.tags.data
         difficulty = form.difficulty.data

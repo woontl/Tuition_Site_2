@@ -1,7 +1,11 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template as real_render_template
+from flaskblog.models import Changelog
 
 errors = Blueprint('errors', __name__)
 
+def render_template(*args, **kwargs):
+    version = Changelog.query.order_by(Changelog.id.desc()).first()
+    return real_render_template(*args, **kwargs, version=version.version)
 
 @errors.app_errorhandler(404) #To handle 404 errors
 def error_404(error):

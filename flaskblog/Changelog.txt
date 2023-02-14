@@ -1,3 +1,15 @@
+Version 1.0.1
+New Features:
+1) Admin can now send email alerts to users to indicate that Homework has been posted
+
+Bug Fixes:
+1) Removed User access from editing Questionbank
+2) Remove Practice view from unauthenticated users
+3) Fixed Homework due date autosave showing wrong date
+4) Questionbank filters incorrect for Grade Tag
+
+---------------------------------------------------------------------------------------------------------------------------------------
+
 Version 1.0.0
 Beta launch
 

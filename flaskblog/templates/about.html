@@ -33,7 +33,7 @@
             </article>
         </div>
         {% endfor %}
-        {% for page_num in changelogs.iter_pages(left_edge=1, right_edge=1, left_current = 1, right_current=2) %} <!--define how many pages to show on bottom both sides-->
+        {% for page_num in changelogs.iter_pages() %} <!--define how many pages to show on bottom both sides-->
             {% if page_num %}
                 {% if changelogs.page==page_num %} <!--different style for current page button-->
                     <a class="btn btn-info mb-4" href="{{ url_for('main.changelog', page=page_num) }}">{{ page_num }}</a>

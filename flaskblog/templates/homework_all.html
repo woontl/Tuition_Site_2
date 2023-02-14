@@ -68,7 +68,7 @@
                 </article>
             </div>
         {% endfor %}
-        {% for page_num in homeworks.iter_pages(left_edge=1, right_edge=1, left_current = 1, right_current=2) %} <!--define how many pages to show on bottom both sides-->
+        {% for page_num in homeworks.iter_pages() %} <!--define how many pages to show on bottom both sides-->
             {% if page_num %}
                 {% if homeworks.page==page_num %} <!--different style for current page button-->
                     {% if current_user.account_type == 'Admin' %}

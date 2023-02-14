@@ -1,7 +1,12 @@
-from flask import render_template, Blueprint
+from flask import render_template as real_render_template, Blueprint
 from flask_login import login_required
+from flaskblog.models import Changelog
 
 resources = Blueprint('resources', __name__) #creating an instance, to be imported
+
+def render_template(*args, **kwargs):
+    version = Changelog.query.order_by(Changelog.id.desc()).first()
+    return real_render_template(*args, **kwargs, version=version.version)
 
 @resources.route("/IB_resources")
 @login_required

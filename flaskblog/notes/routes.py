@@ -1,12 +1,16 @@
-from flask import render_template, Blueprint, flash, redirect, url_for, request, abort, current_app
+from flask import render_template as real_render_template, Blueprint, flash, redirect, url_for, request, abort, current_app
 from flask_login import current_user, login_required
 from flaskblog import db
-from flaskblog.models import User, Note, Activity
+from flaskblog.models import User, Note, Activity, Changelog
 from flaskblog.notes.forms import NotesFilterForm, NoteForm
 import pandas as pd
 import datetime as datetime
 
 notes = Blueprint('notes', __name__) #creating an instance, to be imported
+
+def render_template(*args, **kwargs):
+    version = Changelog.query.order_by(Changelog.id.desc()).first()
+    return real_render_template(*args, **kwargs, version=version.version)
 
 @notes.route("/notes_all/<string:student>", methods=['GET', 'POST'])
 @login_required
