@@ -70,6 +70,11 @@ document.getElementById("calc_button_pi").addEventListener("click", function() {
     lastClickedMathField.focus()
 });
 
+document.getElementById("calc_button_theta").addEventListener("click", function() {
+  lastClickedMathField.cmd("θ");
+  lastClickedMathField.focus()
+});
+
 document.getElementById("calc_button_static").addEventListener("click", function() {
   lastClickedMathField.cmd('【')
   lastClickedMathField.cmd('】')

@@ -1,3 +1,22 @@
+Version 1.0.2
+New Features:
+
+Bug Fixes:
+
+---------------------------------------------------------------------------------------------------------------------------------------=
+
+Version 1.0.2
+New Features:
+1) Version number displayed below website is now dynamic
+2) Adding questions no longer reset filters + page number
+3) Separated clear button in whiteboard away from eraser
+
+Bug Fixes:
+1) Adding topics no longer clear previous texts
+2) Fixed missing page numbers
+
+---------------------------------------------------------------------------------------------------------------------------------------
+
 Version 1.0.1
 New Features:
 1) Admin can now send email alerts to users to indicate that Homework has been posted

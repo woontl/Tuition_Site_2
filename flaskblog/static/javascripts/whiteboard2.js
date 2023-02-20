@@ -1,4 +1,5 @@
 (function() {
+    // Canvas drawing setup
     window.requestAnimFrame = (function(callback) {
       return window.requestAnimationFrame ||
         window.webkitRequestAnimationFrame ||
@@ -13,7 +14,6 @@
     var canvas2 = document.getElementById("canvas2");
     var ctx2 = canvas2.getContext("2d");
 
-  
     var drawing = false;
     var mousePos = {
       x: 0,
@@ -36,7 +36,6 @@
   
     // Add touch event support for mobile
     canvas2.addEventListener("touchstart", function(e) {
-  
     }, false);
   
     canvas2.addEventListener("touchmove", function(e) {
@@ -113,110 +112,6 @@
       renderCanvas();
     })();  
 
-    function eraseBoard() {
-        if (eraser_state == false) {
-            temp_color = currentcolor
-            temp_font = currentfont
-            currentcolor = 'white'
-            currentfont = 5
-            eraser_state = true;
-            eraserBtn.style.backgroundColor = "blue"
-            eraserBtn.style.border = "1px solid blue"
-        } else if (eraser_state == true) {
-            currentcolor = temp_color;
-            currentfont = temp_font;
-            currentfont = 1
-            eraser_state = false;
-            eraserBtn.style.backgroundColor = "white"
-            eraserBtn.style.border = "1px solid white"
-        } 
-    };
-
-    function clearBoard() {
-      if (pgnum==2) {
-        ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
-      }
-  };
-    function changeblackColor() {
-        currentcolor = 'black';
-        colorBtn.style.backgroundColor = currentcolor
-        colorBtn.style.border = "1px solid" + currentcolor
-        eraser_state = false;
-        eraserBtn.style.backgroundColor = "white"
-        eraserBtn.style.border = "1px solid white"
-    };
-    function changeredColor() {
-        currentcolor = 'red';
-        colorBtn.style.backgroundColor = currentcolor
-        colorBtn.style.border = "1px solid" + currentcolor
-        eraser_state = false;
-        eraserBtn.style.backgroundColor = "white"
-        eraserBtn.style.border = "1px solid white"
-    };
-    function changeblueColor() {
-        currentcolor = 'blue';
-        colorBtn.style.backgroundColor = currentcolor
-        colorBtn.style.border = "1px solid" + currentcolor  
-        eraser_state = false;
-        eraserBtn.style.backgroundColor = "white"
-        eraserBtn.style.border = "1px solid white"
-        
-    };
-    function changegreenColor() {
-        currentcolor = 'green';
-        colorBtn.style.backgroundColor = currentcolor
-        colorBtn.style.border = "1px solid" + currentcolor  
-        eraser_state = false;
-        eraserBtn.style.backgroundColor = "white"
-        eraserBtn.style.border = "1px solid white"
-    };
-    function changeyellowColor() {
-        currentcolor = 'yellow';
-        colorBtn.style.backgroundColor = currentcolor
-        colorBtn.style.border = "1px solid" + currentcolor  
-        eraser_state = false;
-        eraserBtn.style.backgroundColor = "white"
-        eraserBtn.style.border = "1px solid white"
-    };
-
-    function changesmallfont() {
-      currentfont = 1
-      eraser_state = false;
-      eraserBtn.style.backgroundColor = "white"
-      eraserBtn.style.border = "1px solid white"
-  };
-  function changemediumfont() {
-      currentfont = 5
-      eraser_state = false;
-      eraserBtn.style.backgroundColor = "white"
-      eraserBtn.style.border = "1px solid white"
-  };
-  function changelargefont() {
-      currentfont = 10
-      eraser_state = false;
-      eraserBtn.style.backgroundColor = "white"
-      eraserBtn.style.border = "1px solid white"
-  };
-
-  function prevpg(){
-    if (pgnum==1){
-      pgnum+=2
-    } else if (pgnum==2){
-      pgnum-=1
-    } else if (pgnum==3){
-      pgnum-=1
-    }
-  }
-
-  function nextpg(){
-    if (pgnum==1){
-      pgnum+=1
-    } else if (pgnum==2){
-      pgnum+=1
-    } else if (pgnum==3){
-      pgnum-=2
-    }
-  }
     //reload canvas with dataURL
     var url = JSON.parse(document.getElementById('workings').value).workings2;
     if (url!=""){
@@ -226,43 +121,6 @@
       img.src = url
     }
 
-    // Set up the UI
-    var eraser_state = false;
-    var pgnum = 1;
-    var clearBtn = document.getElementById("canvas-clear-btn");
-    var prevBtn = document.getElementById("canvas-prev-btn");
-    var nextBtn = document.getElementById("canvas-next-btn");
-    let temp_color = ''
-    let temp_font = ''
-    var saveBtn = document.getElementById("canvas-save-btn");
-    var refreshBtn = document.getElementById("canvas-refresh-btn");
-    var eraserBtn = document.getElementById("canvas-eraser-btn");
-    var colorBtn = document.getElementById("dropdownMenuButton-color");
-    var blackcolorBtn = document.getElementById("canvas-black-color-btn");
-    var redcolorBtn = document.getElementById("canvas-red-color-btn");
-    var bluecolorBtn = document.getElementById("canvas-blue-color-btn");
-    var greencolorBtn = document.getElementById("canvas-green-color-btn");
-    var yellowcolorBtn = document.getElementById("canvas-yellow-color-btn");
-    var currentcolor = 'black';
-    var currentfont = 1;
-    var fontBtn = document.getElementById("dropdownMenuButton-font");
-    var smallfontBtn = document.getElementById("canvas-small-font-btn");
-    var mediumfontBtn = document.getElementById("canvas-medium-font-btn");
-    var largefontBtn = document.getElementById("canvas-large-font-btn");
-
-    clearBtn.addEventListener("click", clearBoard)
-    prevBtn.addEventListener("click", prevpg)
-    nextBtn.addEventListener("click", nextpg)
-    eraserBtn.addEventListener("click", eraseBoard)
-    blackcolorBtn.addEventListener("click", changeblackColor)
-    redcolorBtn.addEventListener("click", changeredColor)
-    bluecolorBtn.addEventListener("click", changeblueColor)
-    greencolorBtn.addEventListener("click", changegreenColor)
-    yellowcolorBtn.addEventListener("click", changeyellowColor)
-    smallfontBtn.addEventListener("click", changesmallfont)
-    mediumfontBtn.addEventListener("click", changemediumfont)
-    largefontBtn.addEventListener("click", changelargefont)
-
     // resizing
     const canvas_parent = document.querySelector("#canvas_parent")
     function onResize() {
@@ -270,5 +128,93 @@
         canvas2.width = canvas_parent.offsetWidth*0.99;
     };
     onResize();
+
+    // Variables
+    var eraser_state = false;
+    var pgnum = 1;
+    var clearBtn = document.getElementById("canvas-clear-btn");
+    var prevBtn = document.getElementById("canvas-prev-btn");
+    var nextBtn = document.getElementById("canvas-next-btn");
+    var eraserBtn = document.getElementById("canvas-eraser-btn");
+    let temp_color = ''
+    let temp_font = ''
+    var currentcolor = document.getElementById("toolbar_colorheader").style.backgroundColor
+    var currentfont = 2;
+    const colorButtons = document.querySelectorAll("[id^='canvas-color-']");
+
+    clearBtn.addEventListener("click", clearBoard)
+    prevBtn.addEventListener("click", prevpg)
+    nextBtn.addEventListener("click", nextpg)
+    eraserBtn.addEventListener("click", eraseBoard)
+
+    // Tools functionalities
+    function clearBoard() {
+      if (pgnum==2) {
+        ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+      }
+  };
+
+    function prevpg(){
+      if (pgnum==1){
+        pgnum+=2
+        page_num.textContent = 'Page ' + pgnum +'/3'
+      } else if (pgnum==2){
+        pgnum-=1
+        page_num.textContent = 'Page ' + pgnum +'/3'
+      } else if (pgnum==3){
+        pgnum-=1
+        page_num.textContent = 'Page ' + pgnum +'/3'
+      }
+    }
+
+    function nextpg(){
+      if (pgnum==1){
+        pgnum+=1
+        page_num.textContent = 'Page ' + pgnum +'/3'
+      } else if (pgnum==2){
+        pgnum+=1
+        page_num.textContent = 'Page ' + pgnum +'/3'
+      } else if (pgnum==3){
+        pgnum-=2
+        page_num.textContent = 'Page ' + pgnum +'/3'
+      }
+    }
+
+    function eraseBoard() {
+      if (eraser_state == false) {
+          temp_color = currentcolor
+          temp_font = currentfont
+          currentcolor = 'white'
+          currentfont = 25
+          eraser_state = true;
+          eraserBtn.style.backgroundColor = "white"
+          eraserBtn.style.border = "1px solid white"
+      } else if (eraser_state == true) {
+          currentcolor = temp_color;
+          currentfont = temp_font;
+          eraser_state = false;
+          eraserBtn.style.backgroundColor = "#2196F3"
+          eraserBtn.style.border = "1px solid #2196F3"
+      } 
+    };
+
+    // Handle color change
+    colorButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        currentcolor = button.dataset.color;
+        currentfont = temp_font
+        document.getElementById("toolbar_colorheader").style.backgroundColor=button.dataset.color
+        if (eraser_state == true) {
+          eraser_state = false;
+          eraserBtn.style.backgroundColor = "#2196F3"
+          eraserBtn.style.border = "1px solid #2196F3"
+        } 
+      });
+    });
+
+    // Handle font change
+    fontSizeSlider.addEventListener('input', () => {
+      currentfont = fontSizeSlider.value;
+    });
 
   })();

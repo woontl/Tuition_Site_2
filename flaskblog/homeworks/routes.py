@@ -376,6 +376,12 @@ def delete_question(homework_id,question_id):
     delete_w = Working.__table__.delete().where(Working.question_id == question_id and Working.homework_id == homework_id)
     db.session.execute(delete_w)
     db.session.commit()
+    
+    count = 1
+    for question in Question.query.filter(Question.homework_id==homework_id).all():
+        question.title = 'Question ' + str(count)
+        count += 1
+    db.session.commit()
     flash('Your question has been deleted!', 'success')
     return redirect(url_for('homeworks.homework',homework_id=homework.id))
 

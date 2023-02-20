@@ -79,14 +79,15 @@ def remove_admin(user_id):
 def delete_user(user_id):
     user = User.query.filter_by(id=user_id).first()
     name = user.username
-    homework = Homework.query.filter_by(student_id=user_id).first()
+    hw_list = Homework.query.filter_by(student_id=user_id).all()
+    hw_id_list = [homework.id for homework in hw_list]
     try:
-        delete_working = Working.__table__.delete().where(Working.homework_id==homework.id)
+        delete_working = Working.__table__.delete().where(Working.homework_id.in_(hw_id_list))
         db.session.execute(delete_working)
     except:
         pass
     try:
-        delete_qn = Question.__table__.delete().where(Question.homework_id==homework.id)
+        delete_qn = Question.__table__.delete().where(Question.homework_id.in_(hw_id_list))
         db.session.execute(delete_qn)
     except:
         pass

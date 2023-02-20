@@ -5,11 +5,6 @@
     <script src="{{ url_for('static', filename='javascripts/whiteboard2.js') }}" defer></script>
     <script src="{{ url_for('static', filename='javascripts/whiteboard3.js') }}" defer></script>
     <script src="{{ url_for('static', filename='javascripts/MQ_solve.js') }}" defer></script>
-    <script>
-        $(function () {
-            $('[data-toggle="tooltip"]').tooltip()
-        })
-    </script>
 {% endblock %}
 {% block content %} <!--block content here replaces block content in parent-->
     <div class="content-section">
@@ -24,39 +19,36 @@
                     {{ form.workings.label() }}
                     {{ form.workings(class="form-control form-control-lg") }}
                     <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#canvas-grid" aria-expanded="false" aria-controls="canvas-grid">
-                        <i class="fa-solid fa-pencil"></i></button>
+                        <i class="fa-solid fa-chalkboard"></i></button>
                     <div class="collapse" id="canvas-grid">
-                        <div class="canvas-buttons">
-                            <div class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton-font" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Font
+                        <div id="toolbar" class="draggable toolbar-draggable" draggable="true" style="background-color: #c8e0f1">
+                            <div id="color-picker" class="mx-3 my-1">
+                                <button id="toolbar_colorheader" type="button" class="btn btn-circle-lg" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa-solid fa-droplet"></i>
                                 </button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton-font">
-                                    <button type="button" id="canvas-small-font-btn" class="btn-xs btn-secondary">S</button>
-                                    <button type="button" id="canvas-medium-font-btn" class="btn-sm btn-secondary">M</button>
-                                    <button type="button" id="canvas-large-font-btn" class="btn-lg btn-secondary">L</button>
+                                <div id="toolbar_color_collapse" class="dropdown-menu" style="background-color: #c8e0f1;">
+                                    <button type="button" id="canvas-color-btn-black" data-color="black" class="btn btn-circle-sm" style="background-color: black"></button>
+                                    <button type="button" id="canvas-color-btn-red" data-color="red" class="btn btn-circle-sm" style="background-color: red"></button>
+                                    <button type="button" id="canvas-color-btn-blue" data-color="blue" class="btn btn-circle-sm" style="background-color: blue"></button>
+                                    <button type="button" id="canvas-color-btn-green" data-color="green" class="btn btn-circle-sm" style="background-color: green"></button>
+                                    <button type="button" id="canvas-color-btn-yellow" data-color="yellow" class="btn btn-circle-sm" style="background-color: yellow"></button>
                                 </div>
                             </div>
-                            <div class="dropdown">
-                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton-color" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Colours
+                            <div id="font-picker" class="mx-3 my-1">
+                                <button id="toolbar_fontheader" type="button" class="btn btn-circle-lg" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa-solid fa-font"></i>
                                 </button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton-color">
-                                <button type="button" id="canvas-black-color-btn" class="btn btn-dark"></button>
-                                <button type="button" id="canvas-red-color-btn" class="btn btn-danger"></button>
-                                <button type="button" id="canvas-blue-color-btn" class="btn btn-primary"></button>
-                                <button type="button" id="canvas-green-color-btn" class="btn btn-success"></button>
-                                <button type="button" id="canvas-yellow-color-btn" class="btn btn-warning"></button>
+                                <div id="toolbar_font_collapse" class="dropdown-menu" style="background-color: #c8e0f1;">
+                                    <input type="range" min="1" max="4" step="1" value="2" id="fontSizeSlider">
                                 </div>
                             </div>
-                            <button type="button" id="canvas-eraser-btn" class="btn"><i class="fa-solid fa-eraser"></i></button>
-                            <button type="button" id="canvas-prev-btn" href="#carouselExampleIndicators" class="btn btn-secondary" data-slide="prev">Prev</button>
-                            <button type="button" id="canvas-next-btn" href="#carouselExampleIndicators" class="btn btn-secondary" data-slide="next">Next</button>
-                            <button type="button" id="canvas-clear-btn" class="btn btn-info float-right mr-2">Clear</button>
-                            <!--{% if final_ans %}
-                                <button id="canvas-save-btn" type="refresh" name="refresh" value="save" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i></button>
-                                <button id="canvas-refresh-btn" type="submit" name="refresh" value="refresh" class="btn btn-success"><i class="fa-solid fa-rotate"></i></button>
-                            {% endif %}-->
+                            <button type="button" id="canvas-eraser-btn" class="btn btn-circle-lg mx-3 my-1"><i class="fa-solid fa-eraser"></i></button>
+                        </div>
+                        <div class="canvas-buttons d-flex justify-content-center">
+                            <span class="my-auto mr-2" id="canvas-pg-num">Page 1/3</span>
+                            <button type="button" id="canvas-prev-btn" href="#carouselExampleIndicators" class="btn btn-secondary mx-2" data-slide="prev">Prev <i class="fa-solid fa-circle-left"></i></button>
+                            <button type="button" id="canvas-next-btn" href="#carouselExampleIndicators" class="btn btn-secondary mx-2" data-slide="next">Next <i class="fa-solid fa-circle-right"></i></button>
+                            <button type="button" id="canvas-clear-btn" class="btn btn-info mx-2">Clear</button>
                         </div>
                         <div id="carouselExampleIndicators" class="carousel slide" data-interval="false">
                             <div class="carousel-inner">
@@ -75,18 +67,6 @@
                 </div>
                 <div class="form-group" id="sub-answer">
                     {{ form.answer.label(class="form-control-label") }}
-                    <button type="button" class="btn btn-link" data-toggle="tooltip" data-placement="bottom" data-html="true" title="
-                    <p style='text-align:left'>
-                        Keyboard Shortcuts: <br>
-                        / = fraction <br>
-                        ^ = Superscript <br>
-                        _ = Subscript <br>
-                        \times = × <br>
-                        \divide = ÷ <br>
-                        \sqrt = √ <br>
-                        \pi = π 
-                    </p>
-                    "><i class="fa-solid fa-circle-info"></i></button>
                     {% set count = namespace(value=1) %}
                     {% set ans_count = namespace(value=0) %}
                     {% for main_ans in ['A','B','C','D','E','F'] %}
@@ -274,6 +254,7 @@
                 <button class="btn" type="button" id="calc_button_more">></button>
                 <button class="btn" type="button" id="calc_button_more_equal">≥</button>
                 <button class="btn" type="button" id="calc_button_pi">π</button>
+                <button class="btn" type="button" id="calc_button_theta">θ</button>
             </div>
             <div class="form-group">
                 <button onclick="calc_ans()" type="submit" class="btn btn-outline-info" type="reset" id="ans" name="action" value="">Submit/Save</button>
