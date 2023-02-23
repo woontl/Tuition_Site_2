@@ -43,6 +43,8 @@
                                 </div>
                             </div>
                             <button type="button" id="canvas-eraser-btn" class="btn btn-circle-lg mx-3 my-1"><i class="fa-solid fa-eraser"></i></button>
+                            <button type="button" id="canvas-redo-btn" class="btn btn-circle-lg mx-3 my-1"><i class="fa-solid fa-rotate-right"></i></button>
+                            <button type="button" id="canvas-undo-btn" class="btn btn-circle-lg mx-3 my-1"><i class="fa-solid fa-rotate-left"></i></button>
                         </div>
                         <div class="canvas-buttons d-flex justify-content-center">
                             <span class="my-auto mr-2" id="canvas-pg-num">Page 1/3</span>
@@ -52,13 +54,13 @@
                         </div>
                         <div id="carouselExampleIndicators" class="carousel slide" data-interval="false">
                             <div class="carousel-inner">
-                               <div class="carousel-item active">
+                               <div class="carousel-item active" style="transition-duration: 0.2s">
                                     <canvas class="mt-1" id="canvas1"></canvas>
                                </div>
-                               <div class="carousel-item">
+                               <div class="carousel-item" style="transition-duration: 0.2s">
                                     <canvas class="mt-1" id="canvas2"></canvas>
                                </div>
-                               <div class="carousel-item">
+                               <div class="carousel-item" style="transition-duration: 0.2s">
                                     <canvas class="mt-1" id="canvas3"></canvas>
                                </div>
                             </div>

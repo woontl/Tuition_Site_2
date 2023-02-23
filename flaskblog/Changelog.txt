@@ -5,6 +5,18 @@ Bug Fixes:
 
 ---------------------------------------------------------------------------------------------------------------------------------------=
 
+Version 1.0.3
+New Features:
+1) New whiteboard toolbar overlay
+2) Added theta button for workings
+3) Added page numbers to whiteboard
+
+Bug Fixes:
+1) Fix a bug when deleting users
+2) Fixed question index when deleting questions
+
+---------------------------------------------------------------------------------------------------------------------------------------=
+
 Version 1.0.2
 New Features:
 1) Version number displayed below website is now dynamic

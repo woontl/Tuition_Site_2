@@ -20,6 +20,8 @@
       y: 0
     };
     var lastPos = mousePos;
+    var strokes1 = []; // stack to stores strokes for undo
+    var undoneStrokes1 = [];
   
     canvas.addEventListener("mousedown", function(e) {
       drawing = true;
@@ -28,6 +30,8 @@
   
     canvas.addEventListener("mouseup", function(e) {
       drawing = false;
+      // push the current stroke onto the undo stack
+      strokes1.push(ctx1.getImageData(0, 0, canvas.width, canvas.height));
     }, false);
   
     canvas.addEventListener("mousemove", function(e) {
@@ -133,6 +137,7 @@
     // Variables
     var eraser_state = false;
     var pgnum = 1;
+    var canClick = true;
     var clearBtn = document.getElementById("canvas-clear-btn");
     var prevBtn = document.getElementById("canvas-prev-btn");
     var nextBtn = document.getElementById("canvas-next-btn");
@@ -140,16 +145,36 @@
     let temp_color = ''
     let temp_font = ''
     var eraserBtn = document.getElementById("canvas-eraser-btn");
+    var undoBtn = document.getElementById("canvas-undo-btn");
+    var redoBtn = document.getElementById("canvas-redo-btn");
     var currentcolor = 'black';
     var currentfont = 2;
     var page_num = document.getElementById("canvas-pg-num");
     const colorButtons = document.querySelectorAll("[id^='canvas-color-']");
 
     clearBtn.addEventListener("click", clearBoard)
-    prevBtn.addEventListener("click", prevpg)
-    nextBtn.addEventListener("click", nextpg)
+    prevBtn.addEventListener("click", function() {
+      if (canClick) {
+        canClick = false;
+        setTimeout(function() {
+          canClick = true;
+        }, 10); 
+        prevpg();
+      }
+    });
+    nextBtn.addEventListener("click", function() {
+      if (canClick) {
+        canClick = false;
+        setTimeout(function() {
+          canClick = true;
+        }, 10); 
+        nextpg();
+      }
+    });
     submitBtn.addEventListener("click", saveURL)
     eraserBtn.addEventListener("click", eraseBoard)
+    undoBtn.addEventListener('click', undoLastStroke);
+    redoBtn.addEventListener('click', redoLastStroke);
 
     // Tools functionalities
     function clearBoard() {
@@ -167,6 +192,33 @@
         var dataURL3 = canvas_out3.toDataURL('image/png');
         var dataURL_arr = [dataURL1,dataURL2,dataURL3]
         document.getElementById('workings').value = dataURL_arr.join('@@@@');
+    }
+
+    function undoLastStroke() {
+      if (pgnum==1){
+        if (strokes1.length > 0) {
+          var lastStroke = strokes1.pop();
+          undoneStrokes1.push(lastStroke);
+          ctx1.clearRect(0, 0, canvas.width, canvas.height);
+          strokes1.forEach(stroke => ctx1.putImageData(stroke, 0, 0));
+          if (strokes1.length == 0) {
+            var url = JSON.parse(document.getElementById('workings').value).workings1;
+            var img = new Image()
+            img.src = url
+            img.onload = () => { ctx1.drawImage(img, 0, 0); };
+          }
+        }
+      }
+    }
+
+    function redoLastStroke() {
+      if (pgnum==1){
+        if (undoneStrokes1.length > 0) {
+          var lastUndoneStroke = undoneStrokes1.pop();
+          strokes1.push(lastUndoneStroke);
+          ctx1.putImageData(lastUndoneStroke, 0, 0);
+        }
+      }
     }
 
     function eraseBoard() {
