@@ -82,3 +82,18 @@ document.getElementById("calc_button_theta").addEventListener("click", function(
   lastClickedMathField.cmd("θ");
   lastClickedMathField.focus()
 });
+
+document.getElementById("calc_button_lambda").addEventListener("click", function() {
+  lastClickedMathField.cmd("λ");
+  lastClickedMathField.focus()
+});
+
+document.getElementById("calc_button_vector").addEventListener("click", function() {
+  lastClickedMathField.cmd("\\vec");
+  lastClickedMathField.focus()
+});
+
+document.getElementById("calc_button_matrix").addEventListener("click", function() {
+  lastClickedMathField.cmd("\\binom");
+  lastClickedMathField.focus()
+});

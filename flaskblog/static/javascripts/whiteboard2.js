@@ -143,8 +143,8 @@
     var eraserBtn = document.getElementById("canvas-eraser-btn");
     var undoBtn = document.getElementById("canvas-undo-btn");
     var redoBtn = document.getElementById("canvas-redo-btn");
-    let temp_color = ''
-    let temp_font = ''
+    let temp_color = 'black'
+    let temp_font = 2
     var currentcolor = document.getElementById("toolbar_colorheader").style.backgroundColor
     var currentfont = 2;
     var page_num = document.getElementById("canvas-pg-num");
@@ -242,16 +242,17 @@
           currentcolor = 'white'
           currentfont = 25
           eraser_state = true;
-          eraserBtn.style.backgroundColor = "white"
-          eraserBtn.style.border = "1px solid white"
+          eraserBtn.style.backgroundColor = "#2196F3"
+          eraserBtn.style.border = "1px solid #2196F3"
       } else if (eraser_state == true) {
           currentcolor = temp_color;
           currentfont = temp_font;
           eraser_state = false;
-          eraserBtn.style.backgroundColor = "#2196F3"
-          eraserBtn.style.border = "1px solid #2196F3"
+          eraserBtn.style.backgroundColor = "black"
+          eraserBtn.style.border = "1px solid black"
       } 
     };
+
 
     // Handle color change
     colorButtons.forEach(button => {

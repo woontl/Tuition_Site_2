@@ -142,8 +142,8 @@
     var prevBtn = document.getElementById("canvas-prev-btn");
     var nextBtn = document.getElementById("canvas-next-btn");
     var submitBtn = document.getElementById("ans");
-    let temp_color = ''
-    let temp_font = ''
+    let temp_color = 'black'
+    let temp_font = 2
     var eraserBtn = document.getElementById("canvas-eraser-btn");
     var undoBtn = document.getElementById("canvas-undo-btn");
     var redoBtn = document.getElementById("canvas-redo-btn");
@@ -228,14 +228,14 @@
           currentcolor = 'white'
           currentfont = 25
           eraser_state = true;
-          eraserBtn.style.backgroundColor = "white"
-          eraserBtn.style.border = "1px solid white"
+          eraserBtn.style.backgroundColor = "#2196F3"
+          eraserBtn.style.border = "1px solid #2196F3"
       } else if (eraser_state == true) {
           currentcolor = temp_color;
           currentfont = temp_font;
           eraser_state = false;
-          eraserBtn.style.backgroundColor = "#2196F3"
-          eraserBtn.style.border = "1px solid #2196F3"
+          eraserBtn.style.backgroundColor = "black"
+          eraserBtn.style.border = "1px solid black"
       } 
     };
 
@@ -289,7 +289,9 @@
     interact('.draggable')
     .draggable({
       // enable inertial throwing
-      inertia: true,
+      inertia: {
+        resistance: 15
+      },
       // keep the element within the area of it's parent
       modifiers: [
         interact.modifiers.restrictRect({

@@ -117,7 +117,12 @@ body {
     border-radius: 60px;
     font-size: 15px;
     text-align: center;
-    background-color: #2196F3;
+    background-color: black;
+  }
+
+
+  .btn-circle-lg i {
+    color: #fff; 
   }
 
   .btn-circle-sm {
@@ -128,19 +133,6 @@ body {
     text-align: center;
     background-color: #2196F3;
   }
-
-  /* #toolbar_font_collapse {
-    position: absolute;
-    top: 50px;
-    right: 0;
-    z-index: 9999;
-    transition: all 0.3s ease-in-out;
-  }
-  
-  #toolbar_font_collapse.collapse {
-    right: -250px;
-  } */
-
 
   #toolbar {
     position: absolute;

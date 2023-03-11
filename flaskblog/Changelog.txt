@@ -3,7 +3,28 @@ New Features:
 
 Bug Fixes:
 
----------------------------------------------------------------------------------------------------------------------------------------=
+---------------------------------------------------------------------------------------------------------------------------------------
+
+Version 1.0.5
+New Features:
+1) Added new button inputs for Questionbank
+
+Bug Fixes:
+1) Fixed timestamp bug in Activities
+2) Made toolbar icons less faded
+3) Increase resistance on toolbar throwing
+4) Fixed font thickness bug on whiteboard
+
+---------------------------------------------------------------------------------------------------------------------------------------
+
+Version 1.0.4
+New Features:
+1) Added Undo and Redo buttons for whiteboard
+
+Bug Fixes:
+1) Fix lag when switching pages in whiteboard
+
+---------------------------------------------------------------------------------------------------------------------------------------
 
 Version 1.0.3
 New Features:
@@ -15,7 +36,7 @@ Bug Fixes:
 1) Fix a bug when deleting users
 2) Fixed question index when deleting questions
 
----------------------------------------------------------------------------------------------------------------------------------------=
+---------------------------------------------------------------------------------------------------------------------------------------
 
 Version 1.0.2
 New Features:
