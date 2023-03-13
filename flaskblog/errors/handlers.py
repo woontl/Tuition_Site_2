@@ -5,7 +5,11 @@ errors = Blueprint('errors', __name__)
 
 def render_template(*args, **kwargs):
     version = Changelog.query.order_by(Changelog.id.desc()).first()
-    return real_render_template(*args, **kwargs, version=version.version)
+    if version == None:
+        return real_render_template(*args, **kwargs, version='V1.0.0')
+    else:
+        return real_render_template(*args, **kwargs, version=version.version)
+
 
 @errors.app_errorhandler(404) #To handle 404 errors
 def error_404(error):

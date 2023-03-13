@@ -1,4 +1,4 @@
-from flask import render_template as real_render_template, Blueprint, flash, redirect, url_for, request, abort, current_app
+from flask import render_template as real_render_template, Blueprint, flash, redirect, url_for, request, abort, current_app, jsonify
 from flask_login import current_user, login_required
 from flaskblog import db
 from flaskblog.models import Homework, Questionbank, Question, Working, User, Activity, TagsList, Changelog
@@ -15,7 +15,10 @@ homeworks = Blueprint('homeworks', __name__) #creating an instance, to be import
 
 def render_template(*args, **kwargs):
     version = Changelog.query.order_by(Changelog.id.desc()).first()
-    return real_render_template(*args, **kwargs, version=version.version)
+    if version == None:
+        return real_render_template(*args, **kwargs, version='V1.0.0')
+    else:
+        return real_render_template(*args, **kwargs, version=version.version)
 
 # Homework Routes
 @homeworks.route("/homework_all/<string:student>", methods=['GET', 'POST'])
@@ -274,6 +277,13 @@ def update_questionbank(questionbank_id):
         qb.checked = (json.loads(request.form['action']))['open_ended_checked']
         db.session.commit()
         flash('Your question has been updated in the Question Bank!', 'success')
+        
+        # Updates all answers in existing Questions
+        questions = Question.query.filter_by(questionbank_id=questionbank_id).all()
+        for question in questions:
+            question.qn_answer = qb.answer
+            db.session.commit()
+                
         return redirect(url_for('homeworks.questionbank', grade="ALL",tags="ALL",difficulty="ALL"))
     return render_template('upload_questionbank.html', title='Update Questionbank', form=form,
                         legend='Update Questionbank', img_preview=img_preview, ans=ans, checked=checked)
@@ -428,7 +438,15 @@ def new_question(homework_id, grade="ALL",tags="ALL",difficulty="ALL"):
             question = Question(title=default_title, questionbank_id=qb.id, homework_id=homework_id, grade=qb.grade, qn_img=img_id, qn_answer=qb.answer,
                              tags=qb.tags, difficulty=qb.difficulty, checked=qb.checked)
             db.session.add(question)
+            
+            # Add blank entry to Workings 
+            final_ans = ';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;'
+            right_wrong = 'NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW'
+            question_id = Question.query.order_by(Question.id.desc()).first().id
+            working = Working(workings='', workings2='', workings3='', final_ans=final_ans, homework_id=homework_id, question_id=question_id, point=0,right_wrong=right_wrong)
+            db.session.add(working)
             db.session.commit()
+            
             flash('Your question has been added!', 'success')
             return redirect(url_for('homeworks.new_question',homework_id=homework.id, grade=form.grade.data, tags=form.tags.data, difficulty = form.difficulty.data, page=page)) #redirect back to homework page after updating
         grade = form.grade.data
@@ -459,83 +477,53 @@ def solve_question(homework_id, question_id):
     check_ans = MQ_formatter(question.qn_answer).split(';')
     checked = question.checked.split(';')
     if request.method == 'GET':
-        if working is None:
-            form.workings.data = json.dumps({"workings1": "",
-                                  "workings2": "",
-                                  "workings3": ""})
-            right_wrong = []
-            final_ans = re.sub('【(.*?)】','\\\\MathQuillMathField{}',question.qn_answer).split(';')
-        else:
-            form.workings.data = json.dumps({"workings1": working.workings,
-                                  "workings2": working.workings2,
-                                  "workings3": working.workings3})
-            final_ans = working.final_ans.split(';')
-            right_wrong = working.right_wrong.split(';')
+        form.workings.data = json.dumps({"workings1": working.workings,
+                                "workings2": working.workings2,
+                                "workings3": working.workings3})
+        final_ans = working.final_ans.split(';')
+        right_wrong = working.right_wrong.split(';')
     elif request.method == 'POST':
-        try:
-            if request.form['refresh'] == "refresh":
-                form.workings.data = working.workings
-            if request.form['refresh'] == "save":
-                working.workings = form.workings.data
-                flash('Your workings have been saved!', 'success')
-                db.session.commit()
-            return redirect(url_for('homeworks.solve_question', homework_id=homework.id, question_id=question.id))
-        except:
-            working = Working.query.filter(Working.homework_id==homework_id, Working.question_id==question_id).first()
-            if working is None:
-                final_ans = MQ_formatter(request.form['action'])                
-                point = []
-                for i,j,k in zip((final_ans.split(';')),(check_ans),checked):
-                    if k == '1':
-                        point.append(0)
-                    elif i == j:
-                        point.append(0)
-                    else:
-                        point.append(1)
-                right_wrong = ';'.join(map(str,point))
-                final_ans = (request.form['action'])
-                workings_arr = form.workings.data.split('@@@@')
-                working = Working(workings=workings_arr[0], workings2=workings_arr[1], workings3=workings_arr[2], final_ans=final_ans, homework_id=homework_id, question_id=question_id, point=sum(point),right_wrong=right_wrong)
-                date_now = datetime.datetime.now()
-                activity = Activity(description=question.title+ " has been attempted in "+homework.title+"!", student_id = homework.student_id, 
-                                    author=current_user, date_posted = date_now)
-                db.session.add(activity)
-                db.session.add(working)
-                db.session.commit()
-                if sum(point) != 0:
-                    flash('Your answer is wrong!', 'danger')
-                    return redirect(url_for('homeworks.solve_question', homework_id=homework.id, question_id=question.id))
-                else:
-                    flash('Your answer is correct!', 'success')
-                    return redirect(url_for('homeworks.homework', homework_id=homework.id))
+        working = Working.query.filter(Working.homework_id==homework_id, Working.question_id==question_id).first()
+        final_ans = MQ_formatter(request.form['action'])
+        point = []
+        for i,j,k in zip((final_ans.split(';')),(check_ans),checked):
+            if k == '1':
+                point.append(0)
+            elif i == j:
+                point.append(0)
             else:
-                final_ans = MQ_formatter(request.form['action'])
-                point = []
-                for i,j,k in zip((final_ans.split(';')),(check_ans),checked):
-                    if k == '1':
-                        point.append(0)
-                    elif i == j:
-                        point.append(0)
-                    else:
-                        point.append(1)
-                right_wrong = ';'.join(map(str,point))
-                workings_arr = form.workings.data.split('@@@@')
-                working.workings = workings_arr[0]
-                working.workings2 = workings_arr[1]
-                working.workings3 = workings_arr[2]
-                final_ans = (request.form['action'])
-                working.final_ans = final_ans
-                working.point = sum(point)
-                working.right_wrong = right_wrong
-                date_now = datetime.datetime.now()
-                activity = Activity(description=question.title+ " has been attempted in "+homework.title+"!", student_id = homework.student_id, 
-                                    author=current_user, date_posted = date_now)
-                db.session.add(activity)
-                db.session.commit()
-                if sum(point) != 0:
-                    flash('Your answer is wrong!', 'danger')
-                    return redirect(url_for('homeworks.solve_question', homework_id=homework.id, question_id=question.id))
-                else:
-                    flash('Your answer is correct!', 'success')
-                    return redirect(url_for('homeworks.homework', homework_id=homework.id))
-    return render_template('working.html', title='Solve Question', form=form, legend = "Solve Question", question=question, ans=correct_ans, final_ans=final_ans, right_wrong=right_wrong, checked=checked, check_ans=check_ans)
+                point.append(1)
+        right_wrong = ';'.join(map(str,point))
+        workings_arr = form.workings.data.split('@@@@')
+        working.workings = workings_arr[0]
+        working.workings2 = workings_arr[1]
+        working.workings3 = workings_arr[2]
+        final_ans = (request.form['action'])
+        working.final_ans = final_ans
+        working.point = sum(point)
+        working.right_wrong = right_wrong
+        date_now = datetime.datetime.now()
+        activity = Activity(description=question.title+ " has been attempted in "+homework.title+"!", student_id = homework.student_id, 
+                            author=current_user, date_posted = date_now)
+        db.session.add(activity)
+        db.session.commit()
+        if sum(point) != 0:
+            flash('Your answer is wrong!', 'danger')
+            return redirect(url_for('homeworks.solve_question', homework_id=homework.id, question_id=question.id))
+        else:
+            flash('Your answer is correct!', 'success')
+            return redirect(url_for('homeworks.homework', homework_id=homework.id))
+    return render_template('working.html', title='Solve Question', form=form, legend = "Solve Question", question=question, ans=correct_ans, 
+                           final_ans=final_ans, right_wrong=right_wrong, checked=checked, check_ans=check_ans, homework_id=homework_id, question_id=question_id)
+
+@homeworks.route('/homework/<int:homework_id>/<int:question_id>/auto_save_canvas', methods=['POST'])
+def auto_save_canvas(homework_id, question_id):
+    working = Working.query.filter(Working.homework_id==homework_id, Working.question_id==question_id).first()
+    data = request.get_json()
+    url = data.get('url')
+    workings_arr = url.split('@@@@')
+    working.workings = workings_arr[0]
+    working.workings2 = workings_arr[1]
+    working.workings3 = workings_arr[2]
+    db.session.commit()
+    return jsonify({})

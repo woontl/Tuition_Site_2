@@ -10,9 +10,18 @@
           window.setTimeout(callback, 1000 / 60);
         };
     })();
-  
+    
+    const canvas_parent = document.querySelector("#canvas_parent")
     var canvas2 = document.getElementById("canvas2");
     var ctx2 = canvas2.getContext("2d");
+    canvas2.height = window.innerHeight;
+    canvas2.width = canvas_parent.offsetWidth*0.99;
+
+    // Add an event listener to adjust the canvas size whenever the window is resized
+    window.addEventListener('resize', function() {
+      canvas2.height = window.innerHeight;
+      canvas2.width = canvas_parent.offsetWidth*0.99;
+    });
 
     var drawing = false;
     var mousePos = {
@@ -124,14 +133,6 @@
       img.onload = () => { ctx2.drawImage(img, 0, 0); };
       img.src = url
     }
-
-    // resizing
-    const canvas_parent = document.querySelector("#canvas_parent")
-    function onResize() {
-        canvas2.height = window.innerHeight;
-        canvas2.width = canvas_parent.offsetWidth*0.99;
-    };
-    onResize();
 
     // Variables
     var eraser_state = false;

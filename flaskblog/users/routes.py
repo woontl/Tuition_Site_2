@@ -11,7 +11,10 @@ users = Blueprint('users', __name__) #creating an instance, to be imported
 
 def render_template(*args, **kwargs):
     version = Changelog.query.order_by(Changelog.id.desc()).first()
-    return real_render_template(*args, **kwargs, version=version.version)
+    if version == None:
+        return real_render_template(*args, **kwargs, version='V1.0.0')
+    else:
+        return real_render_template(*args, **kwargs, version=version.version)
 
 @users.route("/register", methods=['GET', 'POST']) #Need to define methods here 
 def register():

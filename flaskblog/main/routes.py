@@ -10,7 +10,10 @@ main = Blueprint('main', __name__) #creating an instance, to be imported
 
 def render_template(*args, **kwargs):
     version = Changelog.query.order_by(Changelog.id.desc()).first()
-    return real_render_template(*args, **kwargs, version=version.version)
+    if version == None:
+        return real_render_template(*args, **kwargs, version='V1.0.0')
+    else:
+        return real_render_template(*args, **kwargs, version=version.version)
 
 @main.route("/") #Routes are created bring our browers to different pages. "/" represents the root or home page
 @main.route("/home") #Both routes bring to the same page

@@ -11,8 +11,17 @@
       };
   })();
 
+  const canvas_parent = document.querySelector("#canvas_parent")
   var canvas3 = document.getElementById("canvas3");
   var ctx3 = canvas3.getContext("2d");
+  canvas3.height = window.innerHeight;
+  canvas3.width = canvas_parent.offsetWidth*0.99;
+
+  // Add an event listener to adjust the canvas size whenever the window is resized
+  window.addEventListener('resize', function() {
+    canvas3.height = window.innerHeight;
+    canvas3.width = canvas_parent.offsetWidth*0.99;
+  });
 
   var drawing = false;
   var mousePos = {
@@ -124,14 +133,6 @@
     img.onload = () => { ctx3.drawImage(img, 0, 0); };
     img.src = url
   }
-
-  // resizing
-  const canvas_parent = document.querySelector("#canvas_parent")
-  function onResize() {
-      canvas3.height = window.innerHeight;
-      canvas3.width = canvas_parent.offsetWidth*0.99;
-  };
-  onResize();
 
   // Variables
   var eraser_state = false;

@@ -6,7 +6,11 @@ resources = Blueprint('resources', __name__) #creating an instance, to be import
 
 def render_template(*args, **kwargs):
     version = Changelog.query.order_by(Changelog.id.desc()).first()
-    return real_render_template(*args, **kwargs, version=version.version)
+    if version == None:
+        return real_render_template(*args, **kwargs, version='V1.0.0')
+    else:
+        return real_render_template(*args, **kwargs, version=version.version)
+
 
 @resources.route("/IB_resources")
 @login_required
