@@ -5,6 +5,21 @@ Bug Fixes:
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 
+Version 1.0.6
+New Features:
+1) Revamped answer buttons grid
+- You can now input your answers using buttons on screen, instead of typing on keyboard
+- Added Next and Prev to toggle between each answer field
+- Added Left and Right Arrow to move cursor
+2) Updates to answers in Questionbanks now updates all relevant Homeworks
+3) Whiteboard now saves workings automatically every 10 seconds
+
+Bug Fixes:
+1) Fixed whiteboard resizing issue when changing resolutions
+2) Fixed an error when Version Number is None
+
+---------------------------------------------------------------------------------------------------------------------------------------
+
 Version 1.0.5
 New Features:
 1) Added new button inputs for Questionbank

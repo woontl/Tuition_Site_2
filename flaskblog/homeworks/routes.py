@@ -477,42 +477,76 @@ def solve_question(homework_id, question_id):
     check_ans = MQ_formatter(question.qn_answer).split(';')
     checked = question.checked.split(';')
     if request.method == 'GET':
-        form.workings.data = json.dumps({"workings1": working.workings,
-                                "workings2": working.workings2,
-                                "workings3": working.workings3})
-        final_ans = working.final_ans.split(';')
-        right_wrong = working.right_wrong.split(';')
+        if working is None:
+            form.workings.data = json.dumps({"workings1": "",
+                                  "workings2": "",
+                                  "workings3": ""})
+            right_wrong = []
+            final_ans = re.sub('【(.*?)】','\\\\MathQuillMathField{}',question.qn_answer).split(';')
+        else:
+            form.workings.data = json.dumps({"workings1": working.workings,
+                                  "workings2": working.workings2,
+                                  "workings3": working.workings3})
+            final_ans = working.final_ans.split(';')
+            right_wrong = working.right_wrong.split(';')
     elif request.method == 'POST':
         working = Working.query.filter(Working.homework_id==homework_id, Working.question_id==question_id).first()
-        final_ans = MQ_formatter(request.form['action'])
-        point = []
-        for i,j,k in zip((final_ans.split(';')),(check_ans),checked):
-            if k == '1':
-                point.append(0)
-            elif i == j:
-                point.append(0)
+        if working is None:
+            final_ans = MQ_formatter(request.form['action'])                
+            point = []
+            for i,j,k in zip((final_ans.split(';')),(check_ans),checked):
+                if k == '1':
+                    point.append(0)
+                elif i == j:
+                    point.append(0)
+                else:
+                    point.append(1)
+            right_wrong = ';'.join(map(str,point))
+            final_ans = (request.form['action'])
+            workings_arr = form.workings.data.split('@@@@')
+            working = Working(workings=workings_arr[0], workings2=workings_arr[1], workings3=workings_arr[2], final_ans=final_ans, homework_id=homework_id, question_id=question_id, point=sum(point),right_wrong=right_wrong)
+            date_now = datetime.datetime.now()
+            activity = Activity(description=question.title+ " has been attempted in "+homework.title+"!", student_id = homework.student_id, 
+                                author=current_user, date_posted = date_now)
+            db.session.add(activity)
+            db.session.add(working)
+            db.session.commit()
+            if sum(point) != 0:
+                flash('Your answer is wrong!', 'danger')
+                return redirect(url_for('homeworks.solve_question', homework_id=homework.id, question_id=question.id))
             else:
-                point.append(1)
-        right_wrong = ';'.join(map(str,point))
-        workings_arr = form.workings.data.split('@@@@')
-        working.workings = workings_arr[0]
-        working.workings2 = workings_arr[1]
-        working.workings3 = workings_arr[2]
-        final_ans = (request.form['action'])
-        working.final_ans = final_ans
-        working.point = sum(point)
-        working.right_wrong = right_wrong
-        date_now = datetime.datetime.now()
-        activity = Activity(description=question.title+ " has been attempted in "+homework.title+"!", student_id = homework.student_id, 
-                            author=current_user, date_posted = date_now)
-        db.session.add(activity)
-        db.session.commit()
-        if sum(point) != 0:
-            flash('Your answer is wrong!', 'danger')
-            return redirect(url_for('homeworks.solve_question', homework_id=homework.id, question_id=question.id))
+                flash('Your answer is correct!', 'success')
+                return redirect(url_for('homeworks.homework', homework_id=homework.id))
         else:
-            flash('Your answer is correct!', 'success')
-            return redirect(url_for('homeworks.homework', homework_id=homework.id))
+            final_ans = MQ_formatter(request.form['action'])
+            point = []
+            for i,j,k in zip((final_ans.split(';')),(check_ans),checked):
+                if k == '1':
+                    point.append(0)
+                elif i == j:
+                    point.append(0)
+                else:
+                    point.append(1)
+            right_wrong = ';'.join(map(str,point))
+            workings_arr = form.workings.data.split('@@@@')
+            working.workings = workings_arr[0]
+            working.workings2 = workings_arr[1]
+            working.workings3 = workings_arr[2]
+            final_ans = (request.form['action'])
+            working.final_ans = final_ans
+            working.point = sum(point)
+            working.right_wrong = right_wrong
+            date_now = datetime.datetime.now()
+            activity = Activity(description=question.title+ " has been attempted in "+homework.title+"!", student_id = homework.student_id, 
+                                author=current_user, date_posted = date_now)
+            db.session.add(activity)
+            db.session.commit()
+            if sum(point) != 0:
+                flash('Your answer is wrong!', 'danger')
+                return redirect(url_for('homeworks.solve_question', homework_id=homework.id, question_id=question.id))
+            else:
+                flash('Your answer is correct!', 'success')
+                return redirect(url_for('homeworks.homework', homework_id=homework.id))
     return render_template('working.html', title='Solve Question', form=form, legend = "Solve Question", question=question, ans=correct_ans, 
                            final_ans=final_ans, right_wrong=right_wrong, checked=checked, check_ans=check_ans, homework_id=homework_id, question_id=question_id)
 

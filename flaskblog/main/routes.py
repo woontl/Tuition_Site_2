@@ -9,6 +9,7 @@ import datetime as datetime
 main = Blueprint('main', __name__) #creating an instance, to be imported
 
 def render_template(*args, **kwargs):
+    flash('Website has a new version upgrade. Kindly clear your cache!', 'success')
     version = Changelog.query.order_by(Changelog.id.desc()).first()
     if version == None:
         return real_render_template(*args, **kwargs, version='V1.0.0')
