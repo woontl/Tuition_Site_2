@@ -5,6 +5,16 @@ Bug Fixes:
 
 --------------------------------------------------------------------------------------------------------------------------------------
 
+Version 1.0.7
+New Features:
+
+Bug Fixes:
+1) Fixed an error that arises when Homework has no Workings
+2) Fixed a bug that causes whiteboard to clear itself
+3) Fixed attempt and grade % calculation for Homework
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
 Version 1.0.6
 New Features:
 1) Revamped answer buttons grid
