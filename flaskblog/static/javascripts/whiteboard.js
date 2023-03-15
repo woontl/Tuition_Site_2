@@ -11,17 +11,16 @@
         };
     })();
 
-    const canvas_parent = document.querySelector("#canvas_parent")
     var canvas = document.getElementById("canvas1");
     var ctx1 = canvas.getContext("2d");
-    canvas.height = window.innerHeight;
-    canvas.width = canvas_parent.offsetWidth*0.99;
 
-    // Add an event listener to adjust the canvas size whenever the window is resized
-    window.addEventListener('resize', function() {
-      canvas.height = window.innerHeight;
-      canvas.width = canvas_parent.offsetWidth*0.99;
-    });
+    // resizing
+    const canvas_parent = document.querySelector("#canvas_parent")
+    function onResize() {
+        canvas.height = window.innerHeight;
+        canvas.width = canvas_parent.offsetWidth*0.99;
+    };
+    onResize();
 
     var drawing = false;
     var mousePos = {
