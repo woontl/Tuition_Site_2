@@ -1,6 +1,6 @@
 from flask import render_template as real_render_template, Blueprint, flash, redirect, url_for, request, abort, current_app, jsonify
 from flask_login import current_user, login_required
-from flaskblog import db
+from flaskblog import db, socketio
 from flaskblog.models import Homework, Questionbank, Question, Working, User, Activity, TagsList, Changelog
 from flaskblog.homeworks.forms import HomeworkForm, QuestionBankForm, QuestionForm, WorkingForm, HomeworkFilterForm, TagForm
 from flaskblog.homeworks.utils import save_qn_picture, MQ_formatter
@@ -10,6 +10,7 @@ import re
 import json
 from datetime import date, timedelta
 import datetime as datetime
+from flask_socketio import SocketIO, send
 
 homeworks = Blueprint('homeworks', __name__) #creating an instance, to be imported
 
@@ -53,7 +54,7 @@ def homework_all(student="ALL"):
         question_count_arr.append(Question.query.filter_by(homework_id=i).count())
         pt_arr.append(Working.query.filter_by(homework_id=i, point=0).count())
         if Question.query.filter_by(homework_id=i).count() != 0:
-            attempt_percentage_arr.append(round((Working.query.filter_by(homework_id=i).count()/Question.query.filter_by(homework_id=i).count())*100,2))
+            attempt_percentage_arr.append(round((Working.query.filter_by(homework_id=i).filter(Working.workings != '').count()/Question.query.filter_by(homework_id=i).count())*100,2))
             total_parts = 0
             wrong_parts = 0
             for j in Question.query.filter_by(homework_id=i).all():
@@ -67,7 +68,10 @@ def homework_all(student="ALL"):
                 except:
                     wrong_parts += temp
             for j in Working.query.filter_by(homework_id=i).all():
-                wrong_parts += j.point
+                if j.point == 99:
+                    wrong_parts = total_parts
+                else: 
+                    wrong_parts += j.point
             correct_percentage_arr.append(round(((total_parts-wrong_parts)/total_parts)*100,2))
         else:
             attempt_percentage_arr.append(0)
@@ -443,7 +447,7 @@ def new_question(homework_id, grade="ALL",tags="ALL",difficulty="ALL"):
             final_ans = ';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;'
             right_wrong = 'NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW'
             question_id = Question.query.order_by(Question.id.desc()).first().id
-            working = Working(workings='', workings2='', workings3='', final_ans=final_ans, homework_id=homework_id, question_id=question_id, point=0,right_wrong=right_wrong)
+            working = Working(workings='', workings2='', workings3='', final_ans=final_ans, homework_id=homework_id, question_id=question_id, point=99,right_wrong=right_wrong)
             db.session.add(working)
             db.session.commit()
             
@@ -561,3 +565,7 @@ def auto_save_canvas(homework_id, question_id):
     working.workings3 = workings_arr[2]
     db.session.commit()
     return jsonify({})
+
+@socketio.on('message')
+def test(message):
+    return '123'

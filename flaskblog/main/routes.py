@@ -54,7 +54,7 @@ def home():
         question_count_arr.append(Question.query.filter_by(homework_id=i).count())
         pt_arr.append(Working.query.filter_by(homework_id=i, point=0).count())
         if Question.query.filter_by(homework_id=i).count() != 0:
-            attempt_percentage_arr.append(round((Working.query.filter_by(homework_id=i).count()/Question.query.filter_by(homework_id=i).count())*100,2))
+            attempt_percentage_arr.append(round((Working.query.filter_by(homework_id=i).filter(Working.workings != '').count()/Question.query.filter_by(homework_id=i).count())*100,2))
             total_parts = 0
             wrong_parts = 0
             for j in Question.query.filter_by(homework_id=i).all():
@@ -68,7 +68,10 @@ def home():
                 except:
                     wrong_parts += temp
             for j in Working.query.filter_by(homework_id=i).all():
-                wrong_parts += j.point
+                if j.point == 99:
+                    wrong_parts = total_parts
+                else: 
+                    wrong_parts += j.point
             correct_percentage_arr.append(round(((total_parts-wrong_parts)/total_parts)*100,2))
         else:
             attempt_percentage_arr.append(0)

@@ -216,8 +216,8 @@ How to download file from remote to local?
 How to download folder from remote to local?
 1) scp -r woontl@172.104.185.89:Tuition_Site_2/flaskblog/static /Users/tianli.woon/Documents
 
-How to upload file from local to remove?
+How to upload file from local to remote?
 1) scp site.db woontl@172.104.185.89:Tuition_Site_2/flaskblog/
 
-How to upload folder from local to remove?
+How to upload folder from local to remote?
 1) scp -r questionbank/ woontl@172.104.185.89:Tuition_Site_2/flaskblog/static
