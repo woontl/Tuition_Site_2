@@ -34,7 +34,7 @@ document.getElementById("calc_button_alphabet_x").addEventListener("click", func
 });
 
 document.getElementById("calc_button_alphabet_y").addEventListener("click", function() {
-  lastClickedMathField.cmd("x");
+  lastClickedMathField.cmd("y");
   lastClickedMathField.focus()
 });
 
@@ -185,6 +185,11 @@ document.getElementById("calc_button_equal").addEventListener("click", function(
 
 document.getElementById("calc_button_plus").addEventListener("click", function() {
   lastClickedMathField.cmd("+");
+  lastClickedMathField.focus()
+});
+
+document.getElementById("calc_button_delete").addEventListener("click", function() {
+  lastClickedMathField.keystroke('Backspace')
   lastClickedMathField.focus()
 });
 

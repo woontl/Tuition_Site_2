@@ -55,7 +55,23 @@
                             <span class="my-auto mr-2" id="canvas-pg-num">Page 1/3</span>
                             <button type="button" id="canvas-prev-btn" href="#carouselExampleIndicators" class="btn btn-secondary mx-2" data-slide="prev">Prev <i class="fa-solid fa-circle-left"></i></button>
                             <button type="button" id="canvas-next-btn" href="#carouselExampleIndicators" class="btn btn-secondary mx-2" data-slide="next">Next <i class="fa-solid fa-circle-right"></i></button>
-                            <button type="button" id="canvas-clear-btn" class="btn btn-info mx-2">Clear</button>
+                            <button type="button" class="btn btn-info mx-2" data-toggle="modal" data-target="#clearWhiteboard">Clear</button>
+                        </div>
+                        <div class="modal fade" id="clearWhiteboard" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="deleteModalLabel">Are you sure you wish to clear the whiteboard?</h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" id="canvas-clear-btn" data-dismiss="modal" class="btn btn-info mx-2">Yes</button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                </div>
+                              </div>
+                            </div>
                         </div>
                         <div id="carouselExampleIndicators" class="carousel slide" data-interval="false">
                             <div class="carousel-inner">
@@ -304,12 +320,13 @@
                     </div>
                     <div class="col-4">
                         <div class="row justify-content-center">
-                            <button class="calculator-btn-lg" type="button" id="calc_button_arrow_left"><i class="fa-solid fa-arrow-left"></i></button>
-                            <button class="calculator-btn-lg" type="button" id="calc_button_arrow_right"><i class="fa-solid fa-arrow-right"></i></button>
+                            <button class="calculator-btn-lg" type="button" id="calc_button_delete">Delete</button>
+                            <button class="calculator-btn" type="button" id="calc_button_arrow_left"><i class="fa-solid fa-arrow-left"></i></button>
+                            <button class="calculator-btn" type="button" id="calc_button_arrow_right"><i class="fa-solid fa-arrow-right"></i></button>
                         </div>
                         <div class="row justify-content-center">
-                            <button class="calculator-btn-lg" type="button" id="calc_button_next">Next</button>
                             <button class="calculator-btn-lg" type="button" id="calc_button_prev">Prev</button>
+                            <button class="calculator-btn-lg" type="button" id="calc_button_next">Next</button>
                         </div>
                     </div>
                 </div>

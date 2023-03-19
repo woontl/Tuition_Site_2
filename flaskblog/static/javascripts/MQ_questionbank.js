@@ -18,7 +18,7 @@ document.getElementById("calc_button_alphabet_x").addEventListener("click", func
 });
 
 document.getElementById("calc_button_alphabet_y").addEventListener("click", function() {
-  lastClickedMathField.cmd("x");
+  lastClickedMathField.cmd("y");
   lastClickedMathField.focus()
 });
 
