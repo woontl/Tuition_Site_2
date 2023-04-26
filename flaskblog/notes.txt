@@ -255,3 +255,4 @@ How to upload folder from local to remote? (PROD)
 
 dev ssh woontl@139.162.19.71
 prod ssh woontl@172.104.169.106
+sudo password: Fieryflamer@96
