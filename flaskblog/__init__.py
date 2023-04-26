@@ -17,14 +17,14 @@ login_manager.login_view = 'users.login' #Requires login to view
 login_manager.login_message_category = 'info'
 login_manager.anonymous_user = Anonymous
 mail = Mail()
-socketio = SocketIO()
+socketio = SocketIO(logger=True, engineio_logger=True)
 
 
 def create_app(config_class=Config):
     app = Flask(__name__) #Setting an instance of this flask class. __name__ will be set as __main__when ran. But __name__ will be set as another name if importing another module
     app.config.from_object(Config)
 
-    socketio.init_app(app, cors_allowed_origins="*")
+    socketio.init_app(app, cors_allowed_origins="*", debug=True)
     db.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)

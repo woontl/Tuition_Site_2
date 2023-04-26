@@ -4,6 +4,16 @@ New Features:
 Bug Fixes:
 
 --------------------------------------------------------------------------------------------------------------------------------------
+Version 1.0.8
+New Features:
+1) Added delete button for Whiteboard
+2) Added confirmation feature before clearing Whiteboard
+
+Bug Fixes:
+1) FIxed y button for Whiteboard
+2) Swapped next and prev button for Whiteboard
+
+--------------------------------------------------------------------------------------------------------------------------------------
 
 Version 1.0.7
 New Features:

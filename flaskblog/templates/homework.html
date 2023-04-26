@@ -7,7 +7,7 @@
           <small class="text-muted">{{ homework.date_posted.strftime('%Y-%m-%d') }}</small>
               <div>
                   <h2 class="article-title">{{ homework.title }}</h2>
-                  {% if homework.author == current_user %}
+                  {% if current_user.account_type == 'Admin' %}
                     <a class="btn btn-primary btn-sm mt-1 mb-1" href="{{ url_for('homeworks.new_question',homework_id=homework.id, grade='ALL', tags='ALL', difficulty='ALL') }}">Add Question <i class="fa-solid fa-square-plus"></i></a>
                     <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('homeworks.update_homework',homework_id=homework.id) }}">Update Homework <i class="fa-solid fa-pen-to-square"></i></a>
                     <button type = "button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteHomework">Delete Homework <i class="fa-solid fa-trash-can"></i></button>
@@ -24,10 +24,10 @@
                       </button>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <form action="{{ url_for('homeworks.delete_homework', homework_id=homework.id) }}" method="POST">
                             <input class="btn btn-danger" type="submit" value="Delete">
                         </form>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                   </div>
                 </div>
@@ -61,8 +61,10 @@
           </div> 
           <div class="pt-3">
             <a class="btn btn-success btn-sm mt-1 mb-1" href="{{ url_for('homeworks.solve_question',homework_id=homework.id, question_id=question.id) }}">Solve Question <i class="fa-solid fa-square-check"></i></a>
-            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('homeworks.update_question',homework_id=homework.id, question_id=question.id, grade='ALL', tags='ALL', difficulty='ALL', load='not_loaded') }}">Update Question <i class="fa-solid fa-pen-to-square"></i></a>
-            <button type = "button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteQuestion">Delete Question <i class="fa-solid fa-trash-can"></i></button>
+            {% if current_user.account_type == 'Admin' %}
+              <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('homeworks.update_question',homework_id=homework.id, question_id=question.id, grade='ALL', tags='ALL', difficulty='ALL', load='not_loaded') }}">Update Question <i class="fa-solid fa-pen-to-square"></i></a>
+              <button type = "button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteQuestion">Delete Question <i class="fa-solid fa-trash-can"></i></button>
+            {% endif %}  
           <div>
           <!--Modal-->
           <div class="modal fade" id="deleteQuestion" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -75,10 +77,10 @@
                   </button>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <form action="{{ url_for('homeworks.delete_question', homework_id=homework.id, question_id=question.id) }}" method="POST">
-                        <input class="btn btn-danger" type="submit" value="Delete">
+                      <input class="btn btn-danger" type="submit" value="Delete">
                     </form>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
               </div>
             </div>

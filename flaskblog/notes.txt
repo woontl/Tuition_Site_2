@@ -235,14 +235,23 @@ To update production with changed config files
 3) sudo supervisorctl stop all
 3) venv, sudo systemctl restart nginx
 
-How to download file from remote to local?
+How to download file from remote to local? (PROD)
 1) scp woontl@172.104.169.106:Tuition_Site_2/flaskblog/site.db /Users/tianli.woon/Documents
 
-How to download folder from remote to local?
+How to download folder from remote to local? (PROD)
 1) scp -r woontl@172.104.169.106:Tuition_Site_2/flaskblog/static /Users/tianli.woon/Documents
 
-How to upload file from local to remote?
+How to upload file from local to remote? (DEV)
+1) scp site.db woontl@139.162.19.71:Tuition_Site_2/flaskblog/
+
+How to upload folder from local to remote? (DEV)
+1) scp -r static/ woontl@139.162.19.71:Tuition_Site_2/flaskblog
+
+How to upload file from local to remote? (PROD)
 1) scp site.db woontl@172.104.169.106:Tuition_Site_2/flaskblog/
 
-How to upload folder from local to remote?
+How to upload folder from local to remote? (PROD)
 1) scp -r static/ woontl@172.104.169.106:Tuition_Site_2/flaskblog
+
+dev ssh woontl@139.162.19.71
+prod ssh woontl@172.104.169.106
