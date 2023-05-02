@@ -533,19 +533,23 @@ def socket_connect():
 
 @socketio.on('stroke')
 def stroke(data):
+    join_room(session['socketio_code'])
     emit('stroke', data, broadcast=True, include_self=False, to=session['socketio_code'])
-    emit('save', broadcast=True, include_self=False, to=session['socketio_code'])
+    emit('save', broadcast=True, include_self=True, to=session['socketio_code'])
 
 @socketio.on('strokes')
 def strokes(data):
+    join_room(session['socketio_code'])
     emit('strokes', data, broadcast=True, include_self=False, to=session['socketio_code'])
 
 @socketio.on('delete')
 def delete(data):
+    join_room(session['socketio_code'])
     emit('delete', data, broadcast=True, include_self=True, to=session['socketio_code'])
-    emit('save', broadcast=True, include_self=False, to=session['socketio_code'])
+    emit('save', broadcast=True, include_self=True, to=session['socketio_code'])
 
 @socketio.on('clear')
 def clear():
+    join_room(session['socketio_code'])
     emit('clear', broadcast=True, include_self=False, to=session['socketio_code'])
-    emit('save', broadcast=True, include_self=False, to=session['socketio_code'])
+    emit('save', broadcast=True, include_self=True, to=session['socketio_code'])
