@@ -154,7 +154,6 @@ function onTouchEnd(e) {
 }
 function onTouchMove(evt) {
     evt.preventDefault();
-    
     const touch1X = evt.touches[0].pageX;
     const touch1Y = evt.touches[0].pageY;
     const touch1Xprev = lastTouches[0].pageX;
@@ -177,6 +176,14 @@ function onTouchMove(evt) {
         const hypotPrev = Math.sqrt(Math.pow((touch1Xprev - touch2Xprev), 2) + Math.pow((touch1Yprev - touch2Yprev), 2));
 
         var zoomAmount = hypot / hypotPrev;
+
+        // Limit the zoom amount
+        if (zoomAmount > MAX_SCALE) {
+            zoomAmount = MAX_SCALE;
+        } else if (zoomAmount < MIN_SCALE) {
+            zoomAmount = MIN_SCALE;
+        }
+
         scale = scale * zoomAmount;
         const scaleAmount = 1 - zoomAmount;
 
