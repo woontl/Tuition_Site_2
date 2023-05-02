@@ -137,17 +137,26 @@ NGINX
                 include /etc/nginx/proxy_params;
                 proxy_redirect off;
         }
+
+        location /socket.io {
+                include /etc/nginx/proxy_params;
+                proxy_http_version 1.1;
+                proxy_buffering off;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection "Upgrade";
+                proxy_pass http://127.0.0.1:8000/socket.io;
+    }
   }
 5) sudo ufw allow http/tcp
 6) sudo ufw delete allow 5000
 7) sudo ufw enable
 8) sudo systemctl restart nginx
-9) gunicorn -w 3 run:app
+9) gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 module:app
 10) sudo apt install supervisor
 11) sudo nano /etc/supervisor/conf.d/flaskblog.conf
   >[program:flaskblog]
     directory=/home/woontl/Tuition_Site_2
-    command=/home/woontl/Tuition_Site_2/venv/bin/gunicorn -w 3 run:app
+    command=/home/woontl/Tuition_Site_2/venv/bin/gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 module:app
     user=woontl
     autostart=true
     autorestart=true
@@ -222,8 +231,7 @@ Enable HTTPS with SSL
 2) sudo certbot --nginx -d mathinthesky.com -d www.mathinthesky.com
 3) sudo ufw allow https
 4) sudo crontab -e
-1
-30 4 1 * * sudo certbot renew --quiet (4.30am every 1st day of month)
+1 30 4 1 * * sudo certbot renew --quiet (4.30am every 1st day of month)
 9) sudo systemctl restart nginx
 
 How to delete directory and all files

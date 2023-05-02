@@ -1,419 +1,522 @@
-// ------------- Initialize -------------
-const socket = io();
-let canvas1 = document.getElementById('canvas1');
-let canvas2 = document.getElementById('canvas2');
-let canvas3 = document.getElementById('canvas3');
-let ctx1 = canvas1.getContext('2d');
-let ctx2 = canvas2.getContext('2d');
-let ctx3 = canvas3.getContext('2d');
-const canvasMap = {
-  1: canvas1,
-  2: canvas2,
-  3: canvas3
-};
-const ctxMap = {
-  1: ctx1,
-  2: ctx2,
-  3: ctx3
-};
-let strokes1 = [];
-let strokes2 = [];
-let strokes3 = [];
-let strokes1_length = 0;
-let strokes2_length = 0;
-let strokes3_length = 0;
-let undone_strokes1 = []
-let undone_strokes2 = []
-let undone_strokes3 = []
-let redone_strokes1 = []
-let redone_strokes2 = []
-let redone_strokes3 = []
-const strokesMap = {
-  1: strokes1,
-  2: strokes2,
-  3: strokes3
-};
-const strokesMap_length = {
-  1: strokes1_length,
-  2: strokes2_length,
-  3: strokes3_length
-};
-const undone_strokesMap = {
-  1: undone_strokes1,
-  2: undone_strokes2,
-  3: undone_strokes3
-};
-const redone_strokesMap = {
-  1: redone_strokes1,
-  2: redone_strokes2,
-  3: redone_strokes3
-};
+// Adapted from https://github.com/TomHumphries/InfiniteCanvasWhiteboard
+var socket = io();
+var canvas = document.getElementById("whiteboard");
+document.oncontextmenu = function () {
+    return false;
+}
+var context = canvas.getContext("2d");
 
+var canvasHistory = [];
+var strokeHistory = [];
+var socketElements = [];
+var actionHistory = [];
+var backgroundColour = '#fff'
 
-var currentColor = 'black'
-var tempColor = 'black'
-var currentThickness = 2
-var tempThickness = 2
-let currentStroke = null;
-
-
-// ------------- Page/Canvas Change Function -------------
-var pgnum = 1;
-let page_num = document.getElementById("canvas-pg-num");
-let prevBtn = document.getElementById("canvas-prev-btn");
-let nextBtn = document.getElementById("canvas-next-btn");
-prevBtn.addEventListener("click", function() { 
-  if (pgnum==1){
-    pgnum+=2
-    page_num.textContent = 'Page ' + pgnum +'/3'
-  } else if (pgnum==2){
-    pgnum-=1
-    page_num.textContent = 'Page ' + pgnum +'/3'
-  } else if (pgnum==3){
-    pgnum-=1
-    page_num.textContent = 'Page ' + pgnum +'/3'
-  };
-  nextBtn.style.opacity = '0.5';
-  nextBtn.style.pointerEvents = 'none';
-  prevBtn.style.opacity = '0.5';
-  prevBtn.style.pointerEvents = 'none';
-  setTimeout(function() {
-    nextBtn.style.opacity = '1';
-    nextBtn.style.pointerEvents = 'auto';
-    prevBtn.style.opacity = '1';
-    prevBtn.style.pointerEvents = 'auto';
-  }, 500);
-});
-nextBtn.addEventListener("click", function() {
-  if (pgnum==1){
-    pgnum+=1
-    page_num.textContent = 'Page ' + pgnum +'/3'
-  } else if (pgnum==2){
-    pgnum+=1
-    page_num.textContent = 'Page ' + pgnum +'/3'
-  } else if (pgnum==3){
-    pgnum-=2
-    page_num.textContent = 'Page ' + pgnum +'/3'
-  };
-  nextBtn.style.opacity = '0.5';
-  nextBtn.style.pointerEvents = 'none';
-  prevBtn.style.opacity = '0.5';
-  prevBtn.style.pointerEvents = 'none';
-  setTimeout(function() {
-    nextBtn.style.opacity = '1';
-    nextBtn.style.pointerEvents = 'auto';
-    prevBtn.style.opacity = '1';
-    prevBtn.style.pointerEvents = 'auto';
-  }, 500);
+// Fill Window Width and Height
+redraw(scale);
+window.addEventListener("resize", (event) => {
+    redraw(scale);
 });
 
-// ------------- Eraser Function -------------
-let eraserBtn = document.getElementById("canvas-eraser-btn");
-var eraser_state = false
-eraserBtn.addEventListener("click", function(){
-  if (eraser_state == false){
-    eraser_state = true
-    tempThickness = currentThickness
-    tempColor = currentColor
-    currentThickness = 60;
-    eraserBtn.style.backgroundColor = "#2196F3"
-    eraserBtn.style.border = "1px solid #2196F3"
-  } else {
-    eraser_state = false
-    currentThickness = tempThickness
-    currentColor = tempColor
-    eraserBtn.style.backgroundColor = "black"
-    eraserBtn.style.border = "1px solid black"
-  }
-})
+var drawing = false;
+var shiftDown = false;
+var ctrlDown = false;
+var panning = false;
+var rightMouseDown = false;
+let penColour = 'black';
+let penWidth = 2;
+var scale = 1;
+const MIN_SCALE = 1;
+const MAX_SCALE = 5;
 
-// ------------- Color Function -------------
-let colorButtons = document.querySelectorAll("[id^='canvas-color-']");
-colorButtons.forEach(button => {
-  button.addEventListener('click', () => {
-    currentColor = button.dataset.color;
-    currentThickness = tempThickness
-    document.getElementById("toolbar_colorheader").style.backgroundColor=button.dataset.color
-    if (eraser_state == true) {
-      eraser_state = false;
-      eraserBtn.style.backgroundColor = "black"
-      eraserBtn.style.border = "1px solid black"
-    } 
-  });
-});
-
-// ------------- Thickness Function -------------
-let thicknessSlider = document.getElementById("thickness-slider");
-thicknessSlider.onchange = function() {
-  currentThickness = this.value;
-  tempThickness = currentThickness
-  currentColor = document.getElementById("toolbar_colorheader").style.backgroundColor
-  tempColor = currentColor
-  if (eraser_state == true) {
-    eraser_state = false;
-    eraserBtn.style.backgroundColor = "black"
-    eraserBtn.style.border = "1px solid black"
-  } 
-};
-
-// ------------- Whiteboard Resize Function  -------------
-const canvas_parent = document.querySelector("#canvas_parent")
-var scale = 3
-function onResize(pgnum) {
-    canvasMap[pgnum].height = window.innerHeight*1.5*scale;
-    canvasMap[pgnum].width = canvas_parent.offsetWidth*0.99*scale;
-    canvasMap[pgnum].style.width = canvas_parent.offsetWidth*0.99 + 'px';
-    canvasMap[pgnum].style.height = window.innerHeight*1.5 + 'px';
-};
-onResize(1);
-onResize(2);
-onResize(3);
-window.onload = ('resize', function(pgnum){
-  onResize(pgnum)
-  socket.emit('resize-board', pgnum);
-});
-window.addEventListener('resize', function(pgnum){
-  onResize(pgnum)
-  socket.emit('resize-board', pgnum);
-});
+// The scaled width of the screen (ie not the pixels)
+function xUnitsScaled() {
+    return canvas.clientWidth / scale;
+}
+// The scaled height of the screen (ie not the pixels)
+function yUnitsScaled() {
+    return canvas.clientHeight / scale;
+}
 
 // ------------- Undo Function  -------------
 // Disabled since there is nothing to undo at first
 let undoButton = document.getElementById("canvas-undo-btn");
 undoButton.disabled = true;
-undoButton.onclick = function() {
-  let undo_stroke = strokesMap[pgnum].pop();
-  undone_strokesMap[pgnum].push(undo_stroke);
-  if (strokesMap[pgnum].length === strokesMap_length[pgnum]) {
+undoButton.addEventListener("click", () =>{
+    undoLast()
+    if (strokeHistory.length === 0) {
+        undoButton.disabled = true;
+    }
+    }
+);
+
+document.addEventListener('keydown', event => {
+    if (event.key == "Shift") {
+        if (!shiftDown) canvas.style.cursor = 'grab';
+        shiftDown = true;
+    }
+    if (event.key == "Control") ctrlDown = true;
+    if (event.key == "z") {
+        if (ctrlDown) undoLast();
+    }
+})
+document.addEventListener('keyup', event => {
+    if (event.key == "Shift") {
+        canvas.style.cursor = 'crosshair';
+        shiftDown = false;
+    }
+    if (event.key == "Control") ctrlDown = false;
+})
+
+document.addEventListener('wheel', (event) => {
+    if (event.target === canvas) {
+      const deltaY = event.deltaY;
+      const scaleAmount = -deltaY / 500;
+      const newScale = scale * (1 + scaleAmount);
+
+      if (newScale >= MIN_SCALE && newScale <= MAX_SCALE) {
+          scale = newScale;
+  
+          var distX = event.pageX / canvas.clientWidth;
+          var distY = event.pageY / canvas.clientHeight;
+  
+          const unitsZoomedX = xUnitsScaled() * scaleAmount;
+          const unitsZoomedY = yUnitsScaled() * scaleAmount;
+  
+          const unitsAddLeft = unitsZoomedX * distX;
+          const unitsAddTop = unitsZoomedY * distY;
+  
+          offsetX -= unitsAddLeft;
+          offsetY -= unitsAddTop;
+  
+          redraw(scale);
+      }
+    }
+  });
+  
+document.getElementById("whiteboard-reset-zoom-btn").addEventListener("click", () =>{
+    scale = 1;
+    offsetX = 0;
+    offsetY = 0;
+    redraw(scale);
+    }
+);
+
+document.getElementById("open-whiteboard-btn").addEventListener("click", () =>{
+    window.scrollTo(0, 0);
+});
+
+// Mouse Event Handlers
+canvas.addEventListener('mousedown', onMouseDown, false);
+canvas.addEventListener('mouseup', onMouseUp, false);
+canvas.addEventListener('mouseout', onMouseUp, false);
+canvas.addEventListener('mousemove', throttle(onMouseMove, 25), false);
+
+// Touch Event Handlers 
+canvas.addEventListener('touchstart', onTouchStart, { passive: false });
+canvas.addEventListener('touchend', onTouchEnd, { passive: false });
+canvas.addEventListener('touchcancel', onTouchEnd, { passive: false });
+canvas.addEventListener('touchmove', throttle(onTouchMove, 25), { passive: false });
+
+
+function onTouchStart(evt) {
+    if (evt.touches.length == 1) {
+        panning = false;
+        drawing = true;
+
+        lastTouches[0] = evt.touches[0];
+
+    } else if (evt.touches.length >= 2) {
+        panning = true;
+        drawing = false;
+        removeAllDots();
+
+        lastTouches[0] = evt.touches[0];
+        lastTouches[1] = evt.touches[1];
+    }
+}
+function onTouchEnd(e) {
+    if (drawing) {
+        emitStroke();
+        strokeHistory.push({ vectors: currentStroke, colour: penColour, thickness: penWidth})
+        actionHistory.push(currentStroke)
+        currentStroke = [];
+        redraw(scale);
+        undoButton.disabled = false;
+    }
+    panning = false;
+    drawing = false;
+
+}
+function onTouchMove(evt) {
+
+    const touch1X = evt.touches[0].pageX;
+    const touch1Y = evt.touches[0].pageY;
+    const touch1Xprev = lastTouches[0].pageX;
+    const touch1Yprev = lastTouches[0].pageY;
+
+    if (panning) {
+        // if panning there is more than 1 touch.
+        // get the mid point of the first 2 touches
+
+        const touch2X = evt.touches[1].pageX;
+        const touch2Y = evt.touches[1].pageY;
+        const midX = (touch1X + touch2X) / 2;
+        const midY = (touch1Y + touch2Y) / 2;
+        const hypot = Math.sqrt(Math.pow((touch1X - touch2X), 2) + Math.pow((touch1Y - touch2Y), 2));
+
+        const touch2Xprev = lastTouches[1].pageX;
+        const touch2Yprev = lastTouches[1].pageY;
+        const midXprev = (touch1Xprev + touch2Xprev) / 2;
+        const midYprev = (touch1Yprev + touch2Yprev) / 2;
+        const hypotPrev = Math.sqrt(Math.pow((touch1Xprev - touch2Xprev), 2) + Math.pow((touch1Yprev - touch2Yprev), 2));
+
+        var zoomAmount = hypot / hypotPrev;
+        scale = scale * zoomAmount;
+        const scaleAmount = 1 - zoomAmount;
+
+        // calc how many pixels the touches have moved in the x and y direction
+        const panX = midX - midXprev;
+        const panY = midY - midYprev;
+        // scale this movement based on the zoom level
+        offsetX += (panX / scale);
+        offsetY += (panY / scale);
+
+        // Get the relative position of the middle of the zoom.
+        // 0, 0 would be top left. 
+        // 0, 1 would be top right etc.
+        var zoomRatioX = midX / canvas.clientWidth;
+        var zoomRatioY = midY / canvas.clientHeight;
+
+        const unitsZoomedX = xUnitsScaled() * scaleAmount;
+        const unitsZoomedY = yUnitsScaled() * scaleAmount;
+
+        const unitsAddLeft = unitsZoomedX * zoomRatioX;
+        const unitsAddTop = unitsZoomedY * zoomRatioY;
+
+        offsetX += unitsAddLeft;
+        offsetY += unitsAddTop;
+
+
+        redraw(scale)
+    } else if (drawing) {
+        if (currentStroke.length == 0) {
+            // need to add the first touch
+            addToStroke(toTrueX(touch1Xprev), toTrueY(touch1Yprev), penColour, penWidth);
+        }
+        drawLine(touch1Xprev, touch1Yprev, touch1X, touch1Y, penColour, penWidth);
+        addToStroke(toTrueX(touch1X), toTrueY(touch1Y), penColour, penWidth);
+    }
+
+    lastTouches[0] = evt.touches[0];
+    lastTouches[1] = evt.touches[1];
+}
+
+function onMouseDown(evt) {
+
+    if (evt.button == 2) {
+        rightMouseDown = true;
+    } else {
+        rightMouseDown = false;
+    }
+
+    cursorX = evt.pageX;
+    cursorY = evt.pageY;
+    cursorXprev = evt.pageX;
+    cursorYprev = evt.pageY;
+
+    if (shiftDown || rightMouseDown) {
+        canvas.style.cursor = 'grabbing';
+        drawing = false;
+        panning = true;
+        removeAllDots();
+    } else {
+        panning = false;
+        drawing = true;
+        addToStroke((cursorX / scale) - offsetX, (cursorY / scale) - offsetY, penColour, penWidth);
+    }
+}
+
+function removeAllDots() {
+    const dots = document.getElementsByClassName('dot');
+    for (let i = 0; i < dots.length; i++) {
+        const dot = dots[i];
+        dot.remove();
+    }
+}
+
+var cursorX = null;
+var cursorY = null;
+var cursorXprev = null;
+var cursorYprev = null;
+const lastTouches = [null, null];
+var offsetX = 0;
+var offsetY = 0;
+var currentStroke = [];
+function onMouseMove(evt) {
+    cursorX = evt.pageX;
+    cursorY = evt.pageY;
+
+    if (panning) {
+        offsetX += (cursorX - cursorXprev) / scale;
+        offsetY += (cursorY - cursorYprev) / scale;
+        redraw(scale)
+    } else if (drawing) {
+        addToStroke(toTrueX(cursorX), toTrueY(cursorY), penColour, penWidth);
+        drawLine(cursorXprev, cursorYprev, cursorX, cursorY, penColour, penWidth);
+    }
+    const trueX = (cursorX / scale) - offsetX;
+    const trueY = (cursorY / scale) - offsetY;
+
+    cursorXprev = cursorX;
+    cursorYprev = cursorY;
+}
+
+function onMouseUp(e) {
+    if (drawing) {
+        emitStroke();
+        strokeHistory.push({ vectors: currentStroke, colour: penColour, thickness: penWidth})
+        actionHistory.push(currentStroke)
+        currentStroke = [];
+        redraw(scale);
+        undoButton.disabled = false;
+    }
+    canvas.style.cursor = 'crosshair';
+    rightMouseDown = false;
+    panning = false;
+    drawing = false;
+}
+function undoLast() {
+    if (actionHistory.length == 0) return;
+    const toUndo = actionHistory.pop();
+    removeFromHistory(toUndo);
+    socket.emit('delete', {
+        data: toUndo
+    })
+}
+function removeFromHistory(stroke) {
+    for (let i = strokeHistory.length - 1; i >= 0; i--) {
+        const historyElement = strokeHistory[i];
+        if (strokesEqual(historyElement.vectors, stroke)) {
+            strokeHistory.splice(i, 1);
+            redraw(scale);
+            return;
+        }
+    }
+}
+
+function strokesEqual(strokeAVectors, strokeBVectors) {
+    if (strokeAVectors.length != strokeBVectors.length) return false;
+    for (let i = 0; i < strokeAVectors.length; i++) {
+        const strokeAVector = strokeAVectors[i];
+        const strokeBVector = strokeBVectors[i];
+        if (!vectorsEqual(strokeAVector, strokeBVector)) return false;
+    }
+    return true;
+}
+
+function vectorsEqual(vectorA, vectorB) {
+    if (vectorA.length != vectorB.length) return;
+    for (let i = 0; i < vectorA.length; i++) {
+        const elementA = vectorA[i];
+        const elementB = vectorB[i];
+        if (elementA != elementB) return false
+    }
+    return true;
+}
+
+// ------------- Clear Function -------------
+let clearBtn = document.getElementById("whiteboard-clear-btn");
+clearBtn.addEventListener('click', () => {
+    clearWhiteboard()
+    socket.emit('clear')
+})
+function clearWhiteboard (){
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    canvasHistory = [];
+    strokeHistory = [];
+    actionHistory = [];
     undoButton.disabled = true;
-  }
-  if (undone_strokesMap[pgnum].length !== 0) {
-    redoButton.disabled = false;
-  }
-  socket.emit('stroke-delete', pgnum);
-};
-
-// ------------- Redo Function  -------------
-// Disabled since there is nothing to redo at first
-let redoButton = document.getElementById("canvas-redo-btn");
-redoButton.disabled = true;
-redoButton.onclick = function() {
-  let redo_stroke = undone_strokesMap[pgnum].pop();
-  redone_strokesMap[pgnum].push(redo_stroke);
-  strokesMap[pgnum].push(redo_stroke)
-  if (undone_strokesMap[pgnum].length === 0) {
-      redoButton.disabled = true;
-  }
-  if (strokesMap[pgnum].length !== strokesMap_length[pgnum]) {
-    undoButton.disabled = false;
-}
-  socket.emit('stroke-add', redo_stroke, pgnum);
-};
-
-// ------------- Clear Function  -------------
-let clearButton = document.getElementById("canvas-clear-btn");
-clearButton.onclick = function() {
-  clearBoard(pgnum);
-  strokesMap[pgnum].length = 0 // clear list
-  strokesMap_length[pgnum] = 0
-  undone_strokesMap[pgnum] = []
-  redone_strokesMap[pgnum] = []
-  undoButton.disabled = true
-  redoButton.disabled = true
-  socket.emit('clear-board', pgnum);
-};
-function clearBoard(pgnum) {
-  ctxMap[pgnum].clearRect(0, 0, canvasMap[pgnum].width, canvasMap[pgnum].height);
-}
-socket.on('clear-board', function(pgnum){
-  clearBoard(pgnum)
-});
-
-// ------------- Draw Function  -------------
-function drawNewPoint(e) {
-    if (currentStroke === null)
-        return;
-
-    // cross-browser canvas coordinates
-    let x = (e.offsetX || e.layerX - canvas1.offsetLeft)*scale;
-    let y = (e.offsetY || e.layerY - canvas1.offsetTop)*scale;
-
-    currentStroke.points.push({x: x, y: y});
-    drawOnCanvas(currentStroke.points, currentStroke.color, currentStroke.thickness, pgnum);
-    socket.emit('stroke-update', {x: x, y: y}, pgnum)
 }
 
-function drawOnCanvas(plots, color, thickness, pgnum_t) {
-    ctxMap[pgnum_t].beginPath();
-    ctxMap[pgnum_t].moveTo(plots[0].x, plots[0].y);
-
-    for(let i = 1; i < plots.length; i++) {
-      ctxMap[pgnum_t].lineTo(plots[i].x, plots[i].y);
-    }
-
-    ctxMap[pgnum_t].lineWidth = thickness;
-    ctxMap[pgnum_t].strokeStyle = color;
-    ctxMap[pgnum_t].stroke();
-}
-
-socket.on('draw-new-stroke', function(data) {
-  drawOnCanvas(data.points, data.color, data.thickness, data.pgnum);
-});
-
-socket.on('draw-strokes', function(data) {
-  for (let i = 0; i < data.length; i++) {
-      let stroke = data[i];
-      drawOnCanvas(stroke.points, stroke.color, stroke.thickness, pgnum);
-  }
-});
-
-function startDraw(e) {
+// ------------- Color Function -------------
+let colorButtons = document.querySelectorAll("[id^='canvas-color-']");
+colorButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    penColour = button.dataset.color;
+    document.getElementById("toolbar_colorheader").style.backgroundColor=button.dataset.color
     if (eraser_state == true) {
-        currentColor = '#FFFFFF';
+        eraser_state = false;
+        eraserBtn.style.backgroundColor = "black"
+        eraserBtn.style.border = "1px solid black"
+        penWidth = 2
+      } 
+  });
+});
+
+// ------------- Eraser Function -------------
+let eraserBtn = document.getElementById("canvas-eraser-btn");
+var eraser_state = false
+eraserBtn.addEventListener('click', () => {
+    if (eraser_state == false){
+        eraser_state = true
+        penWidth = 50
+        tempColor = penColour
+        penColour = 'white';
+        eraserBtn.style.backgroundColor = "#2196F3"
+        eraserBtn.style.border = "1px solid #2196F3"
+    } else {
+        eraser_state = false
+        penWidth = 2
+        penColour = tempColor
+        eraserBtn.style.backgroundColor = "black"
+        eraserBtn.style.border = "1px solid black"
     }
+});
 
-    // Hack to draw even if cursor doesn't move
-    let x = (e.offsetX || e.layerX - canvas1.offsetLeft)*scale;
-    let y = (e.offsetY || e.layerY - canvas1.offsetTop)*scale;
+function drawLine(x0, y0, x1, y1, colour, thickness) {
+    context.beginPath();
+    context.moveTo(x0, y0);
+    context.lineTo(x1, y1);
+    context.strokeStyle = colour;
+    context.lineWidth = thickness;
+    context.stroke();
+}
 
-    currentStroke = {
-        thickness: currentThickness,
-        color: currentColor,
-        points: [{x: x-1, y: y-1}],
+function addToStroke(x0, y0, colour, thickness) {
+    currentStroke.push([x0, y0]);
+}
+function drawStroke({ vectors, colour, thickness }) {
+    context.beginPath();
+    context.lineJoin = "round";
+    context.lineCap = "round";
+    if (!vectors[0]) return;
+    context.moveTo(toScreenX(vectors[0][0]), toScreenY(vectors[0][1]));
+    for (let i = 0; i < vectors.length; i++) {
+        let x0 = toScreenX(vectors[i][0])
+        let y0 = toScreenY(vectors[i][1])
+        context.lineTo(x0, y0);
+    }
+    context.strokeStyle = colour;
+    context.lineWidth = thickness;
+    context.stroke();
+
+}
+function emitStroke() {
+    socket.emit('stroke', {
+        data: { vectors: currentStroke, colour: penColour, thickness: penWidth }
+    });
+}
+function emitStrokes(strokes) {
+    socket.emit('strokes', {
+        data: strokes
+    });
+}
+
+function toScreenX(xTrue) {
+    return (xTrue + offsetX) * scale
+}
+function toScreenY(yTrue) {
+    return (yTrue + offsetY) * scale
+}
+function toTrueX(xScreen) {
+    return (xScreen / scale) - offsetX
+}
+function toTrueY(yScreen) {
+    return (yScreen / scale) - offsetY
+}
+
+// socket.on('drawing', onDrawingEvent);
+socket.on('stroke', onStrokeEvent);
+socket.on('strokes', onStrokesEvent);
+socket.on('delete', onUndoStrokeEvent);
+socket.on('disconnect', onDisconnect);
+socket.on('clear', clearWhiteboard);
+socket.on('save', saveURL);
+
+function onUndoStrokeEvent(data) {
+    removeFromHistory(data.data);
+}
+function onStrokeEvent(data) {
+    strokeHistory.push(data.data);
+    drawStroke(data.data);
+}
+function onStrokesEvent(data) {
+    strokeHistory = [...data.data, ...strokeHistory];
+    redraw(scale);
+}
+
+// another user drawing
+function onDrawingEvent(data) {
+    canvasHistory.push({ x0: data.x0, y0: data.y0, x1: data.x1, y1: data.y1, colour: data.colour, thickness: data.thickness });
+    drawLine((data.x0 + offsetX) * scale, (data.y0 + offsetY) * scale, (data.x1 + offsetX) * scale, (data.y1 + offsetY) * scale, data.colour, data.thickness);
+}
+function onDisconnect(data) {
+    const dot = document.getElementById(data);
+    if (!dot) return;
+    dot.remove();
+}
+function setDocumentTitle(colour) {
+    if (colour == lightBackgroundColour) {
+        document.title = 'Infiniboards';
+    } else {
+        document.title = 'Infiniboards';
+    }
+}
+
+function createDot(socketId) {
+    const dot = document.createElement('div')
+    dot.className = "dot";
+    dot.id = socketId;
+    dot.style.position = 'fixed';
+    document.body.appendChild(dot);
+    return dot;
+}
+function onHistoryEvent(drawHistory) {
+    strokeHistory = drawHistory.history;
+    backgroundColour = drawHistory.backgroundColour;
+    redraw(scale);
+}
+function redraw(scale = 1) {
+    canvas.width = document.body.clientWidth; //document.width is obsolete
+    canvas.height = document.body.clientHeight; //document.height is obsolete
+    // Set Background Colour
+    context.fillStyle = backgroundColour;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    strokeHistory.forEach(data => {
+        drawStroke({ vectors: data.vectors, colour: data.colour, thickness: data.thickness*scale })
+    });
+}
+
+// limit the number of events per second
+function throttle(callback, delay) {
+    var previousCall = new Date().getTime();
+    return function () {
+        var time = new Date().getTime();
+
+        if ((time - previousCall) >= delay) {
+            previousCall = time;
+            callback.apply(null, arguments);
+        }
     };
-
-    socket.emit('stroke-start', currentStroke, pgnum);
-
-    drawNewPoint(e);
 }
 
-function endDraw() {
-  strokesMap[pgnum].push(currentStroke);
-  currentStroke = null;
-  undoButton.disabled = false;
-  undone_strokesMap[pgnum] = []
-  redone_strokesMap[pgnum] = []
-  redoButton.disabled = true
+// https://stackoverflow.com/a/30832210/10159640 Saving strokes as JSON
+var submitBtn = document.getElementById("ans");
+submitBtn.addEventListener("click", saveURL)
+function saveURL() {
+    let data = JSON.stringify(strokeHistory);
+    document.getElementById('workings').value = data
+    socket.emit('save', data)
 }
 
-// ------------- Mouse Support  -------------
-canvas1.addEventListener('mousedown', startDraw, false);
-canvas1.addEventListener('mousemove', drawNewPoint, false);
-canvas1.addEventListener('mouseup', endDraw, false);
-canvas2.addEventListener('mousedown', startDraw, false);
-canvas2.addEventListener('mousemove', drawNewPoint, false);
-canvas2.addEventListener('mouseup', endDraw, false);
-canvas3.addEventListener('mousedown', startDraw, false);
-canvas3.addEventListener('mousemove', drawNewPoint, false);
-canvas3.addEventListener('mouseup', endDraw, false);
-
-// ------------- Touch Support  -------------
-canvas1.addEventListener("touchmove", function(e) {
-  e.preventDefault()
-  var touch = e.touches[0];
-  var me = new MouseEvent("mousemove", {
-    clientX: touch.clientX,
-    clientY: touch.clientY
-  });
-  canvas1.dispatchEvent(me);
-}, false);
-canvas2.addEventListener("touchmove", function(e) {
-  e.preventDefault()
-  var touch = e.touches[0];
-  var me = new MouseEvent("mousemove", {
-    clientX: touch.clientX,
-    clientY: touch.clientY
-  });
-  canvas2.dispatchEvent(me);
-}, false);
-canvas3.addEventListener("touchmove", function(e) {
-  e.preventDefault()
-  var touch = e.touches[0];
-  var me = new MouseEvent("mousemove", {
-    clientX: touch.clientX,
-    clientY: touch.clientY
-  });
-  canvas3.dispatchEvent(me);
-}, false);
-canvas1.addEventListener("touchstart", function(e) {
-  e.preventDefault()
-  mousePos = getTouchPos(canvas1, e);
-  var touch = e.touches[0];
-  var me = new MouseEvent("mousedown", {
-    clientX: touch.clientX,
-    clientY: touch.clientY
-  });
-  canvas1.dispatchEvent(me);
-}, false);
-canvas2.addEventListener("touchstart", function(e) {
-  e.preventDefault()
-  mousePos = getTouchPos(canvas2, e);
-  var touch = e.touches[0];
-  var me = new MouseEvent("mousedown", {
-    clientX: touch.clientX,
-    clientY: touch.clientY
-  });
-  canvas2.dispatchEvent(me);
-}, false);
-canvas3.addEventListener("touchstart", function(e) {
-  e.preventDefault()
-  mousePos = getTouchPos(canvas3, e);
-  var touch = e.touches[0];
-  var me = new MouseEvent("mousedown", {
-    clientX: touch.clientX,
-    clientY: touch.clientY
-  });
-  canvas3.dispatchEvent(me);
-}, false);
-canvas1.addEventListener("touchend", function(e) {
-  e.preventDefault()
-  var me = new MouseEvent("mouseup", {});
-  canvas1.dispatchEvent(me);
-}, false);
-canvas2.addEventListener("touchend", function(e) {
-  e.preventDefault()
-  var me = new MouseEvent("mouseup", {});
-  canvas2.dispatchEvent(me);
-}, false);
-canvas3.addEventListener("touchend", function(e) {
-  e.preventDefault()
-  var me = new MouseEvent("mouseup", {});
-  canvas3.dispatchEvent(me);
-}, false);
-
-function getTouchPos(canvasDom, touchEvent) {
-  var rect = canvasDom.getBoundingClientRect();
-  return {
-    x: (touchEvent.touches[0].clientX - rect.left)*scale,
-    y: (touchEvent.touches[0].clientY - rect.top)*scale
-  }
+// load image
+function load() {   
+    data = JSON.parse(document.getElementById('workings').value)
+    onStrokesEvent({data:data});
+    emitStrokes(data);
 }
-
-// ------------- Load Canvas with Saved Function  -------------
-socket.on('load-strokes1', function(data) {
-  for (let i = 0; i < data.length; i++) {
-      let stroke = data[i];
-      drawOnCanvas(stroke.points, stroke.color, stroke.thickness, 1);
-      strokes1.push(stroke)
-  }
-  strokesMap_length[1] = strokes1.length
-});
-socket.on('load-strokes2', function(data) {
-  for (let i = 0; i < data.length; i++) {
-      let stroke = data[i];
-      drawOnCanvas(stroke.points, stroke.color, stroke.thickness, 2);
-      strokes2.push(stroke)
-  }
-  strokesMap_length[2] = strokes2.length
-});
-socket.on('load-strokes3', function(data) {
-  for (let i = 0; i < data.length; i++) {
-      let stroke = data[i];
-      drawOnCanvas(stroke.points, stroke.color, stroke.thickness, 3);
-      strokes3.push(stroke)
-  }
-  strokesMap_length[3] = strokes3.length
-});
+window.addEventListener('load', load)
 
 // ------------- Toolbar Drag Function -------------
 interact('.draggable')
@@ -422,7 +525,7 @@ interact('.draggable')
   inertia: {
     resistance: 15
   },
-  ignoreFrom: '#toolbar_colorheader, #toolbar_fontheader, #canvas-eraser-btn, #canvas-redo-btn, #canvas-undo-btn , #toolbar_color_collapse, #toolbar_font_collapse',
+  ignoreFrom: '#toolbar_colorheader, #toolbar_fontheader, #canvas-eraser-btn, #canvas-undo-btn , #toolbar_color_collapse, #toolbar_font_collapse',
   // keep the element within the area of it's parent
   modifiers: [
     interact.modifiers.restrictRect({
@@ -451,15 +554,15 @@ interact('.draggable')
   }
 })
 function dragMoveListener (event) {
-var target = event.target
-// keep the dragged position in the data-x/data-y attributes
-var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx
-var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy
-// translate the element
-target.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
-// update the posiion attributes
-target.setAttribute('data-x', x)
-target.setAttribute('data-y', y)
+    var target = event.target
+    // keep the dragged position in the data-x/data-y attributes
+    var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx
+    var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy
+    // translate the element
+    target.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
+    // update the posiion attributes
+    target.setAttribute('data-x', x)
+    target.setAttribute('data-y', y)
 }
 // this function is used later in the resizing and gesture demos
 window.dragMoveListener = dragMoveListener

@@ -26,7 +26,9 @@ Flask-SocketIO==5.3.2
 Flask-SQLAlchemy==2.5.1
 Flask-WTF==1.0.1
 fonttools==4.29.1
-greenlet==1.1.2
+gevent==22.10.2
+gevent-websocket==0.10.1
+greenlet==2.0.2
 idna==3.3
 iniconfig==1.1.1
 itsdangerous==2.0.1
@@ -70,3 +72,5 @@ virtualenv==20.16.2
 virtualenv-clone==0.5.7
 Werkzeug==2.1.2
 WTForms==3.0.1
+zope.event==4.6
+zope.interface==6.0

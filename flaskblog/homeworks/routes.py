@@ -470,13 +470,6 @@ def new_question(homework_id, grade="ALL",tags="ALL",difficulty="ALL"):
         return redirect(url_for('homeworks.new_question',homework_id=homework.id, grade=form.grade.data, tags=form.tags.data, difficulty = form.difficulty.data)) #redirect back to homework page after updating
     return render_template('new_question.html', images=images, homework_id=homework_id, title='New Question', form=form, legend = "New Question")
 
-
-strokes1 = defaultdict(list)
-strokes2 = defaultdict(list)
-strokes3 = defaultdict(list)
-
-strokes_lock = Lock()
-
 @homeworks.route("/homework/<int:homework_id>/<int:question_id>/solve", methods=['GET', 'POST']) #route based on homework id
 @login_required
 def solve_question(homework_id, question_id):
@@ -489,42 +482,12 @@ def solve_question(homework_id, question_id):
     check_ans = MQ_formatter(question.qn_answer).split(';')
     checked = question.checked.split(';')
     if request.method == 'GET':
-        session['data1'] = working.workings
-        session['data2'] = working.workings2
-        session['data3'] = working.workings3
+        form.workings.data = (working.workings)
+        session['data'] = working.workings
         final_ans = working.final_ans.split(';')
         right_wrong = working.right_wrong.split(';')
     elif request.method == 'POST':
         working = Working.query.filter(Working.homework_id==homework_id, Working.question_id==question_id).first()
-        # if working is None:
-        #     final_ans = MQ_formatter(request.form['action'])                
-        #     point = []
-        #     for i,j,k in zip((final_ans.split(';')),(check_ans),checked):
-        #         if k == '1':
-        #             point.append(0)
-        #         elif i == j:
-        #             point.append(0)
-        #         else:
-        #             point.append(1)
-        #     right_wrong = ';'.join(map(str,point))
-        #     final_ans = (request.form['action'])
-        #     working = Working(workings=json.dumps(strokes1[session['socketio_code']]), 
-        #                     workings2=json.dumps(strokes2[session['socketio_code']]), 
-        #                     workings3=json.dumps(strokes3[session['socketio_code']]), 
-        #                     final_ans=final_ans, homework_id=homework_id, question_id=question_id, 
-        #                     point=sum(point),right_wrong=right_wrong)
-        #     date_now = datetime.datetime.now()
-        #     activity = Activity(description=question.title+ " has been attempted in "+homework.title+"!", student_id = homework.student_id, 
-        #                         author=current_user, date_posted = date_now)
-        #     db.session.add(activity)
-        #     db.session.add(working)
-        #     db.session.commit()
-        #     if sum(point) != 0:
-        #         flash('Your answer is wrong!', 'danger')
-        #         return redirect(url_for('homeworks.solve_question', homework_id=homework.id, question_id=question.id))
-        #     else:
-        #         flash('Your answer is correct!', 'success')
-        #         return redirect(url_for('homeworks.homework', homework_id=homework.id))
         final_ans = MQ_formatter(request.form['action'])
         point = []
         for i,j,k in zip((final_ans.split(';')),(check_ans),checked):
@@ -535,9 +498,7 @@ def solve_question(homework_id, question_id):
             else:
                 point.append(1)
         right_wrong = ';'.join(map(str,point))
-        working.workings = json.dumps(strokes1[session['socketio_code']])
-        working.workings2 = json.dumps(strokes2[session['socketio_code']])
-        working.workings3 = json.dumps(strokes3[session['socketio_code']])
+        working.workings = form.workings.data
         final_ans = (request.form['action'])
         working.final_ans = final_ans
         working.point = sum(point)
@@ -556,165 +517,35 @@ def solve_question(homework_id, question_id):
     return render_template('working.html', title='Solve Question', form=form, legend = "Solve Question", question=question, ans=correct_ans, 
                            final_ans=final_ans, right_wrong=right_wrong, checked=checked, check_ans=check_ans, homework_id=homework_id, question_id=question_id)
 
-def auto_save_canvas():
+@socketio.on('save')
+def auto_save_canvas(data):
     match = re.match(r'(\d+)/(\d+)', session['socketio_code'])
     if match:
         homework_id = int(match.group(1))
         question_id = int(match.group(2))
     working = Working.query.filter(Working.homework_id==homework_id, Working.question_id==question_id).first()
-    # if working is None:
-    #     working = Working(workings=json.dumps(strokes1[session['socketio_code']]), 
-    #                     workings2=json.dumps(strokes2[session['socketio_code']]), 
-    #                     workings3=json.dumps(strokes3[session['socketio_code']]), 
-    #                     final_ans='', homework_id=homework_id, question_id=question_id, 
-    #                     point='',right_wrong='')
-    #     db.session.add(working)
-    # else:
-    working.workings = json.dumps(strokes1[session['socketio_code']])
-    working.workings2 = json.dumps(strokes2[session['socketio_code']])
-    working.workings3 = json.dumps(strokes3[session['socketio_code']])
+    working.workings = data
     db.session.commit()
 
 @socketio.on('connect')
 def socket_connect():
     join_room(session['socketio_code'])
-    global strokes1, strokes2, strokes3
-    count = 1
-    print(session['data1'])
-    print(123)
-    for data in [session['data1'],session['data2'],session['data3']]:
-        data_list = json.loads(data)
-        tt = defaultdict(list)
-        for item in data_list:
-            tt['temp'].append(item)
-        all_strokes = []
-        for stroke_list in tt.values():
-            all_strokes.extend(stroke_list)
-        if count == 1:
-            strokes1[session['socketio_code']] = all_strokes
-            emit('load-strokes1', all_strokes)
-        elif count == 2:
-            strokes2[session['socketio_code']] = all_strokes
-            emit('load-strokes2', all_strokes)
-        elif count == 3:
-            strokes3[session['socketio_code']] = all_strokes
-            emit('load-strokes3', all_strokes)
-        count += 1
 
-def get_all_strokes(pgnum):
-    join_room(session['socketio_code'])
-    """
-    Retrieve from strokes lists strokes in sorted order.
-    :return: list of strokes sorted by time, ascending
-    """
-    global strokes1, strokes2, strokes3
-    all_strokes = []
-    if pgnum == 1:
-        for stroke_list in strokes1[session['socketio_code']]:
-            all_strokes.append(stroke_list)
-    elif pgnum == 2:
-        for stroke_list in strokes2[session['socketio_code']]:
-            all_strokes.append(stroke_list)
-    elif pgnum == 3:
-        for stroke_list in strokes3[session['socketio_code']]:
-            all_strokes.append(stroke_list)
+@socketio.on('stroke')
+def stroke(data):
+    emit('stroke', data, broadcast=True, include_self=False, to=session['socketio_code'])
+    emit('save', broadcast=True, include_self=False, to=session['socketio_code'])
 
-    return all_strokes  
+@socketio.on('strokes')
+def strokes(data):
+    emit('strokes', data, broadcast=True, include_self=False, to=session['socketio_code'])
 
-# Whiteboard handling
-@socketio.on('stroke-start')
-def stroke_start(data, pgnum):
-    global strokes1, strokes2, strokes3
-    with strokes_lock:
-        if pgnum == 1:
-            strokes1[session['socketio_code']].append(data)
-        elif pgnum == 2:
-            strokes2[session['socketio_code']].append(data)
-        elif pgnum == 3:
-            strokes3[session['socketio_code']].append(data)
+@socketio.on('delete')
+def delete(data):
+    emit('delete', data, broadcast=True, include_self=True, to=session['socketio_code'])
+    emit('save', broadcast=True, include_self=False, to=session['socketio_code'])
 
-
-@socketio.on('stroke-update')
-def stroke_update(data, pgnum):
-    join_room(session['socketio_code'])
-    global strokes1, strokes2, strokes3
-
-    with strokes_lock:
-        if pgnum == 1:
-            stroke = strokes1[session['socketio_code']][-1]
-        elif pgnum == 2:
-            stroke = strokes2[session['socketio_code']][-1]
-        elif pgnum == 3:
-            stroke = strokes3[session['socketio_code']][-1]
-
-        stroke['points'].append(data)
-
-        update_stroke = {'thickness': stroke['thickness'],
-                         'color': stroke['color'],
-                         'points': stroke['points'][-2:],
-                         'pgnum': pgnum}
-    emit('draw-new-stroke', update_stroke, broadcast=True, include_self=False, to=session['socketio_code'])
-    auto_save_canvas()
-
-@socketio.on('stroke-delete')
-def stroke_delete(pgnum):
-    join_room(session['socketio_code'])
-    global strokes1, strokes2, strokes3
-
-    with strokes_lock:
-        if pgnum == 1:
-            strokes1[session['socketio_code']].pop()
-        elif pgnum == 2:
-            strokes2[session['socketio_code']].pop()
-        elif pgnum == 3:
-            strokes3[session['socketio_code']].pop()
-
-    emit('clear-board', pgnum, broadcast=True, to=session['socketio_code'])
-    emit('draw-strokes', get_all_strokes(pgnum), broadcast=True, to=session['socketio_code'])
-    auto_save_canvas()
-
-@socketio.on('stroke-add')
-def stroke_add(data, pgnum):
-    join_room(session['socketio_code'])
-    global strokes1, strokes2, strokes3
-
-    with strokes_lock:
-        if pgnum == 1:
-            strokes1[session['socketio_code']].append(data)
-        elif pgnum == 2:
-            strokes2[session['socketio_code']].append(data)
-        elif pgnum == 3:
-            strokes3[session['socketio_code']].append(data)
-
-    emit('clear-board', pgnum, broadcast=True, to=session['socketio_code'])
-    emit('draw-strokes', get_all_strokes(pgnum), broadcast=True, to=session['socketio_code'])
-    auto_save_canvas()
-
-@socketio.on('clear-board')
-def clear_board(pgnum):
-    join_room(session['socketio_code'])
-    global strokes1, strokes2, strokes3
-
-    with strokes_lock:
-        if pgnum == 1:
-            strokes1.clear()
-        elif pgnum == 2:
-            strokes2.clear()
-        elif pgnum == 3:
-            strokes3.clear()
-    emit('clear-board', pgnum, broadcast=True, include_self=False, to=session['socketio_code'])
-    auto_save_canvas()
-
-@socketio.on('resize-board')
-def resize_board(pgnum):
-    join_room(session['socketio_code'])
-    global strokes1, strokes2, strokes3
-    emit('clear-board')
-
-    if pgnum == 1:
-        emit('draw-strokes', get_all_strokes(pgnum))
-    elif pgnum == 2:
-        emit('draw-strokes', get_all_strokes(pgnum))
-    elif pgnum == 3:
-        emit('draw-strokes', get_all_strokes(pgnum))
-    auto_save_canvas()
+@socketio.on('clear')
+def clear():
+    emit('clear', broadcast=True, include_self=False, to=session['socketio_code'])
+    emit('save', broadcast=True, include_self=False, to=session['socketio_code'])
