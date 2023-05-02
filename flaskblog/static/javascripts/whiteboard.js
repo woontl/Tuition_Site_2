@@ -176,15 +176,14 @@ function onTouchMove(evt) {
         const hypotPrev = Math.sqrt(Math.pow((touch1Xprev - touch2Xprev), 2) + Math.pow((touch1Yprev - touch2Yprev), 2));
 
         var zoomAmount = hypot / hypotPrev;
-
-        // Limit the zoom amount
-        if (zoomAmount > MAX_SCALE) {
-            zoomAmount = MAX_SCALE;
-        } else if (zoomAmount < MIN_SCALE) {
-            zoomAmount = MIN_SCALE;
-        }
-
         scale = scale * zoomAmount;
+
+        // Limit the scale amount
+        if (scale > MAX_SCALE) {
+            scale = MAX_SCALE;
+        } else if (scale < MIN_SCALE) {
+            scale = MIN_SCALE;
+        }
         const scaleAmount = 1 - zoomAmount;
 
         // calc how many pixels the touches have moved in the x and y direction
