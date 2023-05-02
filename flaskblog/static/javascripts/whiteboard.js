@@ -176,40 +176,37 @@ function onTouchMove(evt) {
         const hypotPrev = Math.sqrt(Math.pow((touch1Xprev - touch2Xprev), 2) + Math.pow((touch1Yprev - touch2Yprev), 2));
 
         var zoomAmount = hypot / hypotPrev;
-        scale = scale * zoomAmount;
-
-        // Limit the scale amount
-        if (scale > MAX_SCALE) {
-            scale = MAX_SCALE;
-        } else if (scale < MIN_SCALE) {
-            scale = MIN_SCALE;
-        }
+        const newScale = scale * zoomAmount
         const scaleAmount = 1 - zoomAmount;
 
-        // calc how many pixels the touches have moved in the x and y direction
-        const panX = midX - midXprev;
-        const panY = midY - midYprev;
-        // scale this movement based on the zoom level
-        offsetX += (panX / scale);
-        offsetY += (panY / scale);
+        if (newScale >= MIN_SCALE && newScale <= MAX_SCALE) {
+            scale = newScale;
 
-        // Get the relative position of the middle of the zoom.
-        // 0, 0 would be top left. 
-        // 0, 1 would be top right etc.
-        var zoomRatioX = midX / canvas.clientWidth;
-        var zoomRatioY = midY / canvas.clientHeight;
+            // calc how many pixels the touches have moved in the x and y direction
+            const panX = midX - midXprev;
+            const panY = midY - midYprev;
+            // scale this movement based on the zoom level
+            offsetX += (panX / scale);
+            offsetY += (panY / scale);
 
-        const unitsZoomedX = xUnitsScaled() * scaleAmount;
-        const unitsZoomedY = yUnitsScaled() * scaleAmount;
+            // Get the relative position of the middle of the zoom.
+            // 0, 0 would be top left. 
+            // 0, 1 would be top right etc.
+            var zoomRatioX = midX / canvas.clientWidth;
+            var zoomRatioY = midY / canvas.clientHeight;
 
-        const unitsAddLeft = unitsZoomedX * zoomRatioX;
-        const unitsAddTop = unitsZoomedY * zoomRatioY;
+            const unitsZoomedX = xUnitsScaled() * scaleAmount;
+            const unitsZoomedY = yUnitsScaled() * scaleAmount;
 
-        offsetX += unitsAddLeft;
-        offsetY += unitsAddTop;
+            const unitsAddLeft = unitsZoomedX * zoomRatioX;
+            const unitsAddTop = unitsZoomedY * zoomRatioY;
+
+            offsetX += unitsAddLeft;
+            offsetY += unitsAddTop;
 
 
-        redraw(scale)
+            redraw(scale)
+        }
     } else if (drawing) {
         if (currentStroke.length == 0) {
             // need to add the first touch
