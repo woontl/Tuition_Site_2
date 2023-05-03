@@ -3,6 +3,7 @@ import os #to setup env variables on personal com
 load_dotenv()
 
 from flask import Flask
+from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
@@ -10,6 +11,7 @@ from flask_mail import Mail
 from flaskblog.config import Config, Anonymous
 from flask_socketio import SocketIO
 
+session = Session()
 db = SQLAlchemy() #Create DB instance
 bcrypt = Bcrypt()
 login_manager = LoginManager()
@@ -23,7 +25,8 @@ socketio = SocketIO(logger=True, engineio_logger=True)
 def create_app(config_class=Config):
     app = Flask(__name__) #Setting an instance of this flask class. __name__ will be set as __main__when ran. But __name__ will be set as another name if importing another module
     app.config.from_object(Config)
-
+    
+    session.init_app(app)
     socketio.init_app(app, cors_allowed_origins="*", debug=True)
     db.init_app(app)
     bcrypt.init_app(app)

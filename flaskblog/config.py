@@ -21,4 +21,6 @@ class Config:
     MAIL_USERNAME = os.environ.get('EMAIL_USER') #To update to admin gmail and to use env variable
     MAIL_PASSWORD = os.environ.get('EMAIL_PASS')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SESSION_TYPE = 'filesystem'
+    SESSION_PERMANENT = False
     # LOGIN_DISABLED = True #comment out in production
