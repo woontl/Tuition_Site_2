@@ -120,6 +120,7 @@ canvas.addEventListener('touchmove', throttle(onTouchMove, 25), { passive: false
 
 
 function onTouchStart(evt) {
+    evt.preventDefault()
     if (evt.touches.length == 1) {
         panning = false;
         drawing = true;
@@ -137,7 +138,7 @@ function onTouchStart(evt) {
     }
 }
 function onTouchEnd(e) {
-
+    e.preventDefault()
     if (drawing) {
         emitStroke();
         strokeHistory.push({ vectors: currentStroke, colour: penColour, thickness: penWidth})
@@ -151,7 +152,7 @@ function onTouchEnd(e) {
 
 }
 function onTouchMove(evt) {
-
+    evt.preventDefault()
     const touch1X = evt.touches[0].pageX;
     const touch1Y = evt.touches[0].pageY;
     const touch1Xprev = lastTouches[0].pageX;
