@@ -25,7 +25,7 @@ var panning = false;
 var rightMouseDown = false;
 let penColour = 'black';
 let penWidth = 2;
-var scale = 1;
+var scale = 3;
 const MIN_SCALE = 1;
 const MAX_SCALE = 5;
 
@@ -95,7 +95,7 @@ document.addEventListener('wheel', (event) => {
   });
   
 document.getElementById("whiteboard-reset-zoom-btn").addEventListener("click", () =>{
-    scale = 1;
+    scale = 3;
     offsetX = 0;
     offsetY = 0;
     redraw(scale);
@@ -367,7 +367,7 @@ var eraser_state = false
 eraserBtn.addEventListener('click', () => {
     if (eraser_state == false){
         eraser_state = true
-        penWidth = 50
+        penWidth = 20
         tempColor = penColour
         penColour = 'white';
         eraserBtn.style.backgroundColor = "#2196F3"
