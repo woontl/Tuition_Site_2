@@ -484,7 +484,7 @@ function onHistoryEvent(drawHistory) {
     backgroundColour = drawHistory.backgroundColour;
     redraw(scale);
 }
-function redraw(scale = 1) {
+function redraw(scale = 3) {
     canvas.width = document.body.clientWidth; //document.width is obsolete
     canvas.height = document.body.clientHeight; //document.height is obsolete
     // Set Background Colour
