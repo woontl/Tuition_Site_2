@@ -1,6 +1,6 @@
-def test_homework_homework_all_page(test_client):
+def test_homework_my_homework_page(test_client):
 
-    response = test_client.get('/homework_all/ALL')
+    response = test_client.get('/my_homework/ALL')
     assert response.status_code == 200
     assert b"All Homework" in response.data
 

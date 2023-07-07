@@ -49,6 +49,7 @@ class UpdateAccountForm(FlaskForm):
                         Email()]) #Checks if email is legit
     grade = SelectField('Grade', choices=[6,7,8,9,10,11,12,'Admin'])
     picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png','jpeg'])])
+    
     submit = SubmitField('Update')
 
     def validate_username(self, username): #Perform validation checks only if new user/email is different from current user/email
@@ -67,7 +68,7 @@ class RequestResetForm(FlaskForm):
     email = StringField('Email',
                         validators=[DataRequired(), #Must enter email
                         Email()]) #Checks if email is legit
-    submit = SubmitField('Request Password Reset')
+    submit = SubmitField('Send')
     def validate_email(self, email): 
         user = User.query.filter_by(email=email.data).first()
         if user is None:
@@ -79,7 +80,7 @@ class ResetPasswordForm(FlaskForm):
     confirm_password = PasswordField('Confirm Password',
                                     validators = [DataRequired(), #Must enter password
                                     EqualTo('password')]) #Both passwords must be equal
-    submit = SubmitField('Reset Password')
+    submit = SubmitField('Reset')
     
 class UserDateForm(FlaskForm):
     description1 = StringField('Description 1', validators=[DataRequired()]) 

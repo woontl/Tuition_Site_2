@@ -163,3 +163,5 @@ cython_debug/
 /flaskblog/static/profile_pics/
 /flaskblog/static/questionbank/
 /flaskblog/errors/__pycache__
+
+/flask_session

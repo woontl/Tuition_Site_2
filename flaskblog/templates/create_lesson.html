@@ -1,0 +1,45 @@
+{% extends "layout.html" %} <!--inherit from parent html-->
+{% block content %} <!--block content here replaces block content in parent-->
+<form method="POST" action=""novalidate enctype="multipart/form-data"> <!--post form via the route created-->
+    {{ form.hidden_tag() }}
+    <div class="container">
+        <div class="row mx-0">
+            <div class="col-md-12 col-lg-12 col-xl-12">
+                <div class="d-flex align-items-center">
+                    <h2 class="fw-bold my-auto">{{ legend }}</h2>
+                </div>
+                <hr class="black-white">
+                <div class="form-group" style="padding-top: 40px;">
+                    <h5 class="fw-bold">Title</h5>
+                    {% if form.title.errors %}
+                        {{ form.title(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.title.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.title(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group" style="padding-top: 40px;">
+                    <h5 class="fw-bold">Student</h5>
+                    {% if form.student.errors %}
+                        {{ form.student(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.student.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.student(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group" style="padding-top: 40px;">
+                    {{ form.submit(class="btn btn-block btn-primary") }}
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock content %}
