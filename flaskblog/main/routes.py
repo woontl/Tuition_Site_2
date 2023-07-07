@@ -75,6 +75,8 @@ def home():
         id_arr = [homework.id]
     if note == None:
         note = []
+    if lesson == None:
+        lesson = []
     date_now = datetime.datetime.now()
     try:
         homework_due_days = round((homework.deadline - date_now) / timedelta(days=1))
