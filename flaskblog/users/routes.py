@@ -36,7 +36,14 @@ def login():
         return redirect(url_for('main.home'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first() #DB query for email 
+        email_or_username = form.email.data
+
+        # Check if input is a valid email address
+        if '@' in email_or_username:
+            user = User.query.filter_by(email=email_or_username).first()
+        else:
+            user = User.query.filter_by(username=email_or_username).first()
+
         if user and bcrypt.check_password_hash(user.password, form.password.data): #Check for email and password hash
             login_user(user, remember=form.remember.data) #Logins user + remember module
             next_page = request.args.get('next')
