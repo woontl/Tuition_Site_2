@@ -164,4 +164,4 @@ cython_debug/
 /flaskblog/static/questionbank/
 /flaskblog/errors/__pycache__
 
-/flask_session
+/flask_session/*
