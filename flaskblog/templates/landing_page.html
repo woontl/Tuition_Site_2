@@ -1,0 +1,126 @@
+{% extends "layout_prelogin.html" %} 
+{% block content %} 
+<div class="container">
+    <div class="row">
+        <div class="col d-flex align-items-center">
+            <div class="my-auto">
+                <h1 class="display-2 fw-bold">
+                    Elevating Math To Greater Heights
+                </h1>
+                <h5 class="fw-bold mt-3">
+                    Expert Math Tuition Services for Students of All Levels
+                </h5>
+                <div class="row mt-3">
+                    <div class="d-grid col-lg col-md-12 mt-3">
+                        <button type="button" class="btn btn-block btn-primary"><h5 class="fw-bold my-2">SIGN UP</h5></button>
+                    </div>
+                    <div class="d-grid col-lg col-md-12 mt-3">
+                        <a type="button" class="btn btn-block btn-outline-primary" href="{{ url_for('users.login') }}">
+                            <h5 class="fw-bold my-2">LOG IN</h5>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col d-flex align-items-center">
+            <img class="img-fluid my-auto mx-auto" style="width: auto; height: auto;" src="{{ url_for('static', filename='icons/landing-page-books.png') }}">
+        </div>
+    </div>
+    <div class="row" style="padding-top: 60px;">
+        <div class="col">
+            <div class="row">
+                <div class="d-grid col-lg mt-3">
+                    <div class="p-3 subject_offerings text-center">
+                        <h5 class="fw-bold">IBDP</h5>
+                        <small class="d-block my-2">Math AA (SL/HL)</small>
+                        <small class="d-block my-2">Math AI (SL/HL)</small>
+                    </div>
+                </div>
+                <div class="d-grid col-lg mt-3">
+                    <div class="p-3 subject_offerings text-center">
+                        <h5 class="fw-bold">IGCSE</h5>
+                        <small class="d-block my-2">Mathematics</small>
+                        <small class="d-block my-2">Additional Mathematics</small>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="d-grid col-lg mt-3">
+                    <div class="p-3 subject_offerings text-center">
+                        <h5 class="fw-bold">GCE A-Level</h5>
+                        <small class="d-block my-2">Mathematics (H1/H2)</small>
+                    </div>
+                </div>
+                <div class="d-grid col-lg mt-3">
+                    <div class="p-3 subject_offerings text-center">
+                        <h5 class="fw-bold">GCE O-Level</h5>
+                        <small class="d-block my-2">Mathematics</small>
+                        <small class="d-block my-2">Additional Mathematics</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col d-flex align-items-center">
+            <div class="my-auto">
+                <h1 class="display-5 fw-bold">
+                    Our Services
+                </h1>
+                <h5 class="fw-bold mt-3" style="line-height: 1.5">
+                    Math in the Sky offers personalised math tuition services for students of all grade levels, and for both local and international math syllabus.
+                </h5>
+                <div class="row mt-3">
+                    <div class="d-grid col-lg-3">
+                    </div>
+                    <div class="d-grid col">
+                        <button type="button" class="btn btn-block btn-primary"><h5 class="fw-bold my-2">LEARN MORE</h5></button>
+                    </div>
+                    <div class="d-grid col-lg-3">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="padding-top: 60px;">
+        <div class="col d-flex align-items-center">
+            <div class="my-auto">
+                <h1 class="display-5 fw-bold">
+                    Our Approach
+                </h1>
+                <h5 class="fw-bold mt-3" style="line-height: 1.5">
+                    We specialise in building strong math foundations to foster growth, tailoring our services to each student's unique needs and learning style.
+                </h5>
+                <div class="row mt-3">
+                    <div class="d-grid col-lg-3">
+                    </div>
+                    <div class="d-grid col">
+                        <button type="button" class="btn btn-block btn-primary"><h5 class="fw-bold my-2">FIND OUT MORE</h5></button>
+                    </div>
+                    <div class="d-grid col-lg-3">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col d-flex align-items-center">
+            <img class="img-fluid my-auto mx-auto" style="width: auto; height: auto;" src="{{ url_for('static', filename='icons/landing-page-approach.png') }}">
+          </div>          
+    </div>    
+    <div class="row" style="padding-top: 60px;">
+        <div class="col">
+            <div class="p-3 call_to_action text-center">
+                <h3 class="fw-bold mt-3">ARE YOU READY</h3>
+                <h1 class="display-4 fw-bold">Join Our Personalized<br>Tuition Program Now</h1>
+                <div class="row mt-3">
+                    <div class="d-grid col">
+                    </div>
+                    <div class="d-grid col-lg-3 col-md-6">
+                        <button type="button" class="btn btn-block btn-dark"><h5 class="fw-bold my-2">GET STARTED</h5></button>
+                    </div>
+                    <div class="d-grid col">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

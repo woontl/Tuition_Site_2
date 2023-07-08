@@ -1,102 +1,82 @@
 {% extends "layout.html" %} <!--inherit from parent html-->
 {% block content %} <!--block content here replaces block content in parent-->
-  <article class="media content-section">
-    <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + homework.author.image_file) }}">
-    <div class="media-body">
-        <div class="article-metadata">
-          <small class="text-muted">{{ homework.date_posted.strftime('%Y-%m-%d') }}</small>
-              <div>
-                  <h2 class="article-title">{{ homework.title }}</h2>
-                  {% if current_user.account_type == 'Admin' %}
-                    <a class="btn btn-primary btn-sm mt-1 mb-1" href="{{ url_for('homeworks.new_question',homework_id=homework.id, grade='ALL', tags='ALL', difficulty='ALL') }}">Add Question <i class="fa-solid fa-square-plus"></i></a>
-                    <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('homeworks.update_homework',homework_id=homework.id) }}">Update Homework <i class="fa-solid fa-pen-to-square"></i></a>
-                    <button type = "button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteHomework">Delete Homework <i class="fa-solid fa-trash-can"></i></button>
-                  {% endif %}
-              </div>
-              <!--Modal-->
-              <div class="modal fade" id="deleteHomework" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="deleteModalLabel">Delete homework?</h5>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    <div class="modal-footer">
-                        <form action="{{ url_for('homeworks.delete_homework', homework_id=homework.id) }}" method="POST">
-                            <input class="btn btn-danger" type="submit" value="Delete">
-                        </form>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+<div class="container">
+  <div class="row mx-0">
+    <div class="col-md-12 col-lg-12 col-xl-12">
+        <div class="d-flex align-items-center">
+          <h2 class="fw-bold my-auto">{{ homework.title }}</h2>
+          {% if current_user.account_type == 'Admin' %}
+          <a class="btn btn-primary btn-icon ms-3" href="{{ url_for('homeworks.new_question',homework_id=homework.id, grade='ALL', tags='ALL', difficulty='ALL') }}"><i class="bi bi-bookmark-plus align-middle"></i></a>
+          {% endif %}
         </div>
+        <hr class="black-white">
         {% for question in questions.items %} 
-          <div>
+        <div style="padding-top: 20px;">
+          <div class="d-flex">
             <h2 class="article-title">{{ question.title }}
             {% if df[df["question_id"]==question.id]['point'].iloc[0] == 0 %}
-              <span class="badge badge-pill badge-success">Solved</span>
+              <span class="badge text-bg-success text-white ms-3">Solved</span>
             {% else %}
-              <span class="badge badge-pill badge-warning">Unsolved</span>
+              <span class="badge text-bg-warning text-white ms-3">Unsolved</span>
             {% endif %}
             </h2>
           </div>
-          <h5>
-            <span class="badge badge-pill badge-dark">{{ question.grade }}</span>
-            <span class="badge badge-pill badge-secondary">{{ question.tags }}</span>
+          <div class="d-flex my-2">
+            <span class="badge text-white" style="background-color: #7749F8">{{ question.grade }}</span>
+            <span class="badge text-white ms-3" style="background-color: #7749F8">{{ question.tags }}</span>
             {% if question.difficulty=="Easy"%}
-            <span class="badge badge-pill badge-success">{{ question.difficulty }}</span>
+            <span class="badge text-white ms-3" style="background-color: #7749F8">{{ question.difficulty }}</span>
             {% elif question.difficulty=="Moderate"%}
-            <span class="badge badge-pill badge-info">{{ question.difficulty }}</span>
+            <span class="badge text-white ms-3" style="background-color: #7749F8">{{ question.difficulty }}</span>
             {% elif question.difficulty=="Hard"%}
-            <span class="badge badge-pill badge-warning">{{ question.difficulty }}</span>
+            <span class="badge text-white ms-3" style="background-color: #7749F8">{{ question.difficulty }}</span>
             {% elif question.difficulty=="Extreme"%}
-            <span class="badge badge-pill badge-danger">{{ question.difficulty }}</span>
+            <span class="badge text-white ms-3" style="background-color: #7749F8">{{ question.difficulty }}</span>
             {% endif %}
-          </h5>
-          <div class="media">
-            <img class="img-fluid" src="{{ url_for('static', filename='questionbank/' + question.qn_img) }}">
-          </div> 
-          <div class="pt-3">
-            <a class="btn btn-success btn-sm mt-1 mb-1" href="{{ url_for('homeworks.solve_question',homework_id=homework.id, question_id=question.id) }}">Solve Question <i class="fa-solid fa-square-check"></i></a>
-            {% if current_user.account_type == 'Admin' %}
-              <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('homeworks.update_question',homework_id=homework.id, question_id=question.id, grade='ALL', tags='ALL', difficulty='ALL', load='not_loaded') }}">Update Question <i class="fa-solid fa-pen-to-square"></i></a>
-              <button type = "button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteQuestion">Delete Question <i class="fa-solid fa-trash-can"></i></button>
-            {% endif %}  
-          <div>
-          <!--Modal-->
-          <div class="modal fade" id="deleteQuestion" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="deleteModalLabel">Delete question?</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-footer">
-                    <form action="{{ url_for('homeworks.delete_question', homework_id=homework.id, question_id=question.id) }}" method="POST">
-                      <input class="btn btn-danger" type="submit" value="Delete">
-                    </form>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
+          </div>
+          <div class="d-flex">
+            <div class="media" style="width: 100%">
+              <img class="img-fluid" src="{{ url_for('static', filename='questionbank/' + question.qn_img) }}" style="width: 98%; height: auto; min-height: 150px">
+            </div>            
+            <div class="d-flex flex-column justify-content-start">
+              <a class="btn btn-success btn-icon" href="{{ url_for('homeworks.solve_question',homework_id=homework.id, question_id=question.id) }}"><i class="bi bi-check-square text-white align-middle"></i></a>
+              {% if current_user.account_type == 'Admin' %}
+              <a class="btn btn-warning btn-icon mt-3" href="{{ url_for('homeworks.update_question',homework_id=homework.id, question_id=question.id, grade='ALL', tags='ALL', difficulty='ALL', load='not_loaded') }}"><i class="bi bi-pencil-square text-white align-middle"></i></a>
+              <button type="button" class="btn btn-danger btn-icon mt-3" data-bs-toggle="modal" data-bs-target="#deleteQuestion"><i class="bi bi-trash align-middle"></i></button>    
+              {% endif %}
+            </div>
+            <!--Modal-->
+            <div class="modal fade" id="deleteQuestion" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title text-black" id="exampleModalLabel">Delete Question?</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-footer">
+                      <a type="button" class="btn btn-danger" href="{{ url_for('homeworks.delete_question', homework_id=homework.id, question_id=question.id) }}">Delete</a>
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                  </div>
               </div>
             </div>
-          </div>
-        {% endfor %}
+          </div>  
+        </div>
+      {% endfor %}
     </div>
-  </article>
-  {% for page_num in questions.iter_pages() %} 
-    {% if page_num %}
-        {% if questions.page==page_num %} <!--different style for current page button-->
-            <a class="btn btn-info mb-4" href="{{ url_for('homeworks.homework', page=page_num, homework_id=homework_id) }}">{{ page_num }}</a>
+    <div class="mt-3">
+      {% for page_num in questions.iter_pages() %} 
+        {% if page_num %}
+            {% if questions.page==page_num %} <!--different style for current page button-->
+                <a class="btn btn-info mb-4" href="{{ url_for('homeworks.homework', page=page_num, homework_id=homework_id) }}">{{ page_num }}</a>
+            {% else %}
+                <a class="btn btn-outline-info mb-4" href="{{ url_for('homeworks.homework', page=page_num, homework_id=homework_id) }}">{{ page_num }}</a>
+            {% endif %}
         {% else %}
-            <a class="btn btn-outline-info mb-4" href="{{ url_for('homeworks.homework', page=page_num, homework_id=homework_id) }}">{{ page_num }}</a>
+            ...
         {% endif %}
-    {% else %}
-        ...
-    {% endif %}
-  {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
 {% endblock content %}

@@ -5,16 +5,30 @@ from flaskblog.models import User, Homework, Activity, Question, Working, Change
 from flaskblog.users.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
                                    RequestResetForm, ResetPasswordForm, UserDateForm, UserTopicsForm)
 from flaskblog.users.utils import save_picture, send_reset_email, send_HW_alert
-from datetime import datetime
+import datetime as datetime
 
 users = Blueprint('users', __name__) #creating an instance, to be imported
 
 def render_template(*args, **kwargs):
+    try:
+        dark_mode = current_user.dark_mode
+    except:
+        dark_mode = 'On'
     version = Changelog.query.order_by(Changelog.id.desc()).first()
-    if version == None:
-        return real_render_template(*args, **kwargs, version='V1.0.0')
+    if current_user.account_type == 'Admin':
+        activities = Activity.query.order_by(Activity.date_posted.desc()).limit(5).all()
     else:
-        return real_render_template(*args, **kwargs, version=version.version)
+        activities = Activity.query.filter_by(student_id=current_user.id).order_by(Activity.date_posted.desc()).limit(5).all()
+    date_now = datetime.datetime.now()
+    activities_date_arr=[]
+    for activity in activities:
+        activities_date_arr.append(round((date_now-activity.date_posted).total_seconds()/3600/24))
+    if version == None:
+        return real_render_template(*args, **kwargs, version='V1.0.0', dark_mode=dark_mode, activities=activities, 
+                           activities_date_arr=activities_date_arr)
+    else:
+        return real_render_template(*args, **kwargs, version=version.version, dark_mode=dark_mode, activities=activities, 
+                           activities_date_arr=activities_date_arr)
 
 @users.route("/register", methods=['GET', 'POST']) #Need to define methods here 
 def register():
@@ -120,26 +134,27 @@ def delete_user(user_id):
     flash(name + ' has been deleted!', 'success')
     return redirect(url_for('users.admin'))
 
-@users.route("/account", methods=['GET', 'POST'])
+@users.route("/settings", methods=['GET', 'POST'])
 @login_required #Requires login to view this route
-def account():
+def settings():
     form = UpdateAccountForm()
     if form.validate_on_submit():
         if form.picture.data:
             picture_file = save_picture(form.picture.data)
             current_user.image_file = picture_file
+        current_user.dark_mode = request.form.get('dark_mode')
         current_user.username = form.username.data
         current_user.email = form.email.data
         current_user.grade = form.grade.data
         db.session.commit()
         flash('Your account has been updated!', 'success')
-        return redirect(url_for('users.account'))
+        return redirect(url_for('users.settings'))
     elif request.method == 'GET':
         form.username.data = current_user.username
         form.email.data = current_user.email
         form.grade.data = current_user.grade
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file) #Define image_file variable with file path + jpg 
-    return render_template('account.html', title='Account', image_file=image_file, form=form)
+    return render_template('settings.html', image_file=image_file, form=form)
 
 @users.route("/reset_password", methods=['GET', 'POST']) #To reset password
 def reset_request():

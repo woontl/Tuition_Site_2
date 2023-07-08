@@ -1,0 +1,102 @@
+{% extends "layout.html" %} 
+{% block javaScript %}
+{% endblock %}
+{% block content %} 
+<form method="POST" action=""novalidate enctype="multipart/form-data"> <!--post form via the route created-->
+    {{ form.hidden_tag() }}
+    <div class="container">
+        <div class="row mx-0">
+            <div class="col-12">
+                <div>
+                    <h2 class="fw-bold">Settings</h2>
+                </div>
+                <hr class="black-white">
+                <div style="padding-top: 10px;">
+                    <div class="d-flex">
+                        <img class="rounded-circle article-img mx-auto my-3 border border-white" height="120px" width="120px" src="{{ url_for('static', filename='profile_pics/' + current_user.image_file) }}">
+                    </div>
+                    <div class="text-center">
+                        <h5 class="fw-bold">{{ current_user.username }}</h5>
+                        <h5 class="fw-bold">Grade: {{ current_user.grade }}</h5>
+                    </div>
+                </div>
+                <div class="form-group" style="padding-top: 40px;">
+                    <h5 class="fw-bold">User Name</h5>
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="bi bi-person-fill black-white fs-3"></i></span>
+                        </div>
+                        {% if form.username.errors %}
+                            {{ form.username(class="form-control form-control-lg is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.username.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.username(class="form-control form-control-lg") }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group" style="padding-top: 40px;">
+                    <h5 class="fw-bold">Email</h5>
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="bi bi-envelope black-white fs-3"></i></span>
+                        </div>
+                        {% if form.email.errors %}
+                            {{ form.email(class="form-control form-control-lg is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.email.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.email(class="form-control form-control-lg") }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group" style="padding-top: 40px;">
+                    <h5 class="fw-bold">Grade</h5>
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="bi bi-pencil black-white fs-3"></i></span>
+                        </div>
+                        {% if form.grade.errors %}
+                            {{ form.grade(class="form-control form-control-lg is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.grade.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.grade(class="form-control form-control-lg") }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group" style="padding-top: 40px;">
+                    <h5 class="fw-bold">Update Profile Picture</h5>
+                    {{ form.picture(class="form-control-file black-white") }}
+                    {% if form.picture.errors %}
+                        {% for error in form.picture.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="form-check form-switch" style="padding-top: 40px;">
+                    {% if dark_mode %}
+                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" name="dark_mode" checked style="z-index: 4">
+                    <label class="form-check-label black-white" for="flexSwitchCheckChecked">Dark Mode</label>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" name="dark_mode" style="z-index: 4">
+                    <label class="form-check-label black-white" for="flexSwitchCheckDefault">Dark Mode</label>
+                    {% endif %}
+                </div>
+                <div class="form-group" style="padding-top: 40px;">
+                    {{ form.submit(class="btn btn-block btn-primary") }}
+                </div>
+            </div>
+        </div>    
+    </div>
+</form>
+{% endblock content %}
