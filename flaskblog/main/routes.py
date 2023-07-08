@@ -126,7 +126,15 @@ def activity_readall():
     for activity in activities:
         activity.read_tag = 1
     db.session.commit()
-    return '', 204
+
+    # Assuming the previous route is stored in the 'Referer' header of the request
+    previous_route = request.headers.get('Referer')
+    if previous_route:
+        return redirect(previous_route)
+    else:
+        # Provide a fallback route in case the 'Referer' header is not available
+        return redirect(url_for('main.home'))
+    # return '', 204
 
 @main.route("/changelog")
 @login_required
