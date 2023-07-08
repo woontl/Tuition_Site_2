@@ -59,24 +59,24 @@ exit()
 
 How to deploy to a Linux Server.
 Setup
-1) Create server on linode, UBUNTU 22.04 LTS
-2) Copy ssh root@139.177.187.179 from linode and run on local terminal
+1) Create server on linode
+2) Copy ssh root@172.104.169.106 from linode and run on local terminal
 3) Enter Yes and root password
 4) Upgrade to latest version - apt update && apt upgrade
 5) Change host name - hostnamectl set-hostname flask-server
-6) nano /etc/hosts, then key in 139.177.187.179 flask-server
+6) nano /etc/hosts, then key in 172.104.169.106 flask-server
 7) Add a limited user - adduser woontl
 8) Add user to sudo group - adduser woontl sudo
 9) Logout - exit
-10) Log back in as user - ssh woontl@139.177.187.179
+10) Log back in as user - ssh woontl@172.104.169.106
 
 Setup SSH 
 1) Setup SSH keybased authentication
   > make ssh directory - mkdir .ssh
-2) Open SSH on local, DO NOT GEN AGAIN IF ALR GEN BEFORE
+2) Open SSH on local
   > ssh-keygen -b 4096
   > enter default file and overwrite
-3) Copy SSH over to server from local - scp ~/.ssh/id_rsa.pub woontl@139.177.187.179:~/.ssh/authorized_keys
+3) Copy SSH over to server - scp ~/.ssh/id_rsa.pub woontl@172.104.169.106:~/.ssh/authorized_keys
 4) Give permission to use SSH in server
   > sudo chmod 700 ~/.ssh/
   > sudo chmod 600 ~/.ssh/*
@@ -95,7 +95,7 @@ Setup firewall
 
 Transfer Project over to server
 1) On local - pip freeze > requirements.txt
-2) scp -r /Users/tianli.woon/Documents/TL/Coding101/Project/Tuition_Site_2 woontl@139.177.187.179:~/
+2) scp -r /Users/tianli.woon/Documents/TL/Coding101/Project/Tuition_Site_2 woontl@172.104.169.106:~/
 3) In server - sudo apt install python3-pip
 4) sudo apt install python3.10-venv
 5) python3 -m venv Tuition_Site_2/venv
@@ -126,7 +126,7 @@ NGINX
 4) sudo nano /etc/nginx/sites-enabled/flaskblog
   server { 
         listen 80;
-        server_name 139.177.187.179;
+        server_name 172.104.169.106;
 
         location /static {
                 alias /home/woontl/Tuition_Site_2/flaskblog/static;
@@ -151,7 +151,7 @@ NGINX
 6) sudo ufw delete allow 5000
 7) sudo ufw enable
 8) sudo systemctl restart nginx
-9) gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 run:app
+9) gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 module:app
 10) sudo apt install supervisor
 11) sudo nano /etc/supervisor/conf.d/flaskblog.conf
   >[program:flaskblog]
@@ -221,10 +221,9 @@ ns5.linode.com
 3) Create new domain in linode, include domain (mathinthesky.com)
 4) Add A record
 hostname:www
-IP: 139.177.187.179
+IP: 172.104.169.106
 5) In the linode, add reverse DNS: www.mathinthesky.com
-6) sudo nano /etc/nginx/sites-enabled/flaskblog\
->remove listen 80
+6) sudo nano /etc/nginx/sites-enabled/flaskblog
 >change server name to www.mathinthesky.com mathinthesky.com
 
 Enable HTTPS with SSL
@@ -232,8 +231,7 @@ Enable HTTPS with SSL
 2) sudo certbot --nginx -d mathinthesky.com -d www.mathinthesky.com
 3) sudo ufw allow https
 4) sudo crontab -e
-1 
-30 4 1 * * sudo certbot renew --quiet (4.30am every 1st day of month)
+1 30 4 1 * * sudo certbot renew --quiet (4.30am every 1st day of month)
 9) sudo systemctl restart nginx
 
 How to delete directory and all files
@@ -246,10 +244,10 @@ To update production with changed config files
 3) venv, sudo systemctl restart nginx
 
 How to download file from remote to local? (PROD)
-1) scp woontl@139.177.187.179:Tuition_Site_2/flaskblog/site.db /Users/tianli.woon/Documents
+1) scp woontl@172.104.169.106:Tuition_Site_2/flaskblog/site.db /Users/tianli.woon/Documents
 
 How to download folder from remote to local? (PROD)
-1) scp -r woontl@139.177.187.179:Tuition_Site_2/flaskblog/static /Users/tianli.woon/Documents
+1) scp -r woontl@172.104.169.106:Tuition_Site_2/flaskblog/static /Users/tianli.woon/Documents
 
 How to upload file from local to remote? (DEV)
 1) scp site.db woontl@139.162.19.71:Tuition_Site_2/flaskblog/
@@ -258,18 +256,11 @@ How to upload folder from local to remote? (DEV)
 1) scp -r static/ woontl@139.162.19.71:Tuition_Site_2/flaskblog
 
 How to upload file from local to remote? (PROD)
-1) scp site.db woontl@139.177.187.179:Tuition_Site_2/flaskblog/
+1) scp site.db woontl@172.104.169.106:Tuition_Site_2/flaskblog/
 
 How to upload folder from local to remote? (PROD)
-1) scp -r static/ woontl@139.177.187.179:Tuition_Site_2/flaskblog
+1) scp -r static/ woontl@172.104.169.106:Tuition_Site_2/flaskblog
 
-OLD
 dev ssh woontl@139.162.19.71
-prod ssh woontl@139.177.187.179
+prod ssh woontl@172.104.169.106
 sudo password: Fieryflamer@96
-
-NEW
-dev ssh woontl@139.162.6.224
-prod ssh woontl@139.177.187.179
-user ssh password: Flamer@96
-root passowrd: Flamer@20121996

@@ -1,290 +1,379 @@
 {% extends "layout.html" %} <!--inherit from parent html-->
 {% block javaScript %}
-    <script src="{{ url_for('static', filename='javascripts/calc_MQ_answer.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='javascripts/calc_QB_answer.js') }}" defer></script>
     <script src="{{ url_for('static', filename='javascripts/answer_fields.js') }}" defer></script>
     <script src="{{ url_for('static', filename='javascripts/MQ_questionbank.js') }}" defer></script>
 {% endblock %}
 {% block content %} <!--block content here replaces block content in parent-->
-<form method="POST" action=""novalidate enctype="multipart/form-data"> <!--post form via the route created-->
-    {{ form.hidden_tag() }}
-    <div class="container">
-        <div class="row mx-0">
-            <div class="col-md-12 col-lg-12 col-xl-12">
-                <div class="d-flex">
-                    <h2 class="fw-bold">{{ legend }}</h2>
-                </div>
-                <hr class="black-white">
+    <div class="content-secton">
+        <form method="POST" action=""novalidate enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">{{ legend }}</legend>
                 {% if img_preview %}
-                <div class="content-section mt-3">
-                    <div class="media">
-                        <img class="w-100 rounded" src="{{ url_for('static', filename='questionbank/' + img_preview) }}">
+                    <div class="content-section">
+                        <div class="media">
+                            <img class="w-75 rounded" src="{{ url_for('static', filename='questionbank/' + img_preview) }}">
+                        </div>
                     </div>
-                </div>
-                {% endif %}   
-                <div class="row" style="padding-top: 20px;">
+                {% else %}    
                     <div class="form-group">
-                        <h5 class="fw-bold">Click to Upload</h5>
-                        {{ form.img(class="form-control-file text-white") }}
+                        {{ form.img.label() }}
+                        {{ form.img(class="form-control-file") }}
                         {% if form.img.errors %}
                             {% for error in form.img.errors %}
-                                <span class="text-danger">{{ error }}</span>
+                                <span class="text-danger">{{ error }}</span></br>
                             {% endfor %}
                         {% endif %}
                     </div>
-                </div>
-                <div class="row" style="padding-top: 40px;">
-                    <div class="col">
-                        <div class="form-group">
-                            <h5 class="fw-bold">Grade</h5>
-                            {% if form.grade.errors %}
-                                {{ form.grade(class="form-control form-control-lg is-invalid") }}
-                                <div class="invalid-feedback">
-                                    {% for error in form.grade.errors %}
-                                        <span>{{ error }}</span>
-                                    {% endfor %}
-                                </div>
-                            {% else %}
-                                {{ form.grade(class="form-control form-control-lg") }}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="form-group">
-                            <h5 class="fw-bold">Tags</h5>
-                            {% if form.tags.errors %}
-                                {{ form.tags(class="form-control form-control-lg is-invalid") }}
-                                <div class="invalid-feedback">
-                                    {% for error in form.tags.errors %}
-                                        <span>{{ error }}</span>
-                                    {% endfor %}
-                                </div>
-                            {% else %}
-                                {{ form.tags(class="form-control form-control-lg") }}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="form-group">
-                            <h5 class="fw-bold">Difficulty</h5>
-                            {% if form.difficulty.errors %}
-                                {{ form.difficulty(class="form-control form-control-lg is-invalid") }}
-                                <div class="invalid-feedback">
-                                    {% for error in form.difficulty.errors %}
-                                        <span>{{ error }}</span>
-                                    {% endfor %}
-                                </div>
-                            {% else %}
-                                {{ form.difficulty(class="form-control form-control-lg") }}
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                <div class="row" style="padding-top: 40px;">
-                    <div class="form-group" id="sub-answer">
-                        {% if ans %}
-                            <div class="d-flex align-items">
-                                <h5 class="fw-bold my-auto">Answer</h5>
-                                <button onclick="add_main_answer()" type="button" class="btn btn-primary btn-icon my-auto ms-3"><i class="bi bi-plus-square align-middle"></i></button>    
-                                <button onclick="del_main_answer()" type="button" class="btn btn-danger btn-icon my-auto ms-3"><i class="bi bi-trash align-middle"></i></button>  
-                            </div>
-                            {% set count = namespace(value=1) %}
-                            {% set ans_count = namespace(value=0) %}
-                            {% for main_ans in ['A','B','C','D','E','F'] %}
-                                {% if ans[(count.value-1)*7] != '' %}
-                                    <div class="row justify-content-start align-items-center" id="main-answer-{{count.value}}">
-                                        <div class="d-flex align-items-center my-3">
-                                            <button onclick="add_sub_answer({{count.value}})" type="button" class="btn btn-link"><i class="bi bi-file-plus" style="font-size: 24px"></i></button>
-                                            <button onclick="del_sub_answer({{count.value}})" type="button" class="btn btn-link" style="color: red"><i class="bi bi-file-minus" style="font-size: 24px"></i></button>   
-                                            <h6 class="fw-bold my-auto" style="min-width: 60px">Part {{main_ans}}:</h6>
-                                            <div contenteditable="true" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}">{{ans[ans_count.value]}}</div>
-                                        </div>
-                                        {% set ans_count.value = ans_count.value + 1 %}
-                                        {% for roman in ["i", "ii", "iii", "iv", "v", "vi"] %}
-                                        <div id="sub-answer-{{count.value}}-{{roman}}" style="display: none">
-                                            <div class="d-flex align-items-center my-3" style="padding-left: 160px">
-                                                <h6 class="fw-bold my-auto" style="min-width: 60px">Part {{roman}}:</h6>
-                                                <div contenteditable="true" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}-{{roman}}">{{ans[ans_count.value]}}</div>
-                                            </div>
-                                            {% set ans_count.value = ans_count.value + 1 %}
-                                        </div>
-                                        {% endfor %}
-                                    </div>
-                                {% elif ans[(count.value-1)*7] == '' and ans[(count.value-1)*7+1] != ''%}
-                                    <div class="row justify-content-start align-items-center" id="main-answer-{{count.value}}">
-                                        <div class="d-flex align-items-center my-3">
-                                            <button onclick="add_sub_answer({{count.value}})" type="button" class="btn btn-link"><i class="bi bi-file-plus" style="font-size: 24px"></i></button>
-                                            <button onclick="del_sub_answer({{count.value}})" type="button" class="btn btn-link" style="color: red"><i class="bi bi-file-minus" style="font-size: 24px"></i></button>   
-                                            <h6 class="fw-bold my-auto" style="min-width: 60px">Part {{main_ans}}:</h6>
-                                            <div contenteditable="true" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}" style="display: none">{{ans[ans_count.value]}}</div>
-                                        </div>
-                                        {% set ans_count.value = ans_count.value + 1 %}
-                                        {% set roman_count = namespace(value=1) %}
-                                        {% for roman in ["i", "ii", "iii", "iv", "v", "vi"] %}
-                                            {% if ans[(count.value-1)*7 + roman_count.value] != '' %}
-                                            <div id="sub-answer-{{count.value}}-{{roman}}" style="display: block">
-                                                <div class="d-flex align-items-center my-3" style="padding-left: 160px">
-                                                    <h6 class="fw-bold my-auto" style="min-width: 60px">Part {{roman}}:</h6>
-                                                    <div contenteditable="true" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}-{{roman}}">{{ans[ans_count.value]}}</div>
-                                                </div>
-                                                {% set ans_count.value = ans_count.value + 1 %}
-                                            </div>
-                                            {% else %}
-                                            <div id="sub-answer-{{count.value}}-{{roman}}" style="display: none">
-                                                <div class="d-flex align-items-center my-3" style="padding-left: 160px">
-                                                    <h6 class="fw-bold my-auto" style="min-width: 60px">Part {{roman}}:</h6>
-                                                    <div contenteditable="true" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}-{{roman}}">{{ans[ans_count.value]}}</div>
-                                                </div>
-                                                {% set ans_count.value = ans_count.value + 1 %}
-                                            </div>
-                                            {% endif %}
-                                        {% set roman_count.value = roman_count.value + 1 %}
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    <div class="row justify-content-start align-items-center" id="main-answer-{{count.value}}" style="display: none">
-                                        <div class="d-flex align-items-center my-3">
-                                            <button onclick="add_sub_answer({{count.value}})" type="button" class="btn btn-link"><i class="bi bi-file-plus" style="font-size: 24px"></i></button>
-                                            <button onclick="del_sub_answer({{count.value}})" type="button" class="btn btn-link" style="color: red"><i class="bi bi-file-minus" style="font-size: 24px"></i></button>   
-                                            <h6 class="fw-bold my-auto" style="min-width: 60px">Part {{main_ans}}:</h6>
-                                            <div contenteditable="true" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}">{{ans[ans_count.value]}}</div>
-                                        </div>
-                                        {% set ans_count.value = ans_count.value + 1 %}
-                                        {% for roman in ["i", "ii", "iii", "iv", "v", "vi"] %}
-                                            <div id="sub-answer-{{count.value}}-{{roman}}" style="display: none">
-                                                <div class="d-flex align-items-center my-3" style="padding-left: 160px">
-                                                    <h6 class="fw-bold my-auto" style="min-width: 60px">Part {{roman}}:</h6>
-                                                    <div contenteditable="true" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}-{{roman}}">{{ans[ans_count.value]}}</div>
-                                                </div>
-                                                {% set ans_count.value = ans_count.value + 1 %}
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            {% set count.value = count.value + 1 %}
+                {% endif %}
+                <div class="form-group">
+                    {{ form.grade.label(class="form-control-label") }}
+                    {% if form.grade.errors %}
+                        {{ form.grade(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.grade.errors %}
+                                <span>{{ error }}</span>
                             {% endfor %}
-                        {% else %}
-                            <div class="d-flex align-items">
-                                <h5 class="fw-bold my-auto">Answer</h5>
-                                <button onclick="add_main_answer()" type="button" class="btn btn-primary btn-icon my-auto ms-3"><i class="bi bi-plus-square align-middle"></i></button>
-                                <button onclick="del_main_answer()" type="button" class="btn btn-danger btn-icon my-auto ms-3"><i class="bi bi-trash align-middle"></i></button>  
+                        </div>
+                    {% else %}
+                        {{ form.grade(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.tags.label(class="form-control-label") }}
+                    {% if form.tags.errors %}
+                        {{ form.tags(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.tags.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.tags(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.difficulty.label(class="form-control-label") }}
+                    {% if form.difficulty.errors %}
+                        {{ form.difficulty(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.difficulty.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.difficulty(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group" id="sub-answer">
+                    {{ form.answer.label(class="form-control-label") }}
+                    {% if ans %}
+                        <button onclick="add_main_answer()" type="button" class="btn btn-link"><i class="fa-solid fa-square-plus"></i></button>
+                        <button onclick="del_main_answer()" type="button" class="btn btn-link" style="color: red"><i class="fa-solid fa-trash-can"></i></button>
+                        {% set count = namespace(value=1) %}
+                        {% set ans_count = namespace(value=0) %}
+                        {% for main_ans in ['A','B','C','D','E','F'] %}
+                            {% if ans[(count.value-1)*7] != '' %}
+                                <div class="row justify-content-start align-items-center" id="main-answer-{{count.value}}" style="">
+                                    <div class="col-lg-2 col-md-3 col-sm-4 mx-0">
+                                        <p class="d-flex justify-content-around align-items-center form-control-label">
+                                            <button onclick="add_sub_answer({{count.value}})" type="button" class="btn btn-link"><i class="fa-solid fa-square-plus"></i></button>
+                                            <button onclick="del_sub_answer({{count.value}})" type="button" class="btn btn-link" style="color: red"><i class="fa-solid fa-square-minus"></i></button>
+                                            Part {{main_ans}}:
+                                        </p>
+                                    </div>
+                                    <div id="MQ-field-{{count.value}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-4 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
+                                        {{ans[ans_count.value]}}
+                                    </div>
+                                    <div class="col-lg-2 col-md-3 col-sm-4 mx-0 d-flex justify-content-around" id="open-ended-MQ-field-{{count.value}}">
+                                        Open-Ended?
+                                        {% if checked[ans_count.value] == '1' %} 
+                                            <input class="checkbox" type="checkbox" checked>
+                                        {% else %}
+                                            <input class="checkbox" type="checkbox">
+                                        {% endif %}
+                                    </div>
+                                    {% set ans_count.value = ans_count.value + 1 %}
+                                    {% for roman in ["i", "ii", "iii", "iv", "v", "vi"] %}
+                                        <div class="container" id="sub-answer-{{count.value}}-{{roman}}" style="display: none">
+                                            <div class="row justify-content-end align-items-center">
+                                                <div class="col-lg-4 col-md-6 col-sm-6 mx-0">
+                                                    <p class="form-control-label text-right">Part {{roman}}:</p>
+                                                </div>
+                                                <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-6 col-md-3 col-sm-2 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
+                                                    {{ans[ans_count.value]}}
+                                                </div>
+                                                <div class="col-lg-2 col-md-3 col-sm-4 mx-0 d-flex justify-content-around" id="open-ended-MQ-field-{{count.value}}-{{roman}}">
+                                                    Open-Ended?
+                                                    {% if checked[ans_count.value] == '1' %} 
+                                                        <input class="checkbox" type="checkbox" checked>
+                                                    {% else %}
+                                                        <input class="checkbox" type="checkbox">
+                                                    {% endif %}
+                                                </div>
+                                                {% set ans_count.value = ans_count.value + 1 %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% elif ans[(count.value-1)*7] == '' and ans[(count.value-1)*7+1] != ''%}
+                                <div class="row justify-content-start align-items-center" id="main-answer-{{count.value}}" style="">
+                                    <div class="col-lg-2 col-md-3 col-sm-4 mx-0">
+                                        <p class="d-flex justify-content-around align-items-center form-control-label">
+                                            <button onclick="add_sub_answer({{count.value}})" type="button" class="btn btn-link"><i class="fa-solid fa-square-plus"></i></button>
+                                            <button onclick="del_sub_answer({{count.value}})" type="button" class="btn btn-link" style="color: red"><i class="fa-solid fa-square-minus"></i></button>
+                                            Part {{main_ans}}:
+                                        </p>
+                                    </div>
+                                    <div id="MQ-field-{{count.value}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-4 mx-0 form-control form-control-lg mb-2" style="min-height: 50px; display: none">
+                                        {{ans[ans_count.value]}}
+                                    </div>
+                                    <div class="col-lg-2 col-md-3 col-sm-4 mx-0 justify-content-around" id="open-ended-MQ-field-{{count.value}}" style="display: none">
+                                        Open-Ended?
+                                        {% if checked[ans_count.value] == '1' %} 
+                                            <input class="checkbox" type="checkbox" checked>
+                                        {% else %}
+                                            <input class="checkbox" type="checkbox">
+                                        {% endif %}
+                                    </div>
+                                    {% set ans_count.value = ans_count.value + 1 %}
+                                    {% set roman_count = namespace(value=1) %}
+                                    {% for roman in ["i", "ii", "iii", "iv", "v", "vi"] %}
+                                        {% if ans[(count.value-1)*7 + roman_count.value] != '' %}
+                                            <div class="container" id="sub-answer-{{count.value}}-{{roman}}" style="display: block">
+                                                <div class="row justify-content-end align-items-center">
+                                                    <div class="col-lg-4 col-md-6 col-sm-6 mx-0">
+                                                        <p class="form-control-label text-right">Part {{roman}}:</p>
+                                                    </div>
+                                                    <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-6 col-md-3 col-sm-2 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
+                                                        {{ans[ans_count.value]}}
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-3 col-sm-4 mx-0 d-flex justify-content-around" id="open-ended-MQ-field-{{count.value}}-{{roman}}">
+                                                        Open-Ended?
+                                                        {% if checked[ans_count.value] == '1' %} 
+                                                            <input class="checkbox" type="checkbox" checked>
+                                                        {% else %}
+                                                            <input class="checkbox" type="checkbox">
+                                                        {% endif %}
+                                                    </div>
+                                                    {% set ans_count.value = ans_count.value + 1 %}
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="container" id="sub-answer-{{count.value}}-{{roman}}" style="display: none">
+                                                <div class="row justify-content-end align-items-center">
+                                                    <div class="col-lg-4 col-md-6 col-sm-6 mx-0">
+                                                        <p class="form-control-label text-right">Part {{roman}}:</p>
+                                                    </div>
+                                                    <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-6 col-md-3 col-sm-2 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
+                                                        {{ans[ans_count.value]}}
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-3 col-sm-4 mx-0 d-flex justify-content-around" id="open-ended-MQ-field-{{count.value}}-{{roman}}">
+                                                        Open-Ended?
+                                                        {% if checked[ans_count.value] == '1' %} 
+                                                            <input class="checkbox" type="checkbox" checked>
+                                                        {% else %}
+                                                            <input class="checkbox" type="checkbox">
+                                                        {% endif %}
+                                                    </div>
+                                                    {% set ans_count.value = ans_count.value + 1 %}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% set roman_count.value = roman_count.value + 1 %}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="row justify-content-start align-items-center" id="main-answer-{{count.value}}" style="display: none">
+                                    <div class="col-lg-2 col-md-3 col-sm-4 mx-0">
+                                        <p class="d-flex justify-content-around align-items-center form-control-label">
+                                            <button onclick="add_sub_answer({{count.value}})" type="button" class="btn btn-link"><i class="fa-solid fa-square-plus"></i></button>
+                                            <button onclick="del_sub_answer({{count.value}})" type="button" class="btn btn-link" style="color: red"><i class="fa-solid fa-square-minus"></i></button>
+                                            Part {{main_ans}}:
+                                        </p>
+                                    </div>
+                                    <div id="MQ-field-{{count.value}}" contenteditable="true" class="col-lg-8 col-md-6 col-sm-4 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
+                                        {{ans[ans_count.value]}}
+                                    </div>
+                                    <div class="col-lg-2 col-md-3 col-sm-4 mx-0 d-flex justify-content-around" id="open-ended-MQ-field-{{count.value}}">
+                                        Open-Ended?
+                                        {% if checked[ans_count.value] == '1' %} 
+                                            <input class="checkbox" type="checkbox" checked>
+                                        {% else %}
+                                            <input class="checkbox" type="checkbox">
+                                        {% endif %}
+                                    </div>
+                                    {% set ans_count.value = ans_count.value + 1 %}
+                                    {% for roman in ["i", "ii", "iii", "iv", "v", "vi"] %}
+                                        <div class="container" id="sub-answer-{{count.value}}-{{roman}}" style="display: none">
+                                            <div class="row justify-content-end align-items-center">
+                                                <div class="col-lg-4 col-md-6 col-sm-6 mx-0">
+                                                    <p class="form-control-label text-right">Part {{roman}}:</p>
+                                                </div>
+                                                <div id="MQ-field-{{count.value}}-{{roman}}" contenteditable="true" class="col-lg-6 col-md-3 col-sm-2 mx-0 form-control form-control-lg mb-2" style="min-height: 50px;">
+                                                    {{ans[ans_count.value]}}
+                                                </div>
+                                                <div class="col-lg-2 col-md-3 col-sm-4 mx-0 d-flex justify-content-around" id="open-ended-MQ-field-{{count.value}}-{{roman}}">
+                                                    Open-Ended?
+                                                    {% if checked[ans_count.value] == '1' %} 
+                                                        <input class="checkbox" type="checkbox" checked>
+                                                    {% else %}
+                                                        <input class="checkbox" type="checkbox">
+                                                    {% endif %}
+                                                </div>
+                                                {% set ans_count.value = ans_count.value + 1 %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        {% set count.value = count.value + 1 %}
+                        {% endfor %}
+                    {% else %}
+                        <button onclick="add_main_answer()" type="button" class="btn btn-link"><i class="fa-solid fa-square-plus"></i></button>
+                        <button onclick="del_main_answer()" type="button" class="btn btn-link" style="color: red"><i class="fa-solid fa-trash-can"></i></button>
+                        <div class="row justify-content-start align-items-center" id="main-answer-1">
+                            <div class="col-lg-2 col-md-3 col-sm-4 mx-0">
+                                <p class="d-flex justify-content-around align-items-center form-control-label">
+                                    <button onclick="add_sub_answer(1)" type="button" class="btn btn-link"><i class="fa-solid fa-square-plus"></i></button>
+                                    <button onclick="del_sub_answer(1)" type="button" class="btn btn-link" style="color: red"><i class="fa-solid fa-square-minus"></i></button>
+                                    Part A:
+                                </p>
                             </div>
-                            <div class="row justify-content-start align-items-center" id="main-answer-1">
-                                <div class="d-flex align-items-center my-3">
-                                    <button onclick="add_sub_answer(1)" type="button" class="btn btn-link"><i class="bi bi-file-plus" style="font-size: 24px"></i></button>
-                                    <button onclick="del_sub_answer(1)" type="button" class="btn btn-link" style="color: red"><i class="bi bi-file-minus" style="font-size: 24px"></i></button>   
-                                    <h6 class="fw-bold my-auto" style="min-width: 60px">Part A:</h6>
-                                    <div contenteditable="true" class="ms-3 form-control mathfield text-black" id="MQ-field-1"></div>
+                            <div contenteditable="true" class="col-lg-8 col-md-6 col-sm-4 mx-0 form-control form-control-lg mb-2 mathfield" id="MQ-field-1" style="min-height: 50px;">                               
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-sm-4 mx-0 d-flex justify-content-around" id="open-ended-MQ-field-1">
+                                Open-Ended? <input class="checkbox" type="checkbox">
+                            </div>
+                            {% for roman in ["i", "ii", "iii", "iv", "v", "vi"] %}
+                            <div class="container" id="sub-answer-1-{{roman}}" style="display: none">
+                                <div class="row justify-content-end align-items-center">
+                                    <div class="col-lg-4 col-md-6 col-sm-6 mx-0">
+                                        <p class="form-control-label text-right">Part {{roman}}:</p>
+                                    </div>
+                                    <div contenteditable="true" class="col-lg-6 col-md-3 col-sm-2 mx-0 form-control form-control-lg mb-2 mathfield" id="MQ-field-1-{{roman}}" style="min-height: 50px;">
+                                    </div>
+                                    <div class="col-lg-2 col-md-3 col-sm-4 mx-0 d-flex justify-content-around" id="open-ended-MQ-field-1-{{roman}}">
+                                        Open-Ended? <input class="checkbox" type="checkbox">
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% set count = namespace(value=2) %}
+                        {% for letter in 'BCDEF' %}
+                            <div class="row justify-content-start align-items-center" id="main-answer-{{count.value}}" style="display: none">
+                                <div class="col-lg-2 col-md-3 col-sm-4 mx-0">
+                                    <p class="d-flex justify-content-around align-items-center form-control-label">
+                                        <button onclick="add_sub_answer({{count.value}})" type="button" class="btn btn-link"><i class="fa-solid fa-square-plus"></i></button>
+                                        <button onclick="del_sub_answer({{count.value}})" type="button" class="btn btn-link" style="color: red"><i class="fa-solid fa-square-minus"></i></button>
+                                        Part {{letter}}:
+                                    </p>
+                                </div>
+                                <div contenteditable="true" class="col-lg-8 col-md-6 col-sm-4 mx-0 form-control form-control-lg mb-2 mathfield" id="MQ-field-{{count.value}}" style="min-height: 50px;">
+                                </div>
+                                <div class="col-lg-2 col-md-3 col-sm-4 mx-0 d-flex justify-content-around" id="open-ended-MQ-field-{{count.value}}">
+                                    Open-Ended? <input class="checkbox" type="checkbox">
                                 </div>
                                 {% for roman in ["i", "ii", "iii", "iv", "v", "vi"] %}
-                                <div id="sub-answer-1-{{roman}}" style="display: none">
-                                    <div class="d-flex align-items-center my-3" style="padding-left: 160px">
-                                        <h6 class="fw-bold my-auto" style="min-width: 60px">Part {{roman}}:</h6>
-                                        <div contenteditable="true" class="ms-3 form-control mathfield" id="MQ-field-1-{{roman}}"></div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                            {% set count = namespace(value=2) %}
-                            {% for letter in 'BCDEF' %}
-                                <div class="row justify-content-start align-items-center" id="main-answer-{{count.value}}" style="display: none">
-                                    <div class="d-flex align-items-center my-3">
-                                        <button onclick="add_sub_answer({{count.value}})" type="button" class="btn btn-link"><i class="bi bi-file-plus" style="font-size: 24px"></i></button>
-                                        <button onclick="del_sub_answer({{count.value}})" type="button" class="btn btn-link" style="color: red"><i class="bi bi-file-minus" style="font-size: 24px"></i></button>   
-                                        <h6 class="fw-bold my-auto" style="min-width: 60px">Part {{letter}}:</h6>
-                                        <div contenteditable="true" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}"></div>
-                                    </div>
-                                    {% for roman in ["i", "ii", "iii", "iv", "v", "vi"] %}
-                                    <div id="sub-answer-{{count.value}}-{{roman}}" style="display: none">
-                                        <div class="d-flex align-items-center my-3" style="padding-left: 160px">
-                                            <h6 class="fw-bold my-auto" style="min-width: 60px">Part {{roman}}:</h6>
-                                            <div contenteditable="true" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}-{{roman}}"></div>
+                                    <div class="container" id="sub-answer-{{count.value}}-{{roman}}" style="display: none">
+                                        <div class="row justify-content-end align-items-center">
+                                            <div class="col-lg-4 col-md-6 col-sm-6 mx-0">
+                                                <p class="form-control-label text-right">Part {{roman}}:</p>
+                                            </div>
+                                            <div contenteditable="true" class="col-lg-6 col-md-3 col-sm-2 mx-0 form-control form-control-lg mb-2 mathfield" id="MQ-field-{{count.value}}-{{roman}}" style="min-height: 50px;">
+                                            </div>
+                                            <div class="col-lg-2 col-md-3 col-sm-4 mx-0 d-flex justify-content-around" id="open-ended-MQ-field-{{count.value}}-{{roman}}">
+                                                Open-Ended? <input class="checkbox" type="checkbox">
+                                            </div>
                                         </div>
                                     </div>
-                                    {% endfor %}
-                                </div>
-                            {% set count.value = count.value + 1 %}
-                            {% endfor %}
-                        {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% set count.value = count.value + 1 %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="container mb-3">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="row justify-content-center">
+                                <button class="calculator-btn" type="button" id="calc_button_alphabet_x">x</button>
+                                <button class="calculator-btn" type="button" id="calc_button_alphabet_y">y</button>
+                                <button class="calculator-btn" type="button" id="calc_button_superscript">a<sup>b</sup></button>
+                                <button class="calculator-btn" type="button" id="calc_button_subscript">a<sub>b</sup></button>
+                            </div>
+                            <div class="row justify-content-center">
+                                <button class="calculator-btn" type="button" id="calc_button_left_bracket">(</button>
+                                <button class="calculator-btn" type="button" id="calc_button_right_bracket">)</button>
+                                <button class="calculator-btn" type="button" id="calc_button_less"><</button>
+                                <button class="calculator-btn" type="button" id="calc_button_more">></button>
+                            </div>
+                            <div class="row justify-content-center">
+                                <button class="calculator-btn" type="button" id="calc_button_modulus">|a|</button>
+                                <button class="calculator-btn" type="button" id="calc_button_comma">,</button>
+                                <button class="calculator-btn" type="button" id="calc_button_less_equal">≤</button>
+                                <button class="calculator-btn" type="button" id="calc_button_more_equal">≥</button>
+                            </div>
+                            <div class="row justify-content-center">
+                                <button class="calculator-btn" type="button" id="calc_button_sqrt">√</button>
+                                <button class="calculator-btn" type="button" id="calc_button_pi">π</button>
+                                <button class="calculator-btn" type="button" id="calc_button_theta">θ</button>
+                                <button class="calculator-btn" type="button" id="calc_button_lambda">λ</button>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="row justify-content-center">
+                                <button class="calculator-btn" type="button" id="calc_button_digit_7">7</button>
+                                <button class="calculator-btn" type="button" id="calc_button_digit_8">8</button>
+                                <button class="calculator-btn" type="button" id="calc_button_digit_9">9</button>
+                                <button class="calculator-btn" type="button" id="calc_button_divide">÷</button>
+                            </div>
+                            <div class="row justify-content-center">
+                                <button class="calculator-btn" type="button" id="calc_button_digit_4">4</button>
+                                <button class="calculator-btn" type="button" id="calc_button_digit_5">5</button>
+                                <button class="calculator-btn" type="button" id="calc_button_digit_6">6</button>
+                                <button class="calculator-btn" type="button" id="calc_button_times">x</button>
+                            </div>
+                            <div class="row justify-content-center">
+                                <button class="calculator-btn" type="button" id="calc_button_digit_1">1</button>
+                                <button class="calculator-btn" type="button" id="calc_button_digit_2">2</button>
+                                <button class="calculator-btn" type="button" id="calc_button_digit_3">3</button>
+                                <button class="calculator-btn" type="button" id="calc_button_minus">-</button>
+                            </div>
+                            <div class="row justify-content-center">
+                                <button class="calculator-btn" type="button" id="calc_button_digit_0">0</button>
+                                <button class="calculator-btn" type="button" id="calc_button_decimal">.</button>
+                                <button class="calculator-btn" type="button" id="calc_button_equal">=</button>
+                                <button class="calculator-btn" type="button" id="calc_button_plus">+</button>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="row justify-content-center">
+                                <button class="calculator-btn" type="button" id="calc_button_vector">Vec</button>
+                                <button class="calculator-btn" type="button" id="calc_button_matrix"><sup>n</sup>C<sub>r</sub></button>
+                                <button class="calculator-btn" type="button" id="calc_button_deg"><sup>o</sup></button>
+                                <button class="calculator-btn" type="button" id="calc_button_rad">rad</button>
+                            </div>
+                            <div class="row justify-content-center">
+                                <button class="calculator-btn-lg" type="button" id="calc_button_arrow_left"><i class="fa-solid fa-arrow-left"></i></button>
+                                <button class="calculator-btn-lg" type="button" id="calc_button_arrow_right"><i class="fa-solid fa-arrow-right"></i></button>
+                            </div>
+                            <div class="row justify-content-center">
+                                <button class="calculator-btn-lg" type="button" id="calc_button_3sf">3s.f.</button>
+                                <button class="calculator-btn-lg" type="button" id="calc_button_1dp">1d.p.</button>
+                            </div>
+                            <div class="row justify-content-center">
+                                <button class="calculator-btn-lg" type="button" id="calc_button_static">Static</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-lg-4 col-xl-4 col-md-6" style="padding-top: 40px">
-                    <div class="row justify-content-center">
-                        <button class="calculator-btn" type="button" id="calc_button_alphabet_x">x</button>
-                        <button class="calculator-btn" type="button" id="calc_button_alphabet_y">y</button>
-                        <button class="calculator-btn" type="button" id="calc_button_superscript">a<sup>b</sup></button>
-                        <button class="calculator-btn" type="button" id="calc_button_subscript">a<sub>b</sup></button>
-                    </div>
-                    <div class="row justify-content-center">
-                        <button class="calculator-btn" type="button" id="calc_button_left_bracket">(</button>
-                        <button class="calculator-btn" type="button" id="calc_button_right_bracket">)</button>
-                        <button class="calculator-btn" type="button" id="calc_button_less"><</button>
-                        <button class="calculator-btn" type="button" id="calc_button_more">></button>
-                    </div>
-                    <div class="row justify-content-center">
-                        <button class="calculator-btn" type="button" id="calc_button_modulus">|a|</button>
-                        <button class="calculator-btn" type="button" id="calc_button_comma">,</button>
-                        <button class="calculator-btn" type="button" id="calc_button_less_equal">≤</button>
-                        <button class="calculator-btn" type="button" id="calc_button_more_equal">≥</button>
-                    </div>
-                    <div class="row justify-content-center">
-                        <button class="calculator-btn" type="button" id="calc_button_sqrt">√</button>
-                        <button class="calculator-btn" type="button" id="calc_button_pi">π</button>
-                        <button class="calculator-btn" type="button" id="calc_button_theta">θ</button>
-                        <button class="calculator-btn" type="button" id="calc_button_lambda">λ</button>
-                    </div>
+                <div class="form-group">
+                    <button onclick="calc_ans()" type="submit" class="btn btn-outline-info" id="ans" name="action" value="">Upload</button>
                 </div>
-                <div class="col-lg-4 col-xl-4 col-md-6" style="padding-top: 40px">
-                    <div class="row justify-content-center">
-                        <button class="calculator-btn" type="button" id="calc_button_digit_7">7</button>
-                        <button class="calculator-btn" type="button" id="calc_button_digit_8">8</button>
-                        <button class="calculator-btn" type="button" id="calc_button_digit_9">9</button>
-                        <button class="calculator-btn" type="button" id="calc_button_divide">÷</button>
-                    </div>
-                    <div class="row justify-content-center">
-                        <button class="calculator-btn" type="button" id="calc_button_digit_4">4</button>
-                        <button class="calculator-btn" type="button" id="calc_button_digit_5">5</button>
-                        <button class="calculator-btn" type="button" id="calc_button_digit_6">6</button>
-                        <button class="calculator-btn" type="button" id="calc_button_times">x</button>
-                    </div>
-                    <div class="row justify-content-center">
-                        <button class="calculator-btn" type="button" id="calc_button_digit_1">1</button>
-                        <button class="calculator-btn" type="button" id="calc_button_digit_2">2</button>
-                        <button class="calculator-btn" type="button" id="calc_button_digit_3">3</button>
-                        <button class="calculator-btn" type="button" id="calc_button_minus">-</button>
-                    </div>
-                    <div class="row justify-content-center">
-                        <button class="calculator-btn" type="button" id="calc_button_digit_0">0</button>
-                        <button class="calculator-btn" type="button" id="calc_button_decimal">.</button>
-                        <button class="calculator-btn" type="button" id="calc_button_equal">=</button>
-                        <button class="calculator-btn" type="button" id="calc_button_plus">+</button>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-xl-4 col-md-6" style="padding-top: 40px">
-                    <div class="row justify-content-center">
-                        <button class="calculator-btn" type="button" id="calc_button_vector">Vec</button>
-                        <button class="calculator-btn" type="button" id="calc_button_matrix"><sup>n</sup>C<sub>r</sub></button>
-                        <button class="calculator-btn" type="button" id="calc_button_deg"><sup>o</sup></button>
-                        <button class="calculator-btn" type="button" id="calc_button_rad">rad</button>
-                    </div>
-                    <div class="row justify-content-center">
-                        <button class="calculator-btn-lg" type="button" id="calc_button_arrow_left"><i class="bi bi-arrow-left align-middle"></i></button>
-                        <button class="calculator-btn-lg" type="button" id="calc_button_arrow_right"><i class="bi bi-arrow-right align-middle"></i></button>
-                    </div>
-                    <div class="row justify-content-center">
-                        <button class="calculator-btn-lg" type="button" id="calc_button_3sf">3s.f.</button>
-                        <button class="calculator-btn-lg" type="button" id="calc_button_1dp">1d.p.</button>
-                    </div>
-                    <div class="row justify-content-center">
-                        <button class="calculator-btn-lg" type="button" id="calc_button_static">Static</button>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group mt-3">
-                <button onclick="calc_ans()" type="submit" class="btn btn-primary" id="ans" name="action" value="">Upload</button>
-            </div>
-        </div>
+            </fieldset>
+        </form>
     </div>
-</form>
 {% endblock content %}

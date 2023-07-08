@@ -1,0 +1,92 @@
+{% extends "layout.html" %} <!--inherit from parent html-->
+{% block content %} <!--block content here replaces block content in parent-->
+<form method="POST" action=""novalidate>
+    <div class="content-section" style="min-height:50vh">
+        <h3 class="mt-5 text-center">All Homework</h3>
+        {% if current_user.account_type == 'Admin' %}
+            <div class="container-fluid text-center">
+                <a class="btn btn-primary btn-sm mt-1 mb-1" href="{{ url_for('homeworks.new_homework') }}">New Homework <i class="fa-solid fa-square-plus"></i></a>
+            </div> 
+            {{ form.hidden_tag() }} <!--important, just add lol-->
+            <legend class="border-bottom mb-4">{{ legend }}</legend>
+            <div class="form-row">
+                <div class="col">
+                    {{ form.student.label(class="form-control-label") }}
+                    {% if form.student.errors %}
+                        {{ form.student(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.student.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.student(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="my-4 text-center">
+                <input type="submit" class="btn btn-outline-info" type="reset" name="action" value="Load Homework"/>
+            </div>
+            <hr>
+        {% endif %}
+        {% for homework in homeworks.items %}
+            <div class="col w-100 my-3">
+                <article class="media content-section">
+                    <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + homework.author.image_file) }}">
+                    <div class="media-body">
+                        <div class="article-metadata text-left">
+                            <a class="mr-2">Posted by: {{ homework.author.username }}</a> 
+                            <small class="text-muted">Date Posted: {{ homework.date_posted.strftime('%Y-%m-%d') }}</small>
+                            {% if df[df['id']==homework.id]['attempt_percentage'].tolist()[0] == 100 %}
+                                <medium><span class="badge badge-pill badge-success float-right">Completed </span></medium>
+                            {% elif df[df['id']==homework.id]['attempt_percentage'].tolist()[0] == 0 %}
+                                <medium><span class="badge badge-pill badge-danger float-right">New!</span></medium>
+                            {% else %}
+                                <medium><span class="badge badge-pill badge-warning float-right">In Progress </span></medium>
+                            {% endif %}
+                        </div>
+                        <a class="article-title" href="{{ url_for('homeworks.homework', homework_id=homework.id) }}">
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <ul class="list-unstyled">
+                                        <li class="text-center">{{ homework.title }}</li>
+                                        <li class="text-center">No. of Questions: {{ df[df['id']==homework.id]['count'].tolist()[0] }}</li>
+                                        <li class="text-center">Due Date: {{ homework.deadline.strftime("%d %b %Y") }}</li>
+                                        <li class="text-center">Grade: {{ df[df['id']==homework.id]['correct_percentage'].tolist()[0] }}%</li>
+                                        <li class="mt-3 mb-0 text-left">
+                                            <h7 class="text-left">Attempt Progress: </h7>
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style=
+                                                "width: {{ df[df['id']==homework.id]['attempt_percentage'].tolist()[0] }}%">{{ df[df['id']==homework.id]['attempt_percentage'].tolist()[0] }}%</div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </article>
+            </div>
+        {% endfor %}
+        {% for page_num in homeworks.iter_pages() %} <!--define how many pages to show on bottom both sides-->
+            {% if page_num %}
+                {% if homeworks.page==page_num %} <!--different style for current page button-->
+                    {% if current_user.account_type == 'Admin' %}
+                    <a class="btn btn-info mb-4" href="{{ url_for('homeworks.homework_all', page=page_num, student=form.student.data) }}">{{ page_num }}</a>
+                    {% else %}
+                    <a class="btn btn-info mb-4" href="{{ url_for('homeworks.homework_all', page=page_num, student='ALL') }}">{{ page_num }}</a>
+                    {% endif %}
+                {% else %}
+                    {% if current_user.account_type == 'Admin' %}
+                    <a class="btn btn-outline-info mb-4" href="{{ url_for('homeworks.homework_all', page=page_num, student=form.student.data) }}">{{ page_num }}</a>
+                    {% else %}
+                    <a class="btn btn-outline-info mb-4" href="{{ url_for('homeworks.homework_all', page=page_num, student='ALL') }}">{{ page_num }}</a>
+                    {% endif %}
+                {% endif %}
+            {% else %}
+                ...
+            {% endif %}
+        {% endfor %}
+    </div>
+</form>
+{% endblock content %}

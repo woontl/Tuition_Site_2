@@ -1,209 +1,197 @@
 {% extends "layout.html" %} 
 {% block javaScript %}
-    <script src="{{ url_for('static', filename='javascripts/calender.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='javascripts/today_datetime.js') }}" defer></script>
 {% endblock %}
 {% block content %} 
-<div class="container">
-    <div class="row mx-0">
-        <div class="col-md-12 col-lg-12 col-xl-9">
-            <div class="d-flex align-items-start flex-column">
-                <h2 class="fw-bold my-auto">Welcome back, {{ current_user.username }}! <i class="bi bi-emoji-sunglasses fs-4"></i></h2>
-                <h6 class="mt-1">What should we do today?</h6>
-            </div>
-            <div class="row" style="padding-top: 60px;">
-                <div class="mb-1">
-                    <h2 class="fw-bold">At a Glance</h2>
-                </div>
+    <div class="content-section text-center" style="min-height:50vh">
+        <div class="container-fluid">
+            <div class="row">
                 <div class="col">
-                    {% if homework %}
-                    <a class="article-title text-decoration-none expand-link w-100" href="{{ url_for('homeworks.homework', homework_id=homework.id) }}">
-                    {% else %}
-                    <a class="article-title text-decoration-none expand-link w-100">
-                    {% endif %}
-                        <div class="p-3 aga_latest_homework">
-                            <div class="d-flex justify-content-between">
-                                <div class="circle-icon p-4">
-                                    <i class="bi bi-book fs-4 black-white"></i>
+                    <div class="col w-100 my-3">
+                        <article class="media content-section">
+                            <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + current_user.image_file) }}">
+                            <div class="media-body">
+                                <div class="text-left">
+                                    <h3 class="">
+                                        {% if current_user.account_type == 'Admin' %}
+                                        Admin Dashboard
+                                        {% else %}
+                                        Student Dashboard
+                                        {% endif %}
+                                    </h3>
+                                    <h5 class="align-self-center text-muted">Hi {{ current_user.username }}! What do you wish to do today?</h5>
                                 </div>
-                                {% if homework %}
-                                    {% if df[df['id']==homework.id]['attempt_percentage'].tolist()[0] == 100 %}
-                                        <span class="badge rounded-pill bg-success my-auto">Completed</span>
-                                    {% elif df[df['id']==homework.id]['attempt_percentage'].tolist()[0] == 0 %}
-                                        <span class="badge rounded-pill bg-danger my-auto">New!</span>
-                                    {% else %}
-                                        <span class="badge rounded-pill bg-warning my-auto">In Progress</span>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="d-flex justify-content-between mt-5">
+                        <h3 class="text-left mx-3">Latest Homework</h3>
+                        <a class="btn btn-primary" href="{{ url_for('homeworks.homework_all', student='ALL') }}">View All</a>
+                    </div>
+                    <hr>
+                    {% if homework %}
+                        <div class="col w-100 my-3">
+                            <article class="media content-section">
+                                <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + homework.author.image_file) }}">
+                                <div class="media-body">
+                                    <div class="article-metadata text-left">
+                                        <a class="mr-2">Posted by: {{ homework.author.username }}</a> 
+                                        <small class="text-muted">Date Posted: {{ homework.date_posted.strftime('%Y-%m-%d') }}</small>
+                                        {% if df[df['id']==homework.id]['attempt_percentage'].tolist()[0] == 100 %}
+                                            <medium><span class="badge badge-pill badge-success float-right">Completed </span></medium>
+                                        {% elif df[df['id']==homework.id]['attempt_percentage'].tolist()[0] == 0 %}
+                                            <medium><span class="badge badge-pill badge-danger float-right">New!</span></medium>
+                                        {% else %}
+                                            <medium><span class="badge badge-pill badge-warning float-right">In Progress </span></medium>
+                                        {% endif %}
+                                    </div>
+                                    <a class="article-title" href="{{ url_for('homeworks.homework', homework_id=homework.id) }}">
+                                        <div class="row mt-3">
+                                            <div class="col-12">
+                                                <ul class="list-unstyled">
+                                                    <li class="text-center">{{ homework.title }}</li>
+                                                    <li class="text-center">No. of Questions: {{ df[df['id']==homework.id]['count'].tolist()[0] }}</li>
+                                                    <li class="text-center">Due Date: {{ homework.deadline.strftime("%d %b %Y") }}</li>
+                                                    <li class="text-center">Grade: {{ df[df['id']==homework.id]['correct_percentage'].tolist()[0] }}%</li>
+                                                    <li class="mt-3 mb-0 text-left">
+                                                        <h7 class="text-left">Progress: </h7>
+                                                        <div class="progress">
+                                                            <div class="progress-bar" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style=
+                                                            "width: {{ df[df['id']==homework.id]['attempt_percentage'].tolist()[0] }}%">{{ df[df['id']==homework.id]['attempt_percentage'].tolist()[0] }}%</div>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </article>
+                        </div>
+                    {% endif %}
+                    <!--
+                    <div class="d-flex justify-content-between mt-5">
+                        <h3 class="text-left mx-3">Latest Class Notes</h3>
+                        <a class="btn btn-primary" href="{{ url_for('notes.notes_all', student='ALL') }}">View All</a>
+                    </div>
+                    <hr>
+                    {% if note %}
+                        <div class="col w-100 my-3">
+                            <article class="media content-section">
+                                <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + note.author.image_file) }}">
+                                <div class="media-body">
+                                    <div class="article-metadata text-left">
+                                        <a class="mr-2">Posted by: {{ note.author.username }}</a> 
+                                        <small class="text-muted">Date Posted: {{ note.date_posted.strftime('%Y-%m-%d') }}</small>
+                                        {% if note.date_posted.strftime('%Y-%m-%d') == date_now %}
+                                        <medium><span class="badge badge-pill badge-danger float-right">New!</span></medium>
+                                        {% endif %}
+                                    </div>
+                                    <a class="article-title" href="{{ url_for('notes.note', note_id=note.id) }}">
+                                        <div class="row mt-3">
+                                            <div class="col-12">
+                                                <ul class="list-unstyled">
+                                                    <li class="text-center">{{ note.title }}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </article>
+                        </div>
+                    {% endif %}
+                    -->
+                    <div class="d-flex justify-content-between mt-5">
+                        <h3 class="text-left mx-3">Activities</h3>
+                    </div>
+                    <hr>
+                    {% if activities %}
+                        <div class="col w-100">
+                            {% for activity in activities[0:5] %}
+                                <article class="media content-section my-1">
+                                    <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + activity.author.image_file) }}">
+                                    <div class="media-body">
+                                        <div class="article-metadata text-left">
+                                            <a class="mr-2">Posted by: {{ activity.author.username }}</a> 
+                                            <small class="text-muted">~{{ activities_date_arr[loop.index-1] }} hours ago</small>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-12">
+                                                <div>{{ activity.description }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article>
+                            {% endfor %}
+                        </div>
+                        <button class="btn btn-link my-1" type="button" data-toggle="collapse" data-target="#moreactivities" aria-expanded="false" aria-controls="collapseExample">
+                            <i class="fa-solid fa-angle-down"></i></button>
+                        <div class="collapse" id="moreactivities">
+                            <div class="col w-100">
+                            {% for activity in activities[5:20] %}
+                                <article class="media content-section my-1">
+                                    <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + activity.author.image_file) }}">
+                                    <div class="media-body">
+                                        <div class="article-metadata text-left">
+                                            <a class="mr-2">Posted by: {{ activity.author.username }}</a> 
+                                            <small class="text-muted">~{{ activities_date_arr[loop.index+5-1] }} hours ago</small>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-12">
+                                                <div>{{ activity.description }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article>
+                            {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                {% if current_user.account_type=='User' %}
+                <div class="col-4 d-none d-lg-block d-xl-block">
+                    <div class="col w-100 my-3">
+                    <article class="media content-section">
+                        <div class="media-body">
+                            <div class="d-flex text-left">
+                                <h3 class="mx-2">Dates</h3>
+                                <a class="btn btn-link" href="{{ url_for('users.user_dates', username = current_user.username) }}"><i class="fa-solid fa-pen-to-square"></i></a>
+                            </div>
+                            {% if current_user.description1 %}
+                                <ul class="list-group">
+                                    <li class="list-group-item list-group-item-light">{{ current_user.description1 }}:<br> {{ current_user.date1}} {{ current_user.time1 }}</li>
+                                    {% if current_user.description2 %}
+                                    <li class="list-group-item list-group-item-light">{{ current_user.description2 }}:<br> {{ current_user.date2}} {{ current_user.time2 }}</li>
                                     {% endif %}
-                                {% endif %}
+                                    {% if current_user.description3 %}
+                                    <li class="list-group-item list-group-item-light">{{ current_user.description3 }}:<br> {{ current_user.date3}} {{ current_user.time3 }}</li>
+                                    {% endif %}
+                                    {% if current_user.description4 %}
+                                    <li class="list-group-item list-group-item-light">{{ current_user.description4 }}:<br> {{ current_user.date4}} {{ current_user.time4 }}</li>
+                                    {% endif %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    </article>
+                    <article class="media content-section">
+                        <div class="media-body">
+                            <div class="d-flex text-left">
+                                <h3 class="mx-2">Topics</h3>
+                                <a class="btn btn-link" href="{{ url_for('users.user_topics', username = current_user.username) }}"><i class="fa-solid fa-pen-to-square"></i></a>
                             </div>
-                            <div class="mt-4" style="width: 100%">
-                                <h4 class="fw-bold my-auto text-center">Latest Homework</h4>
-                                {% if homework %}
-                                    <h5 class="mt-2 text-center">{{ homework.title }}</h5>
-                                    <div class="aga_bubble mt-4">
-                                        <div class="d-flex align-items-center justify-content-center my-3">
-                                            <i class="bi bi-question-circle fs-4 black-white my-auto"></i>
-                                            <h6 class="my-auto ms-2">{{ df[df['id']==homework.id]['count'].tolist()[0] }}</h6>
-                                        </div>
-                                        <div class="d-flex align-items-center justify-content-center my-3">
-                                            <i class="bi bi-check2-circle fs-4 black-white my-auto"></i>
-                                            <h6 class="my-auto ms-2">{{ df[df['id']==homework.id]['correct_percentage'].tolist()[0] }}%</h6>
-                                        </div>
-                                        <div class="d-flex align-items-center justify-content-center my-3">
-                                            <i class="bi bi-clock fs-4 black-white my-auto"></i>
-                                            <h6 class="my-auto ms-2">{{ df[df['id']==homework.id]['homework_due_days'].tolist()[0] }} days</h6>
-                                        </div>
-                                    </div>
-                                {% endif %}
-                            </div>
+                            <ul class="list-group">
+                                {% for topic in topics %}
+                                    {% if checks[ loop.index-1 ] == '1' %}
+                                        <li class="list-group-item list-group-item-light"><i class="fa-solid fa-check" style="color: green"></i> Topic {{ loop.index }}:<br> {{ topic }}</li>
+                                    {% else %}
+                                        <li class="list-group-item list-group-item-light">Topic {{ loop.index }}:<br> {{ topic }}</li>       
+                                    {% endif %} 
+                                {% endfor %}
+                            </ul>
                         </div>
-                    </a>
+                    </article>
                 </div>
-                <div class="col">
-                    {% if lesson %}
-                    <a class="article-title text-decoration-none expand-link w-100" href="{{ url_for('lessons.lesson', lesson_id=lesson.id) }}">
-                    {% else %}
-                    <a class="article-title text-decoration-none expand-link w-100">
-                    {% endif %}
-                        <div class="p-3 aga_latest_lesson">
-                            <div class="circle-icon p-4">
-                                <i class="bi bi-pencil fs-4 black-white"></i>
-                            </div>
-                            <div class="mt-4" style="width: 100%">                
-                                <h4 class="fw-bold my-auto text-center">Latest Lesson</h4>
-                                {% if homework %}
-                                    <h5 class="mt-2 text-center">{{ lesson.title }}</h5>
-                                    <div class="aga_bubble mt-4">
-                                        <div class="d-flex align-items-center justify-content-center my-3">
-                                            <i class="bi bi-calendar-event fs-4 black-white"></i>
-                                            <h6 class="my-auto ms-2">{{ lesson.date_posted.strftime('%d/%m/%Y') }}</h6>
-                                        </div>
-                                        <div class="d-flex align-items-center justify-content-center my-3">
-                                            <i class="bi bi-list-task fs-4 black-white"></i>
-                                            <h6 class="my-auto ms-2">Calculus</h6>
-                                        </div>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </a>
-                </div>
+                {% endif %}
             </div>
-            <div class="row" style="padding-top: 60px;">
-                <div class="mb-1">
-                    <h2 class="fw-bold">Your Learning Progress</h2>
-                    <h6 class="">Keep it up! You are doing great!</h6>
-                </div>
-                <svg viewBox="0 0 100 50" width="200px">
-                    <path class="progress-background" d="M10 50 A40 40 0 1 1 90 50"></path>
-                    <path class="progress-bar" d="M10 50 A40 40 0 1 1 90 50"></path>
-                    {% if dark_mode %}
-                    <text x="50" y="32" text-anchor="middle" class="progress-text" fill="white" style="font-size: 12px;">{{ course_progress*100 }}%</text>
-                    <text x="50" y="40" text-anchor="middle" class="progress-text" fill="white" style="font-size: 4px;">Syllabus Completed!</text>
-                    {% else %}
-                    <text x="50" y="32" text-anchor="middle" class="progress-text" fill="black" style="font-size: 12px;">{{ course_progress*100 }}%</text>
-                    <text x="50" y="40" text-anchor="middle" class="progress-text" fill="black" style="font-size: 4px;">Syllabus Completed!</text>
-                    {% endif %}
-                    <svg x="46" y="44" xmlns="http://www.w3.org/2000/svg" width="6" height="6" fill="gold" class="bi bi-trophy" viewBox="0 0 16 16">
-                        <path d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5zm.099 2.54a2 2 0 0 0 .72 3.935c-.333-1.05-.588-2.346-.72-3.935zm10.083 3.935a2 2 0 0 0 .72-3.935c-.133 1.59-.388 2.885-.72 3.935zM3.504 1c.007.517.026 1.006.056 1.469.13 2.028.457 3.546.87 4.667C5.294 9.48 6.484 10 7 10a.5.5 0 0 1 .5.5v2.61a1 1 0 0 1-.757.97l-1.426.356a.5.5 0 0 0-.179.085L4.5 15h7l-.638-.479a.501.501 0 0 0-.18-.085l-1.425-.356a1 1 0 0 1-.757-.97V10.5A.5.5 0 0 1 9 10c.516 0 1.706-.52 2.57-2.864.413-1.12.74-2.64.87-4.667.03-.463.049-.952.056-1.469H3.504z"/>
-                    </svg>
-                </svg>
-                <!-- {% set visible_length = 100 %} -->
-                {% set invisible_length = 251 %}
-                <!-- 100% is 126 -->
-                <style>
-                    @keyframes progress {
-                      to {
-                        stroke-dasharray: {{ course_progress*126 }} {{ invisible_length }};
-                      }
-                    }
-                </style>  
-            </div>
-            <div class="row" style="padding-top: 60px;">
-                <div class="mb-1">
-                    <h2 class="fw-bold">Statistics</h2>
-                </div>
-                <div class="col-4">
-                    <div class="py-2 px-1 stats_homework text-center d-flex align-items-between">
-                      <div class="text-center" style="width: 100%">
-                        <div class="d-flex flex-column align-items-center">
-                          <h1 class="fw-bold display-1 mb-0">{{ homework_count }}</h1>
-                          <h6 class="fw-bold">Homework Completed</h6>
-                        </div>
-                      </div>
-                    </div>
-                </div>
-                <div class="col-4">
-                    <div class="py-2 px-1 stats_question text-center d-flex align-items-between">
-                      <div class="text-center" style="width: 100%">
-                        <div class="d-flex flex-column align-items-center">
-                          <h1 class="fw-bold display-1 mb-0">{{ question_count }}</h1>
-                          <h6 class="fw-bold">Questions Solved</h6>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-4">
-                    <div class="py-2 px-1 stats_lesson text-center d-flex align-items-between">
-                      <div class="text-center" style="width: 100%">
-                        <div class="d-flex flex-column align-items-center">
-                          <h1 class="fw-bold display-1 mb-0">{{ lesson_count }}</h1>
-                          <h6 class="fw-bold">Lessons Completed</h6>
-                        </div>
-                      </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 d-none d-xl-block">
-            <h2 class="fw-bold">Profile</h2>
-            <div style="padding-top: 10px;">
-                <div class="d-flex">
-                    <img class="rounded-circle article-img mx-auto my-3 border border-white" height="120px" width="120px" src="{{ url_for('static', filename='profile_pics/' + current_user.image_file) }}">
-                </div>
-                <div class="text-center">
-                    <h5 class="fw-bold">{{ current_user.username }}</h5>
-                    <h5 class="fw-bold">Grade: {{ current_user.grade }}</h5>
-                </div>
-            </div>
-            <div style="padding-top: 60px;">
-                <h1 class="fw-bold display-1 text-center">30</h1>
-                <h6 class="fw-bold text-center">Days to Finals Paper 1</h6>
-            </div>
-            <div class="calendar calendar-first" id="calendar_first" style="padding-top: 60px;">
-                <div class="calendar_header">
-                    <button class="switch-month switch-left"> <i class="fa fa-chevron-left"></i></button>
-                     <h2></h2>
-                    <button class="switch-month switch-right"> <i class="fa fa-chevron-right"></i></button>
-                </div>
-                <div class="calendar_weekdays"></div>
-                <div class="calendar_content"></div>
-            </div>
-            <div style="padding-top: 20px;">
-                <div class="p-3 calender_upcoming text-center d-flex align-items-center">
-                    <i class="bi bi-calendar-date fs-4 black-white text-start"></i>
-                    <h5 class="fw-bold my-auto text-start ms-3">{{ homework.title }} Due</h5>
-                </div>
-            </div>
-            <div style="padding-top: 20px;">
-                <div class="p-3 calender_upcoming text-center d-flex align-items-center">
-                    <i class="bi bi-calendar-date fs-4 black-white text-start"></i>
-                    <h5 class="fw-bold my-auto text-start ms-3">Math tuition</h5>
-                </div>
-            </div>
-            <div style="padding-top: 20px;">
-                <div class="p-3 calender_upcoming text-center d-flex align-items-center">
-                    <i class="bi bi-calendar-date fs-4 black-white text-start"></i>
-                    <h5 class="fw-bold my-auto text-start ms-3">Finals Paper 1</h5>
-                </div>
-            </div>
-            <div style="padding-top: 20px;">
-                <div class="p-3 calender_upcoming text-center d-flex align-items-center">
-                    <i class="bi bi-calendar-date fs-4 black-white text-start"></i>
-                    <h5 class="fw-bold my-auto text-start ms-3">Finals Paper 2</h5>
-                </div>
-            </div>
-            <img class="img-fluid my-auto mx-auto" style="width: auto; height: auto;" src="{{ url_for('static', filename='icons/calendar-main.png') }}">
         </div>
     </div>
-</div>
 {% endblock content %}

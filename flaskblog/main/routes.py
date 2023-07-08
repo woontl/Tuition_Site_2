@@ -1,41 +1,22 @@
 from flask import render_template as real_render_template, Blueprint, url_for, flash, redirect, request
 from flask_login import login_required, current_user
 from flaskblog import db
-from flaskblog.models import Homework, Question, Working, Note, Activity, Changelog, Bug, Course, Lesson
+from flaskblog.models import Homework, Question, Working, Note, Activity, Changelog, Bug
 from flaskblog.main.forms import ChangelogForm, BugForm
 import pandas as pd
 import datetime as datetime
-from datetime import timedelta
 
 main = Blueprint('main', __name__) #creating an instance, to be imported
 
 def render_template(*args, **kwargs):
-    try:
-        dark_mode = current_user.dark_mode
-    except:
-        dark_mode = 'On'
+    flash('Website has a new version upgrade. Kindly clear your cache!', 'success')
     version = Changelog.query.order_by(Changelog.id.desc()).first()
-    if current_user.account_type == 'Admin':
-        activities = Activity.query.order_by(Activity.date_posted.desc()).limit(5).all()
-    else:
-        activities = Activity.query.filter_by(student_id=current_user.id).order_by(Activity.date_posted.desc()).limit(5).all()
-    date_now = datetime.datetime.now()
-    activities_date_arr=[]
-    for activity in activities:
-        activities_date_arr.append(round((date_now-activity.date_posted).total_seconds()/3600/24))
     if version == None:
-        return real_render_template(*args, **kwargs, version='V1.0.0', dark_mode=dark_mode, activities=activities, 
-                           activities_date_arr=activities_date_arr)
+        return real_render_template(*args, **kwargs, version='V1.0.0')
     else:
-        return real_render_template(*args, **kwargs, version=version.version, dark_mode=dark_mode, activities=activities, 
-                           activities_date_arr=activities_date_arr)
+        return real_render_template(*args, **kwargs, version=version.version)
 
-@main.route("/") 
-def landing_page():
-    if current_user.is_authenticated:
-        return redirect(url_for('main.home'))
-    return render_template('landing_page.html')
-    
+@main.route("/") #Routes are created bring our browers to different pages. "/" represents the root or home page
 @main.route("/home") #Both routes bring to the same page
 @login_required
 def home():
@@ -48,26 +29,12 @@ def home():
         checks = []
     if current_user.account_type == 'Admin':
         homework = Homework.query.order_by(Homework.date_posted.desc()).first()
-        lesson = Lesson.query.order_by(Lesson.date_posted.desc()).first()
         note = Note.query.order_by(Note.date_posted.desc()).first()
-        homework_count = 0
-        question_count = 0
-        lesson_count = 0
-        course_progress = 1
+        activities = Activity.query.order_by(Activity.date_posted.desc()).all()
     else:
         homework = Homework.query.filter_by(student_id=current_user.id).order_by(Homework.date_posted.desc()).first()
-        homework_count = len(Homework.query.filter_by(student_id=current_user.id).order_by(Homework.date_posted.desc()).all())
-        question_count = 0
-        for id in Homework.query.filter_by(student_id=current_user.id).order_by(Homework.date_posted.desc()).all():
-            question_count += len(Question.query.filter_by(homework_id=id.id).all())
-        lesson = Lesson.query.filter_by(student_id=current_user.id).order_by(Lesson.date_posted.desc()).first()
-        lesson_count = len(Lesson.query.filter_by(student_id=current_user.id).order_by(Lesson.date_posted.desc()).all())
         note = Note.query.filter_by(student_id=current_user.id).order_by(Note.date_posted.desc()).first()
-        course_progress = Course.query.filter_by(student_id=current_user.id).first().checked.split(';')
-        topics = Course.query.filter_by(student_id=current_user.id).first().topics.split(';')
-        total_checks = sum(topic is not '' for topic in topics)*4
-        checks = sum(int(progress) for progress in (course_progress))
-        course_progress = (checks/total_checks)
+        activities = Activity.query.filter_by(student_id=current_user.id).order_by(Activity.date_posted.desc()).all()
     if homework == None:
         homework = []
         id_arr = []
@@ -76,12 +43,9 @@ def home():
     if note == None:
         note = []
     date_now = datetime.datetime.now()
-    try:
-        homework_due_days = round((homework.deadline - date_now) / timedelta(days=1))
-        if homework_due_days < 0:
-            homework_due_days = '-'
-    except:
-        homework_due_days = '-'
+    activities_date_arr=[]
+    for activity in activities:
+        activities_date_arr.append(round((date_now-activity.date_posted).total_seconds()/3600))
     pt_arr = []
     question_count_arr = []
     attempt_percentage_arr = []
@@ -108,23 +72,9 @@ def home():
         else:
             attempt_percentage_arr.append(0)
             correct_percentage_arr.append(0)
-    df = pd.DataFrame({'id': id_arr, 'pt': pt_arr, 'count': question_count_arr, 'attempt_percentage': attempt_percentage_arr,
-     'correct_percentage': correct_percentage_arr, 'homework_due_days': homework_due_days})
-    return render_template('home.html', image_file=image_file, homework=homework, note=note,df=df, topics=topics, 
-                            checks=checks, homework_count=homework_count, question_count=question_count, lesson = lesson,
-                            lesson_count=lesson_count, course_progress=course_progress) 
-
-@main.route("/activity_readall", methods=['POST']) #Both routes bring to the same page
-@login_required
-def activity_readall():
-    if current_user.account_type == 'Admin':
-        activities = Activity.query.all()
-    else:
-        activities = Activity.query.filter_by(student_id=current_user.id).all()
-    for activity in activities:
-        activity.read_tag = 1
-    db.session.commit()
-    return '', 204
+    df = pd.DataFrame({'id': id_arr, 'pt': pt_arr, 'count': question_count_arr, 'attempt_percentage': attempt_percentage_arr, 'correct_percentage': correct_percentage_arr})
+    return render_template('home.html', image_file=image_file, homework=homework, note=note, activities=activities, 
+                           activities_date_arr=activities_date_arr,df=df, topics=topics, checks=checks) 
 
 @main.route("/changelog")
 @login_required

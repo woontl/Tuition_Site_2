@@ -1,113 +1,106 @@
 {% extends "layout.html" %} <!--inherit from parent html-->
 {% block content %} <!--block content here replaces block content in parent-->
-<form method="POST" action=""novalidate enctype="multipart/form-data"> <!--post form via the route created-->
-    {{ form.hidden_tag() }}
-    <div class="container">
-        <div class="row mx-0">
-            <div class="col-md-12 col-lg-12 col-xl-12">
-                <div class="d-flex">
-                    <h2 class="fw-bold">Questionbank</h2>
-                    {% if current_user.account_type == 'Admin' %}
-                    <a class="btn btn-primary btn-icon ms-3 my-auto" href="{{ url_for('homeworks.upload_questionbank') }}"><i class="bi bi-file-earmark-plus align-middle"></i></a>
-                    <a class="btn btn-warning btn-icon ms-3 my-auto" href="{{ url_for('homeworks.edit_tags') }}"><i class="bi bi-pencil-square text-white align-middle"></i></a>
+    <div class="content-section">
+        <h3 class="mt-5 text-center">Questionbank</h3>
+        <div class="container-fluid text-center">
+            {% if current_user.account_type == 'Admin' %}
+                <a class="btn btn-primary btn-sm mt-1 mb-1" href="{{ url_for('homeworks.upload_questionbank') }}">Upload New Question <i class="fa-solid fa-square-plus"></i></a>
+                <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('homeworks.edit_tags') }}">Edit Tags <i class="fa-solid fa-pencil"></i></a>
+            {% endif %}
+        </div>
+        <form method="POST" action=""novalidate> <!--post form via the route created-->
+            {{ form.hidden_tag() }} <!--important, just add lol-->
+            <legend class="border-bottom mb-4">{{ legend }}</legend>
+            <div class="form-row">
+                <div class="col">
+                    {{ form.grade.label(class="form-control-label") }}
+                    {% if form.grade.errors %}
+                        {{ form.grade(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.grade.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.grade(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
-                <hr class="black-white">
-                <div class="row" style="padding-top: 20px;">
-                    <div class="col">
-                        <div class="form-group">
-                            <h5 class="fw-bold">Grade</h5>
-                            {% if form.grade.errors %}
-                                {{ form.grade(class="form-control form-control-lg is-invalid") }}
-                                <div class="invalid-feedback">
-                                    {% for error in form.grade.errors %}
-                                        <span>{{ error }}</span>
-                                    {% endfor %}
-                                </div>
-                            {% else %}
-                                {{ form.grade(class="form-control form-control-lg") }}
-                            {% endif %}
+                <div class="col">
+                    {{ form.tags.label(class="form-control-label") }}
+                    {% if form.tags.errors %}
+                        {{ form.tags(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.tags.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
                         </div>
-                    </div>
-                    <div class="col">
-                        <div class="form-group">
-                            <h5 class="fw-bold">Tags</h5>
-                            {% if form.tags.errors %}
-                                {{ form.tags(class="form-control form-control-lg is-invalid") }}
-                                <div class="invalid-feedback">
-                                    {% for error in form.tags.errors %}
-                                        <span>{{ error }}</span>
-                                    {% endfor %}
-                                </div>
-                            {% else %}
-                                {{ form.tags(class="form-control form-control-lg") }}
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="form-group">
-                            <h5 class="fw-bold">Difficulty</h5>
-                            {% if form.difficulty.errors %}
-                                {{ form.difficulty(class="form-control form-control-lg is-invalid") }}
-                                <div class="invalid-feedback">
-                                    {% for error in form.difficulty.errors %}
-                                        <span>{{ error }}</span>
-                                    {% endfor %}
-                                </div>
-                            {% else %}
-                                {{ form.difficulty(class="form-control form-control-lg") }}
-                            {% endif %}
-                        </div>
-                    </div>
+                    {% else %}
+                        {{ form.tags(class="form-control form-control-lg") }}
+                    {% endif %}
                 </div>
-                <div class="form-group d-flex justify-content-center" style="padding-top: 40px;">
-                    <input type="submit" class="btn btn-outline-info" type="reset" name="action" value="Load Questions" />
-                </div>                  
-                {% if images %}
+                <div class="col">
+                    {{ form.difficulty.label(class="form-control-label") }}
+                    {% if form.difficulty.errors %}
+                        {{ form.difficulty(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.difficulty.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.difficulty(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="my-4 text-center">
+                <input type="submit" class="btn btn-outline-info" type="reset" name="action" value="Load Questions"/>
+            </div>
+            <hr>
+            {% if images %}
                 {% for image in images.items %}
-                <div class="d-flex" style="padding-top: 40px;">
-                    <div class="media" style="width: 100%">
-                        <img class="img-fluid rounded" src="{{ url_for('static', filename='questionbank/' + image.img) }}" style="width: 98%; height: auto; min-height: 150px">
-                    </div>       
-                    {% if current_user.account_type == 'Admin' %}     
-                    <div class="d-flex flex-column justify-content-start">
-                        <a class="btn btn-warning btn-icon" href="{{ url_for('homeworks.update_questionbank',questionbank_id=image.id) }}"><i class="bi bi-pencil-square text-white align-middle"></i></a>
-                        <button type="button" class="btn btn-danger btn-icon mt-3" data-bs-toggle="modal" data-bs-target="#deleteQuestion"><i class="bi bi-trash align-middle"></i></button>    
+                    <div class="content-section">
+                        <div class="media align-items-center">
+                            <img class="w-75 rounded" src="{{ url_for('static', filename='questionbank/' + image.img) }}">
+                            <div class="text-center media-body">
+                                {% if current_user.account_type == 'Admin' %}
+                                    <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{{ url_for('homeworks.update_questionbank',questionbank_id=image.id) }}">Update <i class="fa-solid fa-pen-to-square"></i></a>
+                                    <a class="btn btn-danger btn-sm mt-1 mb-1" href="{{ url_for('homeworks.delete_questionbank',questionbank_id=image.id) }}">Delete <i class="fa-solid fa-trash-can"></i></a>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
                     <!--Modal-->
-                    <div class="modal fade" id="deleteQuestion" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
+                    <div class="modal fade" id="deleteQB{{image.id}}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
                             <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title text-black" id="exampleModalLabel">Delete Question?</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-footer">
-                                <a type="button" class="btn btn-danger" href="{{ url_for('homeworks.delete_questionbank',questionbank_id=image.id) }}">Delete</a>
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
+                                <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModalLabel">Delete Questionbank?</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <form action="{{ url_for('homeworks.delete_questionbank', questionbank_id=image.id) }}" method="POST">
+                                        <input class="btn btn-danger" type="submit" value="Delete">
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    {% endif %}
-                </div>
                 {% endfor %}
-                {% endif %}
-            </div>
-            <div class="mt-3">
-                {% for page_num in images.iter_pages() %} <!--define how many pages to show on bottom both sides-->
-                    {% if page_num %}
-                        {% if images.page==page_num %} <!--different style for current page button-->
-                            <a class="btn btn-info mb-4" href="{{ url_for('homeworks.questionbank', page=page_num, grade=form.grade.data, tags=form.tags.data, difficulty = form.difficulty.data) }}">{{ page_num }}</a>
-                        {% else %}
-                            <a class="btn btn-outline-info mb-4" href="{{ url_for('homeworks.questionbank', page=page_num, grade=form.grade.data, tags=form.tags.data, difficulty = form.difficulty.data) }}">{{ page_num }}</a>
-                        {% endif %}
+            {% endif %}
+            {% for page_num in images.iter_pages() %} <!--define how many pages to show on bottom both sides-->
+                {% if page_num %}
+                    {% if images.page==page_num %} <!--different style for current page button-->
+                        <a class="btn btn-info mb-4" href="{{ url_for('homeworks.questionbank', page=page_num, grade=form.grade.data, tags=form.tags.data, difficulty = form.difficulty.data) }}">{{ page_num }}</a>
                     {% else %}
-                        ...
+                        <a class="btn btn-outline-info mb-4" href="{{ url_for('homeworks.questionbank', page=page_num, grade=form.grade.data, tags=form.tags.data, difficulty = form.difficulty.data) }}">{{ page_num }}</a>
                     {% endif %}
-                {% endfor %}
-            </div>
-        </div>    
+                {% else %}
+                    ...
+                {% endif %}
+            {% endfor %}
+        </form>
     </div>
-</form>
 {% endblock content %}

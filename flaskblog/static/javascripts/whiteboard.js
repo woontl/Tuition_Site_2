@@ -1,4 +1,3 @@
-
 // Adapted from https://github.com/TomHumphries/InfiniteCanvasWhiteboard
 var socket = io();
 var canvas = document.getElementById("whiteboard");
@@ -12,7 +11,6 @@ var strokeHistory = [];
 var socketElements = [];
 var actionHistory = [];
 var backgroundColour = '#fff'
-var imageDataArray = [];
 
 // Fill Window Width and Height
 redraw(scale);
@@ -26,11 +24,10 @@ var ctrlDown = false;
 var panning = false;
 var rightMouseDown = false;
 let penColour = 'black';
-let penWidth = 1;
-var scale = 5;
-var zoom_scale = '';
+let penWidth = 2;
+var scale = 3;
 const MIN_SCALE = 1;
-const MAX_SCALE = 50;
+const MAX_SCALE = 5;
 
 // The scaled width of the screen (ie not the pixels)
 function xUnitsScaled() {
@@ -76,7 +73,6 @@ document.addEventListener('wheel', (event) => {
       const deltaY = event.deltaY;
       const scaleAmount = -deltaY / 500;
       const newScale = scale * (1 + scaleAmount);
-      zoom_scale = newScale
 
       if (newScale >= MIN_SCALE && newScale <= MAX_SCALE) {
           scale = newScale;
@@ -86,39 +82,27 @@ document.addEventListener('wheel', (event) => {
   
           const unitsZoomedX = xUnitsScaled() * scaleAmount;
           const unitsZoomedY = yUnitsScaled() * scaleAmount;
-            
+  
           const unitsAddLeft = unitsZoomedX * distX;
           const unitsAddTop = unitsZoomedY * distY;
   
           offsetX -= unitsAddLeft;
           offsetY -= unitsAddTop;
+  
           redraw(scale);
       }
     }
   });
   
 document.getElementById("whiteboard-reset-zoom-btn").addEventListener("click", () =>{
+    scale = 3;
     offsetX = 0;
     offsetY = 0;
     redraw(scale);
     }
 );
 
-var state = false; // Initial state is inactive
-
-window.onscroll = function() {
-  if (state) {
-    window.scrollTo(0, 0);
-  }
-};
-
-document.getElementById("open-whiteboard-btn").addEventListener("click", function() {
-  state = true; // Set state to active when the button is clicked
-  window.scrollTo(0, 0);
-});
-
-document.getElementById("whiteboard-close-btn").addEventListener("click", function() {
-    state = false; // Set state to active when the button is clicked
+document.getElementById("open-whiteboard-btn").addEventListener("click", () =>{
     window.scrollTo(0, 0);
 });
 
@@ -126,52 +110,14 @@ document.getElementById("whiteboard-close-btn").addEventListener("click", functi
 canvas.addEventListener('mousedown', onMouseDown, false);
 canvas.addEventListener('mouseup', onMouseUp, false);
 canvas.addEventListener('mouseout', onMouseUp, false);
-canvas.addEventListener('mousemove', throttle(onMouseMove, 0), false);
+canvas.addEventListener('mousemove', throttle(onMouseMove, 25), false);
 
 // Touch Event Handlers 
 canvas.addEventListener('touchstart', onTouchStart, { passive: false });
 canvas.addEventListener('touchend', onTouchEnd, { passive: false });
 canvas.addEventListener('touchcancel', onTouchEnd, { passive: false });
-canvas.addEventListener('touchmove', throttle(onTouchMove, 0), { passive: false });
+canvas.addEventListener('touchmove', throttle(onTouchMove, 25), { passive: false });
 
-
-// Add event listener for 'paste' event
-document.addEventListener('paste', handlePaste);
-function handlePaste(event) {
-    const items = (event.clipboardData || event.originalEvent.clipboardData).items;
-    for (const item of items) {
-      if (item.type.indexOf("image") === 0) {
-        const blob = item.getAsFile();
-        const image = new Image();
-
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          image.onload = function () {image.png
-            // Draw the image on the canvas
-            context.drawImage(image, (cursorX), (cursorY), image.width * scale * 0.2, image.height * scale * 0.2);
-
-            // Store image data in the array
-            var imageData = {
-                dataURL: e.target.result,
-                x: (cursorX / scale) - offsetX, // Update with desired x-coordinate
-                y: (cursorY / scale) - offsetY, // Update with desired y-coordinate
-                height: image.height,
-                width: image.width
-            };
-            imageDataArray.push((imageData));
-            // data = JSON.stringify(imageDataArray)
-            socket.emit('save_images', JSON.stringify(imageData))
-          };
-          image.src = e.target.result;
-        };
-        reader.readAsDataURL(blob);
-
-        // Prevent the default paste behavior
-        event.preventDefault();
-        break;
-      }
-    }
-}
 
 function onTouchStart(evt) {
     evt.preventDefault()
@@ -231,7 +177,6 @@ function onTouchMove(evt) {
         var zoomAmount = hypot / hypotPrev;
         const newScale = scale * zoomAmount
         const scaleAmount = 1 - zoomAmount;
-        zoom_scale = newScale
 
         if (newScale >= MIN_SCALE && newScale <= MAX_SCALE) {
             scale = newScale;
@@ -266,7 +211,7 @@ function onTouchMove(evt) {
             // need to add the first touch
             addToStroke(toTrueX(touch1Xprev), toTrueY(touch1Yprev), penColour, penWidth);
         }
-        drawLine(touch1Xprev, touch1Yprev, touch1X, touch1Y, penColour, penWidth*scale);
+        drawLine(touch1Xprev, touch1Yprev, touch1X, touch1Y, penColour, penWidth);
         addToStroke(toTrueX(touch1X), toTrueY(touch1Y), penColour, penWidth);
     }
 
@@ -291,7 +236,6 @@ function onMouseDown(evt) {
         canvas.style.cursor = 'grabbing';
         drawing = false;
         panning = true;
-        redraw(scale)
         removeAllDots();
     } else {
         panning = false;
@@ -316,7 +260,6 @@ const lastTouches = [null, null];
 var offsetX = 0;
 var offsetY = 0;
 var currentStroke = [];
-
 function onMouseMove(evt) {
     cursorX = evt.pageX;
     cursorY = evt.pageY;
@@ -327,7 +270,7 @@ function onMouseMove(evt) {
         redraw(scale)
     } else if (drawing) {
         addToStroke(toTrueX(cursorX), toTrueY(cursorY), penColour, penWidth);
-        drawLine(cursorXprev, cursorYprev, cursorX, cursorY, penColour, penWidth*scale);
+        drawLine(cursorXprev, cursorYprev, cursorX, cursorY, penColour, penWidth);
     }
     const trueX = (cursorX / scale) - offsetX;
     const trueY = (cursorY / scale) - offsetY;
@@ -394,7 +337,6 @@ let clearBtn = document.getElementById("whiteboard-clear-btn");
 clearBtn.addEventListener('click', () => {
     clearWhiteboard()
     socket.emit('clear')
-    redraw_img()
 })
 function clearWhiteboard (){
     context.fillRect(0, 0, canvas.width, canvas.height);
@@ -432,7 +374,7 @@ eraserBtn.addEventListener('click', () => {
         eraserBtn.style.border = "1px solid #2196F3"
     } else {
         eraser_state = false
-        penWidth = 1
+        penWidth = 2
         penColour = tempColor
         eraserBtn.style.backgroundColor = "black"
         eraserBtn.style.border = "1px solid black"
@@ -449,7 +391,7 @@ function drawLine(x0, y0, x1, y1, colour, thickness) {
 }
 
 function addToStroke(x0, y0, colour, thickness) {
-    currentStroke.push([x0, y0, colour, thickness]);
+    currentStroke.push([x0, y0]);
 }
 function drawStroke({ vectors, colour, thickness }) {
     context.beginPath();
@@ -498,7 +440,6 @@ socket.on('delete', onUndoStrokeEvent);
 socket.on('disconnect', onDisconnect);
 socket.on('clear', clearWhiteboard);
 socket.on('save', saveURL);
-socket.on('load_images', loadImages);
 
 function onUndoStrokeEvent(data) {
     removeFromHistory(data.data);
@@ -543,115 +484,16 @@ function onHistoryEvent(drawHistory) {
     backgroundColour = drawHistory.backgroundColour;
     redraw(scale);
 }
-
-function redraw(scale) {
-    canvas.width = document.body.clientWidth; // document.width is obsolete
-    canvas.height = document.body.clientHeight; // document.height is obsolete
+function redraw(scale = 3) {
+    canvas.width = document.body.clientWidth; //document.width is obsolete
+    canvas.height = document.body.clientHeight; //document.height is obsolete
     // Set Background Colour
     context.fillStyle = backgroundColour;
     context.fillRect(0, 0, canvas.width, canvas.height);
-    redraw_img()
-    strokeHistory.forEach((data) => {
-      drawStroke({ vectors: data.vectors, colour: data.colour, thickness: data.thickness * scale });
+    strokeHistory.forEach(data => {
+        drawStroke({ vectors: data.vectors, colour: data.colour, thickness: data.thickness*scale })
     });
 }
-
-window.addEventListener('load', loadpaste)
-function loadpaste() {
-    if (qnimgURL) {
-        const context = canvas.getContext('2d');
-        const image = new Image();
-        image.onload = function() {
-            context.drawImage(image, cursorX, cursorY);
-        };
-        image.src = '/static/questionbank/' + qnimgURL; // Make sure to assign a valid URL to imgURL
-        // Push QN Image first
-        var imageData = {
-            dataURL: '/static/questionbank/' + qnimgURL,
-            x: cursorX, // Update with desired x-coordinate
-            y: cursorY, // Update with desired y-coordinate
-            height: image.height,
-            width: image.width
-        };
-        imageDataArray.push((imageData));
-    }
-    // Push screenshot images if any
-    if (imgarrURL != '') {
-        var imgarrURL_replaced = imgarrURL.replace(/&#34;/g, '"');
-        workings_images_arr = imgarrURL_replaced.split("@@@");
-        for (i=0; i<(workings_images_arr).length; i++) {
-            ele = JSON.parse(workings_images_arr[i])
-            const context = canvas.getContext('2d');
-            const image = new Image();
-            image.onload = function() {
-                context.drawImage(image, toScreenX(scaledX), toScreenY(scaledY), width, height);
-            };
-            width = ele.width * zoom_scale * 0.2
-            height = ele.height * zoom_scale * 0.2
-            var scaledX = ele.x
-            var scaledY = ele.y 
-            image.src = '/static/questionbank/' + ele['dataURL']
-            var imageData = {
-                dataURL: '/static/questionbank/' + ele['dataURL'],
-                x: ele.x, // Update with desired x-coordinate
-                y: ele.y , // Update with desired y-coordinate
-                height: ele.height,
-                width: ele.width
-            };
-            imageDataArray.push((imageData))
-        }
-    }
-}
-function loadImages(imgarrURL) {
-    // after emit, load images for all users
-    if (imgarrURL != '') {
-        var imgarrURL_replaced = imgarrURL.replace(/&#34;/g, '"');
-        workings_images_arr = imgarrURL_replaced.split("@@@");
-        for (i=0; i<(workings_images_arr).length; i++) {
-            ele = JSON.parse(workings_images_arr[i])
-            const context = canvas.getContext('2d');
-            const image = new Image();
-            image.onload = function() {
-                context.drawImage(image, toScreenX(scaledX), toScreenY(scaledY), width, height);
-            };
-            width = ele.width * zoom_scale * 0.2
-            height = ele.height * zoom_scale * 0.2
-            var scaledX = ele.x
-            var scaledY = ele.y 
-            image.src = '/static/questionbank/' + ele['dataURL']
-            var imageData = {
-                dataURL: '/static/questionbank/' + ele['dataURL'],
-                x: ele.x, // Update with desired x-coordinate
-                y: ele.y , // Update with desired y-coordinate
-                height: ele.height,
-                width: ele.width
-            };
-            imageDataArray.push((imageData))
-        }
-    }
-}
-function redraw_img() {
-    if (imageDataArray.length > 0) {
-        for (i=0; i<imageDataArray.length; i++) {
-            const image = new Image();
-            image.src = imageDataArray[i].dataURL;
-            if (zoom_scale) {
-                width = imageDataArray[i].width * zoom_scale * 0.2
-                height = imageDataArray[i].height * zoom_scale * 0.2
-                var scaledX = imageDataArray[i].x 
-                var scaledY = imageDataArray[i].y 
-                context.drawImage(image, toScreenX(scaledX), toScreenY(scaledY), width, height);
-            } else {
-                width = imageDataArray[i].width
-                height = imageDataArray[i].height
-                var scaledX = imageDataArray[i].x
-                var scaledY = imageDataArray[i].y 
-                context.drawImage(image, toScreenX(scaledX), toScreenY(scaledY), width, height);
-            }
-        }
-    }
-}
-  
 
 // limit the number of events per second
 function throttle(callback, delay) {
@@ -671,22 +513,10 @@ var submitBtn = document.getElementById("ans");
 submitBtn.addEventListener("click", saveURL)
 function saveURL() {
     let data = JSON.stringify(strokeHistory);
-    let jsonData = {
-        key: 'workings',
-        value: data
-    };
-    document.getElementById('workings').value = jsonData
+    document.getElementById('workings').value = data
     socket.emit('save', data)
 }
-function saveImages() {
-    let data = JSON.stringify(imageDataArray);
-    let jsonData = {
-        key: 'workings_images',
-        value: data
-    };
-    document.getElementById('workings').value = jsonData
-    socket.emit('save_images', data)
-}
+
 // load image
 function load() {   
     data = JSON.parse(document.getElementById('workings').value)

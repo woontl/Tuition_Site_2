@@ -3,35 +3,6 @@ New Features:
 
 Bug Fixes:
 
-
---------------------------------------------------------------------------------------------------------------------------------------
-Version 2.0.0
-Add read_tag column to Activity DB
-Add dark_mode tag to User DB
-Remove checked column in Questionbank, Question
-Add new Course Table
-Add new Lesson Table + Workings_images column
-Workings2->Workings_images in Workings Table
-
-
-
-
-
-
---------------------------------------------------------------------------------------------------------------------------------------
-
-Version 1.1.0
-New Features:
-1) Revamped Whiteboard to be an overlay above question, with infinite space and pinch zoom functionality
-2) Whiteboard now supports real-time synchronization across multiple users, with real-time saves
-
-Bug Fixes:
-1) Fixed Homework grade % bug
-2) Fixed Homework attempt % bug
-3) Whiteboard toolbar no longer drags when clicking on buttons in it
-4) Swap delete and close buttons for Homework
-5) Removed user access to update/delete Homework
-
 --------------------------------------------------------------------------------------------------------------------------------------
 Version 1.0.8
 New Features:

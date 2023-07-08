@@ -1,9 +1,9 @@
 from flask import render_template as real_render_template, Blueprint, flash, redirect, url_for, request, abort, current_app, jsonify, session
 from flask_login import current_user, login_required
 from flaskblog import db, socketio
-from flaskblog.models import Homework, Questionbank, Question, Working, User, Activity, TagsList, Changelog, Lesson
+from flaskblog.models import Homework, Questionbank, Question, Working, User, Activity, TagsList, Changelog
 from flaskblog.homeworks.forms import HomeworkForm, QuestionBankForm, QuestionForm, WorkingForm, HomeworkFilterForm, TagForm
-from flaskblog.homeworks.utils import save_qn_picture, save_working_picture ,MQ_formatter
+from flaskblog.homeworks.utils import save_qn_picture, MQ_formatter
 import pandas as pd
 import os
 import re
@@ -15,35 +15,20 @@ from threading import Lock
 import operator
 from collections import defaultdict
 import time
-import base64
 
 homeworks = Blueprint('homeworks', __name__) #creating an instance, to be imported
 
 def render_template(*args, **kwargs):
-    try:
-        dark_mode = current_user.dark_mode
-    except:
-        dark_mode = 'On'
     version = Changelog.query.order_by(Changelog.id.desc()).first()
-    if current_user.account_type == 'Admin':
-        activities = Activity.query.order_by(Activity.date_posted.desc()).limit(5).all()
-    else:
-        activities = Activity.query.filter_by(student_id=current_user.id).order_by(Activity.date_posted.desc()).limit(5).all()
-    date_now = datetime.datetime.now()
-    activities_date_arr=[]
-    for activity in activities:
-        activities_date_arr.append(round((date_now-activity.date_posted).total_seconds()/3600/24))
     if version == None:
-        return real_render_template(*args, **kwargs, version='V1.0.0', dark_mode=dark_mode, activities=activities, 
-                           activities_date_arr=activities_date_arr)
+        return real_render_template(*args, **kwargs, version='V1.0.0')
     else:
-        return real_render_template(*args, **kwargs, version=version.version, dark_mode=dark_mode, activities=activities, 
-                           activities_date_arr=activities_date_arr)
+        return real_render_template(*args, **kwargs, version=version.version)
 
 # Homework Routes
-@homeworks.route("/my_homework/<string:student>", methods=['GET', 'POST'])
+@homeworks.route("/homework_all/<string:student>", methods=['GET', 'POST'])
 @login_required
-def my_homework(student="ALL"):
+def homework_all(student="ALL"):
     form = HomeworkFilterForm()
     page = request.args.get('page', 1, type = int)
     if request.method == 'GET' and current_user.account_type == 'Admin':
@@ -55,34 +40,13 @@ def my_homework(student="ALL"):
         form.student.data = student
         if student == "ALL":
             homeworks = Homework.query.order_by(Homework.date_posted.desc()).paginate(per_page=5, page=page)
-            homework_due_days_arr = []
-            for homework in homeworks.items:
-                date_now = datetime.datetime.now()
-                homework_due_days = round((homework.deadline - date_now) / timedelta(days=1))
-                if homework_due_days < 0:
-                    homework_due_days = '-'
-                homework_due_days_arr.append(homework_due_days)
         else:
             user = (User.query.filter_by(username=student).first()).id
             homeworks = Homework.query.filter_by(student_id=user).order_by(Homework.date_posted.desc()).paginate(per_page=5, page=page)
-            homework_due_days_arr = []
-            for homework in homeworks.items:
-                date_now = datetime.datetime.now()
-                homework_due_days = round((homework.deadline - date_now) / timedelta(days=1))
-                if homework_due_days < 0:
-                    homework_due_days = '-'
-                homework_due_days_arr.append(homework_due_days)
     elif request.method == 'GET' and current_user.account_type == 'User':
         homeworks = Homework.query.filter_by(student_id=current_user.id).order_by(Homework.date_posted.desc()).paginate(per_page=5, page=page)
-        homework_due_days_arr = []
-        for homework in homeworks.items:
-            date_now = datetime.datetime.now()
-            homework_due_days = round((homework.deadline - date_now) / timedelta(days=1))
-            if homework_due_days < 0:
-                homework_due_days = '-'
-            homework_due_days_arr.append(homework_due_days)
     if request.method == 'POST' and current_user.account_type == 'Admin':
-        return redirect(url_for('homeworks.my_homework', student=form.student.data))
+        return redirect(url_for('homeworks.homework_all', student=form.student.data))
     id_arr = []
     for i in homeworks.items:
         id_arr.append(i.id)
@@ -112,8 +76,8 @@ def my_homework(student="ALL"):
         else:
             attempt_percentage_arr.append(0)
             correct_percentage_arr.append(0)
-    df = pd.DataFrame({'id': id_arr, 'pt': pt_arr, 'count': question_count_arr, 'attempt_percentage': attempt_percentage_arr, 'correct_percentage': correct_percentage_arr, 'homework_due_days': homework_due_days_arr})
-    return render_template('my_homework.html', homeworks=homeworks, df=df, form=form)
+    df = pd.DataFrame({'id': id_arr, 'pt': pt_arr, 'count': question_count_arr, 'attempt_percentage': attempt_percentage_arr, 'correct_percentage': correct_percentage_arr})
+    return render_template('homework_all.html', homeworks=homeworks, df=df, form=form, legend="Filters")
 
 @homeworks.route("/homework/new", methods=['GET', 'POST'])
 @login_required
@@ -139,7 +103,7 @@ def new_homework():
         db.session.add(activity)
         db.session.commit()
         flash('Your homework has been created!', 'success')
-        return redirect(url_for('homeworks.my_homework', student='ALL'))
+        return redirect(url_for('homeworks.homework_all', student='ALL'))
     return render_template('create_homework.html', title='New Homework',
                            form=form, legend='New Homework')
 
@@ -147,7 +111,7 @@ def new_homework():
 def homework(homework_id):
     homework = Homework.query.get_or_404(homework_id) #get data, but return error 404 if not available
     page = request.args.get('page', 1, type = int)
-    questions = Question.query.filter_by(homework_id=homework_id).order_by(Question.id.asc()).paginate(per_page=5, page=page)
+    questions = Question.query.filter_by(homework_id=homework_id).order_by(Question.id.asc()).paginate(per_page=1, page=page)
     df = pd.read_sql_table('working', db.engine).filter(items=['homework_id','question_id','point'])
     df = df[df["homework_id"]==homework_id].filter(items=['question_id','point'])
     return render_template('homework.html', title=homework.title,homework=homework,homework_id=homework.id, questions=questions, df=df)
@@ -170,7 +134,7 @@ def update_homework(homework_id):
         homework.deadline = form.deadline.data
         db.session.commit()
         flash('Your homework has been updated!', 'success')
-        return redirect(url_for('homeworks.my_homework', student="ALL")) #redirect back to homework page after updating
+        return redirect(url_for('homeworks.homework_all', student="ALL")) #redirect back to homework page after updating
     elif request.method == 'GET':
         form.title.data = homework.title
         form.deadline.data = homework.deadline
@@ -178,7 +142,7 @@ def update_homework(homework_id):
 
     return render_template('create_homework.html', title='Update Homework', form=form, legend = "Update Homework")
 
-@homeworks.route("/homework/<int:homework_id>/delete", methods=['GET', 'POST']) #route based on homework id
+@homeworks.route("/homework/<int:homework_id>/delete", methods=['POST']) #route based on homework id
 @login_required
 def delete_homework(homework_id):
     homework = Homework.query.get_or_404(homework_id)
@@ -195,7 +159,7 @@ def delete_homework(homework_id):
     db.session.delete(homework)
     db.session.commit()
     flash('Your homework has been deleted!', 'success')
-    return redirect(url_for('homeworks.my_homework', student="ALL"))
+    return redirect(url_for('homeworks.homework_all', student="ALL"))
 
 # Questionbank Routes
 @homeworks.route("/questionbank/<string:grade>/<string:tags>/<string:difficulty>", methods=['GET', 'POST'])
@@ -259,15 +223,16 @@ def upload_questionbank():
         img = save_qn_picture(form.img.data)
         tags_str = ','.join(form.tags.data)
         ans = (json.loads(request.form['action']))['ans_merged']
+        checked = (json.loads(request.form['action']))['open_ended_checked']
         questionbank = Questionbank(grade=form.grade.data, tags=tags_str, img=img,
-                                     difficulty=form.difficulty.data, answer=ans)
+                                     difficulty=form.difficulty.data, answer=ans, checked=checked)
         db.session.add(questionbank)
         db.session.commit()
         flash('Your question has been added to the Question Bank!', 'success')
         return redirect(url_for('homeworks.upload_questionbank'))
     elif request.method == 'GET':
         return render_template('upload_questionbank.html', title='New Upload', form=form,
-                        legend='New Upload')
+                        legend='New Upload', temp_ans="")
 
 @homeworks.route("/edit_tags", methods=['GET', 'POST'])
 @login_required
@@ -306,12 +271,14 @@ def update_questionbank(questionbank_id):
         form.difficulty.data = qb.difficulty
         ans=qb.answer.split(';')
         img_preview = qb.img
+        checked=qb.checked.split(';')
         
     elif request.method == "POST":
         qb.grade = form.grade.data
         qb.tags = ','.join(form.tags.data)
         qb.difficulty = form.difficulty.data
         qb.answer = (json.loads(request.form['action']))['ans_merged']
+        qb.checked = (json.loads(request.form['action']))['open_ended_checked']
         db.session.commit()
         flash('Your question has been updated in the Question Bank!', 'success')
         
@@ -323,7 +290,7 @@ def update_questionbank(questionbank_id):
                 
         return redirect(url_for('homeworks.questionbank', grade="ALL",tags="ALL",difficulty="ALL"))
     return render_template('upload_questionbank.html', title='Update Questionbank', form=form,
-                        legend='Update Questionbank', img_preview=img_preview, ans=ans)
+                        legend='Update Questionbank', img_preview=img_preview, ans=ans, checked=checked)
 
 @homeworks.route("/questionbank/<int:questionbank_id>/delete", methods=['GET','POST'])
 @login_required
@@ -377,18 +344,19 @@ def update_question(homework_id, question_id, grade="ALL",tags="ALL",difficulty=
         try:
             if (request.form['action']) != "Load Questions":
                 img_id = (request.form['action'])
-                qb = Questionbank.query.filter(Questionbank.id==img_id).first()
+                qb = Questionbank.query.filter(Questionbank.img==img_id).first()
                 if qb is None:
                     qb = Questionbank.query.filter(Questionbank.img==question.qn_img).first()
                     question.qn_img = qb.img
                 else:
-                    question.qn_img = qb.img
+                    question.qn_img = img_id
                 question.title = form.title.data
                 question.grade = qb.grade
                 question.tags = qb.tags
                 question.difficulty = qb.difficulty
                 question.questionbank_id = qb.id
                 question.qn_answer=qb.answer
+                question.checked=qb.checked
                 db.session.commit()
                 flash('Your question has been updated!', 'success')
                 return redirect(url_for('homeworks.homework', homework_id=homework.id))      
@@ -411,7 +379,7 @@ def update_question(homework_id, question_id, grade="ALL",tags="ALL",difficulty=
         except:
             pass
 
-@homeworks.route("/homework/<int:homework_id>/<int:question_id>/delete", methods=['GET', 'POST']) #route based on homework id
+@homeworks.route("/homework/<int:homework_id>/<int:question_id>/delete", methods=['POST']) #route based on homework id
 @login_required
 def delete_question(homework_id,question_id):
     homework = Homework.query.get_or_404(homework_id)
@@ -463,7 +431,7 @@ def new_question(homework_id, grade="ALL",tags="ALL",difficulty="ALL"):
     if request.method == 'POST':
         if (request.form['action']) != "Load Questions":
             img_id = (request.form['action'])
-            qb = Questionbank.query.filter(Questionbank.id==img_id).first()
+            qb = Questionbank.query.filter(Questionbank.img==img_id).first()
             if qb is None:
                 flash('Please select your question before submitting!', 'danger')
                 return redirect(url_for('homeworks.new_question',homework_id=homework.id, grade=form.grade.data, tags=form.tags.data, difficulty = form.difficulty.data)) #redirect back to homework page after updating
@@ -471,8 +439,8 @@ def new_question(homework_id, grade="ALL",tags="ALL",difficulty="ALL"):
                 default_title = 'Question ' + str(Question.query.filter_by(homework_id=homework.id).count() + 1)
             else:
                 default_title = form.title.data
-            question = Question(title=default_title, questionbank_id=qb.id, homework_id=homework_id, grade=qb.grade, qn_img=qb.img, qn_answer=qb.answer,
-                             tags=qb.tags, difficulty=qb.difficulty)
+            question = Question(title=default_title, questionbank_id=qb.id, homework_id=homework_id, grade=qb.grade, qn_img=img_id, qn_answer=qb.answer,
+                             tags=qb.tags, difficulty=qb.difficulty, checked=qb.checked)
             db.session.add(question)
             
             # Add blank entry to Workings 
@@ -512,26 +480,25 @@ def solve_question(homework_id, question_id):
     question = Question.query.filter(Question.id==question_id, Question.homework_id==homework_id).first()
     correct_ans = re.sub('【(.*?)】','\\\\MathQuillMathField{}',question.qn_answer).split(';')
     check_ans = MQ_formatter(question.qn_answer).split(';')
+    checked = question.checked.split(';')
     if request.method == 'GET':
         form.workings.data = (working.workings)
         session['data'] = working.workings
         final_ans = working.final_ans.split(';')
         right_wrong = working.right_wrong.split(';')
-        if working.workings_images:
-            workings_images = working.workings_images
-        else:
-            workings_images = ''
     elif request.method == 'POST':
         working = Working.query.filter(Working.homework_id==homework_id, Working.question_id==question_id).first()
         final_ans = MQ_formatter(request.form['action'])
         point = []
-        for i,j in zip((final_ans.split(';')),(check_ans)):
-            if i == j:
+        for i,j,k in zip((final_ans.split(';')),(check_ans),checked):
+            if k == '1':
+                point.append(0)
+            elif i == j:
                 point.append(0)
             else:
                 point.append(1)
         right_wrong = ';'.join(map(str,point))
-        # working.workings = form.workings.data      not needed due to auto_save, if need, need to jsonloads
+        working.workings = form.workings.data
         final_ans = (request.form['action'])
         working.final_ans = final_ans
         working.point = sum(point)
@@ -548,8 +515,7 @@ def solve_question(homework_id, question_id):
             flash('Your answer is correct!', 'success')
             return redirect(url_for('homeworks.homework', homework_id=homework.id))
     return render_template('working.html', title='Solve Question', form=form, legend = "Solve Question", question=question, ans=correct_ans, 
-                           final_ans=final_ans, right_wrong=right_wrong, check_ans=check_ans, homework_id=homework_id, question_id=question_id, 
-                           workings_images = workings_images)
+                           final_ans=final_ans, right_wrong=right_wrong, checked=checked, check_ans=check_ans, homework_id=homework_id, question_id=question_id)
 
 @socketio.on('save')
 def auto_save_canvas(data):
@@ -557,45 +523,9 @@ def auto_save_canvas(data):
     if match:
         homework_id = int(match.group(1))
         question_id = int(match.group(2))
-        working = Working.query.filter(Working.homework_id==homework_id, Working.question_id==question_id).first()
-        working.workings = data
-        db.session.commit()
-    else:
-        lesson_id = session['socketio_code']
-        lesson = Lesson.query.filter(Lesson.id==lesson_id).first()
-        lesson.workings = data
-        db.session.commit()
-
-@socketio.on('save_images')
-def auto_save_canvas_images(data):
-    match = re.match(r'(\d+)/(\d+)', session['socketio_code'])
-    if match:
-        homework_id = int(match.group(1))
-        question_id = int(match.group(2))
-        working = Working.query.filter(Working.homework_id==homework_id, Working.question_id==question_id).first()
-        img_png = save_working_picture(data)
-        image_data = json.loads(data)
-        image_data['dataURL'] = img_png
-        modified_json_string = json.dumps(image_data)
-        if working.workings_images:
-            working.workings_images += '@@@'+ modified_json_string
-        else:
-            working.workings_images = modified_json_string
-        db.session.commit()
-        emit('load_images', working.workings_images , broadcast=True, include_self=False, to=session['socketio_code'])
-    else:
-        lesson_id = session['socketio_code']
-        lesson = Lesson.query.filter(Lesson.id==lesson_id).first()
-        img_png = save_working_picture(data)
-        image_data = json.loads(data)
-        image_data['dataURL'] = img_png
-        modified_json_string = json.dumps(image_data)
-        if lesson.workings_images:
-            lesson.workings_images += '@@@'+ modified_json_string
-        else:
-            lesson.workings_images = modified_json_string
-        db.session.commit()
-        emit('load_images', lesson.workings_images , broadcast=True, include_self=False, to=session['socketio_code'])
+    working = Working.query.filter(Working.homework_id==homework_id, Working.question_id==question_id).first()
+    working.workings = data
+    db.session.commit()
 
 @socketio.on('connect')
 def socket_connect():

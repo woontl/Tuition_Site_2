@@ -21,7 +21,6 @@ class User(db.Model, UserMixin): #Creating user table in DB
     homeworks = db.relationship('Homework', backref='author', lazy=True)
     activities = db.relationship('Activity', backref='author', lazy=True)
     changelogs = db.relationship('Changelog', backref='author', lazy=True)
-    lessons = db.relationship('Lesson', backref='author', lazy=True)
     bugs = db.relationship('Bug', backref='author', lazy=True)
     topics = db.Column(db.String(1000))
     topics_check = db.Column(db.String(1000))
@@ -38,7 +37,6 @@ class User(db.Model, UserMixin): #Creating user table in DB
     date4 = db.Column(db.Date)
     time4 = db.Column(db.Time)
     grade = db.Column(db.String(200))
-    dark_mode = db.Column(db.String(200))
 
     def get_reset_token(self, expires_sec=1800): #Token expires in 1800 secs
         s = Serializer(current_app.config['SECRET_KEY'], expires_sec)
@@ -76,6 +74,7 @@ class Questionbank(db.Model):
     tags = db.Column(db.String(200), nullable=False)
     difficulty = db.Column(db.String(100), nullable=False)
     answer = db.Column(db.String(200), nullable=False)
+    checked = db.Column(db.String(200), nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default = datetime.now)
 
     def __repr__(self):
@@ -98,6 +97,7 @@ class Question(db.Model):
     difficulty = db.Column(db.String(200), nullable=False)
     qn_img = db.Column(db.Text, nullable=False)
     qn_answer = db.Column(db.String(200), nullable=False)
+    checked = db.Column(db.String(200), nullable=False)
 
     def __repr__(self):
         return f"Question('{self.id}', '{self.title}')"
@@ -107,7 +107,7 @@ class Working(db.Model):
     homework_id = db.Column(db.Integer, db.ForeignKey('homework.id'), nullable=False)
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
     workings = db.Column(db.Text)
-    workings_images = db.Column(db.Text)
+    workings2 = db.Column(db.Text)
     workings3 = db.Column(db.Text)
     final_ans = db.Column(db.Text, nullable=False)
     point = db.Column(db.Integer)
@@ -133,7 +133,6 @@ class Activity(db.Model):
     student_id = db.Column(db.Integer, nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default = datetime.now)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) #foreign key links to User table
-    read_tag = db.Column(db.Integer)
 
     def __repr__(self):
         return f"Activity('{self.id}')"
@@ -158,27 +157,3 @@ class Bug(db.Model):
     
     def __repr__(self):
         return f"Bug('{self.id}')"
-
-class Course(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    student_id = db.Column(db.Integer, nullable=False)
-    topics = db.Column(db.String(999999))
-    checked = db.Column(db.String(999999))
-    
-    def __repr__(self):
-        return f"Course('{self.id}')"
-
-class Lesson(db.Model): 
-    id = db.Column(db.Integer, primary_key = True)
-    title = db.Column(db.String(100), nullable=False)
-    student_id = db.Column(db.Integer, nullable=False)
-    date_posted = db.Column(db.DateTime, nullable=False, default = datetime.now)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) #foreign key links to User table
-    notes = db.Column(db.String(999999))
-    formulas = db.Column(db.String(999999))
-    topics = db.Column(db.String(200))
-    workings = db.Column(db.Text)
-    workings_images = db.Column(db.Text)
-
-    def __repr__(self):
-        return f"Lesson('{self.title}', '{self.date_posted}')"
