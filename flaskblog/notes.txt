@@ -252,10 +252,10 @@ How to download folder from remote to local? (PROD)
 1) scp -r woontl@139.177.187.179:Tuition_Site_2/flaskblog/static /Users/tianli.woon/Documents
 
 How to upload file from local to remote? (DEV)
-1) scp site.db woontl@139.162.19.71:Tuition_Site_2/flaskblog/
+1) scp site.db woontl@139.162.6.224:Tuition_Site_2/flaskblog/
 
 How to upload folder from local to remote? (DEV)
-1) scp -r static/ woontl@139.162.19.71:Tuition_Site_2/flaskblog
+1) scp -r static/ woontl@139.162.6.224:Tuition_Site_2/flaskblog
 
 How to upload file from local to remote? (PROD)
 1) scp site.db woontl@139.177.187.179:Tuition_Site_2/flaskblog/
