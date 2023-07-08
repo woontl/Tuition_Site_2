@@ -104,7 +104,10 @@ def lesson(lesson_id):
         form.workings.data = (lesson.workings)
         session['data'] = lesson.workings
         form.notes.data = lesson.notes
-        formulas = lesson.formulas.split(';')
+        if lesson.formulas:
+            formulas = lesson.formulas.split(';')
+        else: 
+            formulas = []
         form.topics.data = lesson.topics
     return render_template('lesson.html', lesson=lesson, formulas = formulas, form=form, workings_images=workings_images)
 
