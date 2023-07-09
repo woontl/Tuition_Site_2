@@ -5,6 +5,7 @@ var temp_index = 0
 mathFields.forEach(function(mathField) {
   let mathFieldInstance = MQ.StaticMath(mathField);
   mathField.addEventListener("click", function(event) {
+    event.preventDefault(); // Prevent the default behavior (e.g., showing the keyboard)
     let innerField = event.target;
     if (innerField.classList.contains("mq-root-block")) {
       innerField = innerField
