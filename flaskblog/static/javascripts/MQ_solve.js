@@ -27,80 +27,96 @@ if (mf_num < mathFields.length) {
   lastClickedMathField = MQ.StaticMath(mathFields[mf_num]).innerFields[0];
 }
 lastClickedMathField.focus()
+lastClickedMathField.blur()
 
 document.getElementById("calc_button_digit_7").addEventListener("click", function() {
   lastClickedMathField.cmd("7");
   lastClickedMathField.focus()
+  lastClickedMathField.blur()
 });
 
 document.getElementById("calc_button_digit_8").addEventListener("click", function() {
   lastClickedMathField.cmd("8");
   lastClickedMathField.focus()
+  lastClickedMathField.blur()
 });
 
 document.getElementById("calc_button_digit_9").addEventListener("click", function() {
   lastClickedMathField.cmd("9");
   lastClickedMathField.focus()
+  lastClickedMathField.blur()
 });
 
 document.getElementById("calc_button_digit_4").addEventListener("click", function() {
   lastClickedMathField.cmd("4");
   lastClickedMathField.focus()
+  lastClickedMathField.blur()
 });
 
 document.getElementById("calc_button_digit_5").addEventListener("click", function() {
   lastClickedMathField.cmd("5");
   lastClickedMathField.focus()
+  lastClickedMathField.blur()
 });
 
 document.getElementById("calc_button_digit_6").addEventListener("click", function() {
   lastClickedMathField.cmd("6");
   lastClickedMathField.focus()
+  lastClickedMathField.blur()
 });
 
 document.getElementById("calc_button_digit_1").addEventListener("click", function() {
   lastClickedMathField.cmd("1");
   lastClickedMathField.focus()
+  lastClickedMathField.blur()
 });
 
 document.getElementById("calc_button_digit_2").addEventListener("click", function() {
   lastClickedMathField.cmd("2");
   lastClickedMathField.focus()
+  lastClickedMathField.blur()
 });
 
 document.getElementById("calc_button_digit_3").addEventListener("click", function() {
   lastClickedMathField.cmd("3");
   lastClickedMathField.focus()
+  lastClickedMathField.blur()
 });
 
 document.getElementById("calc_button_digit_0").addEventListener("click", function() {
   lastClickedMathField.cmd("0");
   lastClickedMathField.focus()
+  lastClickedMathField.blur()
 });
 
 document.getElementById("calc_button_decimal").addEventListener("click", function() {
   lastClickedMathField.cmd(".");
   lastClickedMathField.focus()
+  lastClickedMathField.blur()
 });
 
 document.getElementById("calc_button_equal").addEventListener("click", function() {
   lastClickedMathField.cmd("=");
   lastClickedMathField.focus()
+  lastClickedMathField.blur()
 });
 
 document.getElementById("calc_button_delete").addEventListener("click", function() {
   lastClickedMathField.keystroke('Backspace')
   lastClickedMathField.focus()
+  lastClickedMathField.blur()
 });
 
 document.getElementById("calc_button_arrow_left").addEventListener("click", function() {
   lastClickedMathField.keystroke('Left')
   lastClickedMathField.focus()
+  lastClickedMathField.blur()
 });
 
 document.getElementById("calc_button_arrow_right").addEventListener("click", function() {
   lastClickedMathField.keystroke('Right')
   lastClickedMathField.focus()
+  lastClickedMathField.blur()
 });
 
 var mqFieldIds = document.querySelectorAll("[id^='MQ-field-']");
@@ -127,6 +143,7 @@ document.getElementById("calc_button_next").addEventListener("click", function()
 function next_tab_within_part(currentIndex){
   lastClickedMathField = MQ.StaticMath(mathFields[currentIndex]).innerFields[temp_index+1];
   lastClickedMathField.focus()
+  lastClickedMathField.blur()
   temp_index++
 }
 
@@ -138,6 +155,7 @@ function next_tab_mainpart(currentIndex){
   }
   lastClickedMathField = MQ.StaticMath(mathFields[currentIndex]).innerFields[temp_index+1];
   lastClickedMathField.focus()
+  lastClickedMathField.blur()
 }
 
 function next_tab_subpart(currentIndex){
@@ -148,6 +166,7 @@ function next_tab_subpart(currentIndex){
   }
   lastClickedMathField = MQ.StaticMath(mathFields[currentIndex]).innerFields[temp_index];
   lastClickedMathField.focus()
+  lastClickedMathField.blur()
 }
 
 document.getElementById("calc_button_prev").addEventListener("click", function() {
@@ -168,6 +187,7 @@ document.getElementById("calc_button_prev").addEventListener("click", function()
 function prev_tab_within_part(currentIndex){
   lastClickedMathField = MQ.StaticMath(mathFields[currentIndex]).innerFields[temp_index-1];
   lastClickedMathField.focus()
+  lastClickedMathField.blur()
   temp_index--
 }
 
@@ -179,6 +199,7 @@ function prev_tab_mainpart(currentIndex){
   temp_index=MQ.StaticMath(mathFields[currentIndex]).innerFields.length-1
   lastClickedMathField = MQ.StaticMath(mathFields[currentIndex]).innerFields[temp_index];
   lastClickedMathField.focus()
+  lastClickedMathField.blur()
 }
 
 function prev_tab_subpart(currentIndex){
@@ -189,4 +210,5 @@ function prev_tab_subpart(currentIndex){
   temp_index=MQ.StaticMath(mathFields[currentIndex]).innerFields.length-1
   lastClickedMathField = MQ.StaticMath(mathFields[currentIndex]).innerFields[temp_index];
   lastClickedMathField.focus()
+  lastClickedMathField.blur()
 }
