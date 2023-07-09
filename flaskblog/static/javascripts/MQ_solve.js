@@ -4,6 +4,11 @@ let lastClickedMathField;
 var temp_index = 0
 mathFields.forEach(function(mathField) {
   let mathFieldInstance = MQ.StaticMath(mathField);
+  mathField.addEventListener("focus", function(event) {
+    event.preventDefault(); // Prevent the default behavior of the focus event
+    // Set the focus manually to the MathQuill input field
+    MQ.focus(mathField);
+  });
   mathField.addEventListener("click", function(event) {
     let innerField = event.target;
     if (innerField.classList.contains("mq-root-block")) {
