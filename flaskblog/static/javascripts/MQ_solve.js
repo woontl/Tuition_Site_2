@@ -4,12 +4,6 @@ let lastClickedMathField;
 var temp_index = 0
 mathFields.forEach(function(mathField) {
   let mathFieldInstance = MQ.StaticMath(mathField);
-  mathField.addEventListener("focus", function(event) {
-    event.preventDefault(); // Prevent the default behavior of the focus event
-    // Set the focus manually to the MathQuill input field
-    MQ.focus(mathField);
-    mathField.selectionStart = mathField.selectionEnd = mathField.value.length; // Set the cursor at the end of the input
-  });
   mathField.addEventListener("click", function(event) {
     let innerField = event.target;
     if (innerField.classList.contains("mq-root-block")) {
@@ -22,6 +16,10 @@ mathFields.forEach(function(mathField) {
     temp_index = index
     lastClickedMathField = mathFieldInstance.innerFields[index];
     lastClickedMathField.blur()
+
+    setTimeout(function() {
+      lastClickedMathField.focus();
+    }, 0);
   });
 });
 
