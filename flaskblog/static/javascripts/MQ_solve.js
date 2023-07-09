@@ -5,7 +5,7 @@ var temp_index = 0
 mathFields.forEach(function(mathField) {
   let mathFieldInstance = MQ.StaticMath(mathField);
   mathField.addEventListener("click", function(event) {
-    navigator.virtualKeyboard.hide()
+    mathField.blur()
     let innerField = event.target;
     if (innerField.classList.contains("mq-root-block")) {
       innerField = innerField
