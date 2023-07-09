@@ -8,6 +8,7 @@ mathFields.forEach(function(mathField) {
     event.preventDefault(); // Prevent the default behavior of the focus event
     // Set the focus manually to the MathQuill input field
     MQ.focus(mathField);
+    mathField.selectionStart = mathField.selectionEnd = mathField.value.length; // Set the cursor at the end of the input
   });
   mathField.addEventListener("click", function(event) {
     let innerField = event.target;
