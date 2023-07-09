@@ -19,7 +19,7 @@
             <div class="col-md-12 col-lg-12 col-xl-12">
                 <div class="d-flex justify-content-between align-items-center">
                     <h2 class="fw-bold">{{ legend }}</h2>
-                    <input type="text" id="manageBinsBinId" inputmode="none" >
+                    <input type="text" inputmode="none">
                     <div class="d-flex">
                         <h5 class="fw-bold my-auto">Whiteboard</h5>
                         {{ form.workings(class="form-control form-control-lg") }}
@@ -71,9 +71,9 @@
                             <div class="d-flex align-items-center my-3">
                                 <h6 class="fw-bold my-auto" style="min-width: 60px">Part {{main_ans}}:</h6>
                                 {% if (right_wrong[ans_count.value]) == '1' or (right_wrong[ans_count.value]) == 'NEW' %}
-                                    <div contenteditable="true" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}">{{ans[ans_count.value]}}</div>
+                                    <div inputmode="none" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}">{{ans[ans_count.value]}}</div>
                                 {% else %}
-                                    <div contenteditable="true" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}">{{final_ans[ans_count.value]}}</div>
+                                    <div inputmode="none" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}">{{final_ans[ans_count.value]}}</div>
                                 {% endif %}
                                 <button onclick="check_ans('{{check_ans[ans_count.value]}}', 'MQ-field-{{count.value}}', '{{count.value}}')" type="button" class="ms-3 btn btn-outline-info">Check</button>
                                 {% if right_wrong %}
@@ -95,9 +95,9 @@
                                     <div class="d-flex align-items-center my-3" style="padding-left: 160px">
                                         <h6 class="fw-bold my-auto" style="min-width: 60px">Part {{roman}}:</h6>
                                         {% if (right_wrong[ans_count.value]) == '1' or (right_wrong[ans_count.value]) == 'NEW' %}
-                                        <div contenteditable="true" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}-{{roman}}">{{ans[ans_count.value]}}</div>
+                                        <div inputmode="none" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}-{{roman}}">{{ans[ans_count.value]}}</div>
                                         {% else %}
-                                        <div contenteditable="true" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}-{{roman}}">{{final_ans[ans_count.value]}}</div>
+                                        <div inputmode="none" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}-{{roman}}">{{final_ans[ans_count.value]}}</div>
                                         {% endif %}
                                         {% set ans_count.value = ans_count.value + 1 %}
                                     </div>
@@ -109,9 +109,9 @@
                             <div class="d-flex align-items-center my-3">
                                 <h6 class="fw-bold my-auto" style="min-width: 60px">Part {{main_ans}}:</h6>
                                 {% if (right_wrong[ans_count.value]) == '1' or (right_wrong[ans_count.value]) == 'NEW' %}
-                                    <div contenteditable="true" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}" style="display: none">{{ans[ans_count.value]}}</div>
+                                    <div inputmode="none" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}" style="display: none">{{ans[ans_count.value]}}</div>
                                 {% else %}
-                                    <div contenteditable="true" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}" style="display: none">{{final_ans[ans_count.value]}}</div>
+                                    <div inputmode="none" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}" style="display: none">{{final_ans[ans_count.value]}}</div>
                                 {% endif %}
                                 {% if right_wrong %}
                                 {% if (right_wrong[ans_count.value]) == '1' or (right_wrong[ans_count.value]) == '' %}
@@ -131,9 +131,9 @@
                                         <div class="d-flex align-items-center my-3" style="padding-left: 160px">
                                             <h6 class="fw-bold my-auto" style="min-width: 60px">Part {{roman}}:</h6>
                                             {% if (right_wrong[ans_count.value]) == '1' or (right_wrong[ans_count.value]) == 'NEW' %}
-                                            <div contenteditable="true" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}-{{roman}}">{{ans[ans_count.value]}}</div>
+                                            <div inputmode="none" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}-{{roman}}">{{ans[ans_count.value]}}</div>
                                             {% else %}
-                                            <div contenteditable="true" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}-{{roman}}">{{final_ans[ans_count.value]}}</div>
+                                            <div inputmode="none" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}-{{roman}}">{{final_ans[ans_count.value]}}</div>
                                             {% endif %}
                                             <button onclick="check_ans('{{check_ans[ans_count.value]}}', 'MQ-field-{{count.value}}-{{roman}}', '{{count.value}}-{{roman}}')" type="button" class="ms-3 btn btn-outline-info">Check</button>
                                             {% if right_wrong %}
@@ -156,9 +156,9 @@
                                         <div class="d-flex align-items-center my-3" style="padding-left: 160px">
                                             <h6 class="fw-bold my-auto" style="min-width: 60px">Part {{roman}}:</h6>
                                             {% if (right_wrong[ans_count.value]) == '1' or (right_wrong[ans_count.value]) == 'NEW' %}
-                                            <div contenteditable="true" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}-{{roman}}">{{ans[ans_count.value]}}</div>
+                                            <div inputmode="none" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}-{{roman}}">{{ans[ans_count.value]}}</div>
                                             {% else %}
-                                            <div contenteditable="true" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}-{{roman}}">{{final_ans[ans_count.value]}}</div>
+                                            <div inputmode="none" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}-{{roman}}">{{final_ans[ans_count.value]}}</div>
                                             {% endif %}
                                             {% set ans_count.value = ans_count.value + 1 %}
                                         </div>
@@ -171,13 +171,13 @@
                         <div class="row justify-content-start align-items-center" id="main-answer-{{count.value}}" style="display: none">
                             <div class="d-flex align-items-center my-3">
                                 <h6 class="fw-bold my-auto" style="min-width: 60px">Part {{main_ans}}:</h6>
-                                <div contenteditable="true" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}"></div>
+                                <div inputmode="none" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}"></div>
                             </div>
                             {% for roman in ["i", "ii", "iii", "iv", "v", "vi"] %}
                                 <div id="sub-answer-{{count.value}}-{{roman}}" style="display: none">
                                     <div class="d-flex align-items-center my-3" style="padding-left: 160px">
                                         <h6 class="fw-bold my-auto" style="min-width: 60px">Part {{roman}}:</h6>
-                                        <div contenteditable="true" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}-{{roman}}"></div>
+                                        <div inputmode="none" class="ms-3 form-control mathfield" id="MQ-field-{{count.value}}-{{roman}}"></div>
                                     </div>
                                 </div>
                             {% endfor %}
