@@ -479,7 +479,7 @@ def new_question(homework_id, grade="ALL",tags="ALL",difficulty="ALL"):
             final_ans = ';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;'
             right_wrong = 'NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW;NEW'
             question_id = Question.query.order_by(Question.id.desc()).first().id
-            working = Working(workings='[]', workings2='[]', workings3='[]', final_ans=final_ans, homework_id=homework_id, question_id=question_id, point=99,right_wrong=right_wrong)
+            working = Working(workings='[]', workings3='[]', final_ans=final_ans, homework_id=homework_id, question_id=question_id, point=99,right_wrong=right_wrong)
             db.session.add(working)
             db.session.commit()
             
