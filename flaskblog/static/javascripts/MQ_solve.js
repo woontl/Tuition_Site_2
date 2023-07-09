@@ -4,6 +4,9 @@ let lastClickedMathField;
 var temp_index = 0
 mathFields.forEach(function(mathField) {
   let mathFieldInstance = MQ.StaticMath(mathField);
+  mathField.addEventListener("touchstart", function(event) {
+    event.preventDefault()
+  });
   mathField.addEventListener("click", function(event) {
     event.preventDefault(); // Prevent the default behavior (e.g., showing the keyboard)
     let innerField = event.target;
