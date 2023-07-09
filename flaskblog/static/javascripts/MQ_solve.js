@@ -5,9 +5,6 @@ var temp_index = 0
 mathFields.forEach(function(mathField) {
   let mathFieldInstance = MQ.StaticMath(mathField);
   mathField.addEventListener("click", function(event) {
-    mathField.attr('readonly', 'readonly');
-    mathField.focus();
-    mathField.removeAttr('readonly');
     let innerField = event.target;
     if (innerField.classList.contains("mq-root-block")) {
       innerField = innerField
@@ -18,6 +15,7 @@ mathFields.forEach(function(mathField) {
     let index = mathFieldInstance.innerFields.findIndex(obj => obj.id == innerField_id);
     temp_index = index
     lastClickedMathField = mathFieldInstance.innerFields[index];
+    lastClickedMathField.blur()
   });
 });
 
