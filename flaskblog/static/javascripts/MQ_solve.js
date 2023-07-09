@@ -15,23 +15,6 @@ mathFields.forEach(function(mathField) {
     let index = mathFieldInstance.innerFields.findIndex(obj => obj.id == innerField_id);
     temp_index = index
     lastClickedMathField = mathFieldInstance.innerFields[index];
-
-    // Temporarily set the field as content editable
-    lastClickedMathField.el().setAttribute('contenteditable', 'true');
-
-    // Set the focus to the field and move the cursor to the end
-    lastClickedMathField.focus();
-    let range = document.createRange();
-    let sel = window.getSelection();
-    range.setStart(lastClickedMathField.el(), 1); // Set cursor at end (change the index if needed)
-    range.collapse(true);
-    sel.removeAllRanges();
-    sel.addRange(range);
-
-    // Remove the content editable attribute after a short delay
-    setTimeout(function() {
-      lastClickedMathField.el().setAttribute('contenteditable', 'false');
-    }, 200);
   });
 });
 
