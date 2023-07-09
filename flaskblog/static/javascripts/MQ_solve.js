@@ -5,7 +5,9 @@ var temp_index = 0
 mathFields.forEach(function(mathField) {
   let mathFieldInstance = MQ.StaticMath(mathField);
   mathField.addEventListener("click", function(event) {
-    mathField.blur()
+    mathField.attr('readonly', 'readonly');
+    mathField.focus();
+    mathField.removeAttr('readonly');
     let innerField = event.target;
     if (innerField.classList.contains("mq-root-block")) {
       innerField = innerField
