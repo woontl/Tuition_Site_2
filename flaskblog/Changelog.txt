@@ -10,15 +10,46 @@ Add read_tag column to Activity DB
 Add dark_mode tag to User DB
 Remove checked column in Questionbank, Question
 Add new Course Table
-Add new Lesson Table + Workings_images column
+CREATE TABLE "course" (
+"id"	INTEGER NOT NULL,
+"student_id"	INTEGER NOT NULL,
+"topics"	VARCHAR(999999) NOT NULL,
+"checked"	VARCHAR(999999) NOT NULL,
+PRIMARY KEY("id")
+)
+Add new Lesson Table
+CREATE TABLE "lesson" (
+	"id"	INTEGER NOT NULL,
+	"title"	VARCHAR(100) NOT NULL,
+	"student_id"	INTEGER NOT NULL,
+	"date_posted"	DATETIME NOT NULL,
+	"user_id"	INTEGER NOT NULL,
+	"formulas"	VARCHAR(999999),
+	"notes"	INTEGER,
+	"topics"	INTEGER,
+	"workings"	TEXT,
+	"workings_images"	TEXT,
+	FOREIGN KEY("user_id") REFERENCES "user"("id"),
+	PRIMARY KEY("id")
+)
 Workings2->Workings_images in Workings Table
 Add topics column in Homework Table
 Delete tagslist table
-Delete notes column from user Table
 Changes Tags->Topics column in Questionbank and Question Table
 Delete Notes and Post Table
 Remove topics, topics_check, description1, date1, time1 from User Table
 Create exam table
+CREATE TABLE "exam" (
+	"id"	INTEGER NOT NULL,
+	"student_id"	INTEGER NOT NULL,
+	"date1"	DATETIME,
+	"description1"	VARCHAR(100),
+	"date2"	DATETIME,
+	"description2"	VARCHAR(100),
+	"date3"	DATETIME,
+	"description3"	VARCHAR(100),
+	PRIMARY KEY("id")
+)
 Add verified column to User, add 1 to existing users
 Change environ variables to new
 

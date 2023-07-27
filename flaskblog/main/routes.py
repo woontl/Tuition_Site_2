@@ -97,8 +97,12 @@ def home():
         homework_title = ''
     else:
         id_arr = [homework.id]
-        homework_num = (homework.title.split('-'))[0]
-        homework_title = (homework.title.split('-'))[1]
+        try:
+            homework_num = (homework.title.split('-'))[0]
+            homework_title = (homework.title.split('-'))[1]
+        except:
+            homework_num = ''
+            homework_title = ''
     if lesson == None:
         lesson = []
         lesson_num = ''
