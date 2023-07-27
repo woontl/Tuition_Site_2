@@ -1,0 +1,157 @@
+{% extends "layout_prelogin.html" %} <!--inherit from parent html-->
+{% block content %} <!--block content here replaces block content in parent-->
+<form method="POST" action=""novalidate> <!--post form via the route created-->
+    {{ form.hidden_tag() }}
+    <div class="container" style="height: 110vh; display: flex; justify-content: center; align-items: center;">
+        <div class="row" style="width: 100%">
+            <div class="col d-flex align-items-center">
+                <img class="img-fluid my-auto mx-auto" style="width: auto; height: auto;" src="{{ url_for('static', filename='icons/contact.png') }}">
+            </div>
+            <div class="col">
+                <h1 class="display-4 fw-bold">Contact Us</h1>
+                <div class="form-group mt-3">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="bi bi-person-fill text-white fs-3"></i></span>
+                        </div>
+                        {% if form.name.errors %} <!--if got error, print error-->
+                            {{ form.name(class="form-control form-control-lg is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.name.errors %} 
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.name(class="form-control form-control-lg", placeholder="Enter your name") }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group mt-3">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="bi bi-person-fill text-white fs-3"></i></span>
+                        </div>
+                        {% if form.age.errors %}
+                            {{ form.age(class="form-control form-control-lg is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.age.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.age(class="form-control form-control-lg", placeholder="Enter your age") }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group mt-3">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="bi bi-telephone text-white fs-3"></i></span>
+                        </div>
+                        {% if form.number.errors %}
+                            {{ form.number(class="form-control form-control-lg is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.number.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.number(class="form-control form-control-lg", placeholder="Enter your number") }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group mt-3">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="bi bi-envelope black-white fs-3"></i></span>
+                        </div>
+                        {% if form.email.errors %}
+                            {{ form.email(class="form-control form-control-lg is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.email.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.email(class="form-control form-control-lg", placeholder="Enter your email") }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group mt-3">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="bi bi-pencil black-white fs-3"></i></span>
+                        </div>
+                        {% if form.school.errors %}
+                            {{ form.school(class="form-control form-control-lg is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.school.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.school(class="form-control form-control-lg", placeholder="Enter your school") }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group mt-3">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="bi bi-pencil black-white fs-3"></i></span>
+                        </div>
+                        {% if form.grade.errors %}
+                            {{ form.grade(class="form-control form-control-lg is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.grade.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.grade(class="form-control form-control-lg", placeholder="Enter your grade") }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group mt-3">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="bi bi-pencil black-white fs-3"></i></span>
+                        </div>
+                        {% if form.syllabus.errors %}
+                            {{ form.syllabus(class="form-control form-control-lg is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.syllabus.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.syllabus(class="form-control form-control-lg", placeholder="Enter your syllabus (Eg. IGCSE/IB)") }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group mt-3">
+                    {% if form.enquiry.errors %}
+                        {{ form.enquiry(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.enquiry.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.enquiry(class="form-control form-control-lg", placeholder="State your enquiry here! Eg. Lesson fees, frequency of classes", style="min-height: 200px;") }}
+                    {% endif %}
+                </div>
+                <div class="row mt-3">
+                    <div class="d-grid col-lg-3">
+                    </div>
+                    <div class="d-grid col">
+                        {{ form.submit(class="btn btn-block btn-primary fw-bold h5 my-2") }}
+                    </div>
+                    <div class="d-grid col-lg-3">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+{% endblock content %}

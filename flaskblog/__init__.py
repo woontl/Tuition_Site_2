@@ -35,19 +35,19 @@ def create_app(config_class=Config):
 
     from flaskblog.users.routes import users
     from flaskblog.main.routes import main
-    from flaskblog.notes.routes import notes
     from flaskblog.resources.routes import resources
     from flaskblog.homeworks.routes import homeworks
     from flaskblog.lessons.routes import lessons
     from flaskblog.courses.routes import courses
+    from flaskblog.exams.routes import exams
     from flaskblog.errors.handlers import errors
     app.register_blueprint(users)
     app.register_blueprint(main)
-    app.register_blueprint(notes)
     app.register_blueprint(resources)
     app.register_blueprint(homeworks)
     app.register_blueprint(lessons)
     app.register_blueprint(courses)
+    app.register_blueprint(exams)
     app.register_blueprint(errors)
 
     return app

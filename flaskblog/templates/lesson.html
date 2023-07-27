@@ -24,16 +24,7 @@
           </div>
         </div>
         <hr class="black-white">
-        <div class="form-group">
-          <h5 class="fw-bold">Topics</h5>
-          {{ form.topics(class="form-control-file form-control-lg w-100") }}
-          {% if form.topics.errors %}
-              {% for error in form.topics.errors %}
-                  <span class="text-danger">{{ error }}</span>
-              {% endfor %}
-          {% endif %}
-        </div>
-        <div class="form-group" style="padding-top: 40px">
+        <div class="form-group" style="padding-top: 20px">
           <h5 class="fw-bold">Summary Notes</h5>
           {{ form.notes(class="form-control-file w-100", style="min-height: 200px;") }}
           {% if form.notes.errors %}

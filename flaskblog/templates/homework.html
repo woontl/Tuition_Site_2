@@ -6,7 +6,7 @@
         <div class="d-flex align-items-center">
           <h2 class="fw-bold my-auto">{{ homework.title }}</h2>
           {% if current_user.account_type == 'Admin' %}
-          <a class="btn btn-primary btn-icon ms-3" href="{{ url_for('homeworks.new_question',homework_id=homework.id, grade='ALL', tags='ALL', difficulty='ALL') }}"><i class="bi bi-bookmark-plus align-middle"></i></a>
+          <a class="btn btn-primary btn-icon ms-3" href="{{ url_for('homeworks.new_question',homework_id=homework.id, grade='ALL', topics='ALL', difficulty='ALL') }}"><i class="bi bi-bookmark-plus align-middle"></i></a>
           {% endif %}
         </div>
         <hr class="black-white">
@@ -23,7 +23,7 @@
           </div>
           <div class="d-flex my-2">
             <span class="badge text-white" style="background-color: #7749F8">{{ question.grade }}</span>
-            <span class="badge text-white ms-3" style="background-color: #7749F8">{{ question.tags }}</span>
+            <span class="badge text-white ms-3" style="background-color: #7749F8">{{ question.topics }}</span>
             {% if question.difficulty=="Easy"%}
             <span class="badge text-white ms-3" style="background-color: #7749F8">{{ question.difficulty }}</span>
             {% elif question.difficulty=="Moderate"%}
@@ -41,7 +41,7 @@
             <div class="d-flex flex-column justify-content-start">
               <a class="btn btn-success btn-icon" href="{{ url_for('homeworks.solve_question',homework_id=homework.id, question_id=question.id) }}"><i class="bi bi-check-square text-white align-middle"></i></a>
               {% if current_user.account_type == 'Admin' %}
-              <a class="btn btn-warning btn-icon mt-3" href="{{ url_for('homeworks.update_question',homework_id=homework.id, question_id=question.id, grade='ALL', tags='ALL', difficulty='ALL', load='not_loaded') }}"><i class="bi bi-pencil-square text-white align-middle"></i></a>
+              <a class="btn btn-warning btn-icon mt-3" href="{{ url_for('homeworks.update_question',homework_id=homework.id, question_id=question.id, grade='ALL', topics='ALL', difficulty='ALL', load='not_loaded') }}"><i class="bi bi-pencil-square text-white align-middle"></i></a>
               <button type="button" class="btn btn-danger btn-icon mt-3" data-bs-toggle="modal" data-bs-target="#deleteQuestion"><i class="bi bi-trash align-middle"></i></button>    
               {% endif %}
             </div>

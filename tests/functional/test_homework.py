@@ -21,7 +21,7 @@ def test_homework_questionbank_page(test_client):
     assert b"Questionbank" in response.data
     assert b"Filters" in response.data
     assert b"Grade" in response.data
-    assert b"Tags" in response.data
+    assert b"Topics" in response.data
     assert b"Difficulty" in response.data
     assert b"Load Question" in response.data
     
@@ -32,7 +32,7 @@ def test_homework_upload_questionbank_page(test_client):
     assert b"New Upload" in response.data
     assert b"Click to Upload Question Image" in response.data
     assert b"Grade" in response.data
-    assert b"Tags" in response.data
+    assert b"Topics" in response.data
     assert b"Difficulty" in response.data
     assert b"Answer" in response.data
     assert b"Part A:" in response.data

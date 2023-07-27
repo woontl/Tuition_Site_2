@@ -12,8 +12,15 @@ Remove checked column in Questionbank, Question
 Add new Course Table
 Add new Lesson Table + Workings_images column
 Workings2->Workings_images in Workings Table
-
-
+Add topics column in Homework Table
+Delete tagslist table
+Delete notes column from user Table
+Changes Tags->Topics column in Questionbank and Question Table
+Delete Notes and Post Table
+Remove topics, topics_check, description1, date1, time1 from User Table
+Create exam table
+Add verified column to User, add 1 to existing users
+Change environ variables to new
 
 
 

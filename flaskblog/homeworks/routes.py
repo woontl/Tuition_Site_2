@@ -1,8 +1,8 @@
 from flask import render_template as real_render_template, Blueprint, flash, redirect, url_for, request, abort, current_app, jsonify, session
 from flask_login import current_user, login_required
 from flaskblog import db, socketio
-from flaskblog.models import Homework, Questionbank, Question, Working, User, Activity, TagsList, Changelog, Lesson
-from flaskblog.homeworks.forms import HomeworkForm, QuestionBankForm, QuestionForm, WorkingForm, HomeworkFilterForm, TagForm
+from flaskblog.models import Homework, Questionbank, Question, Working, User, Activity, Changelog, Lesson, Course
+from flaskblog.homeworks.forms import HomeworkForm, QuestionBankForm, QuestionForm, WorkingForm, HomeworkFilterForm
 from flaskblog.homeworks.utils import save_qn_picture, save_working_picture ,MQ_formatter
 import pandas as pd
 import os
@@ -84,8 +84,9 @@ def my_homework(student="ALL"):
     if request.method == 'POST' and current_user.account_type == 'Admin':
         return redirect(url_for('homeworks.my_homework', student=form.student.data))
     id_arr = []
-    for i in homeworks.items:
-        id_arr.append(i.id)
+    if homeworks:
+        for i in homeworks.items:
+            id_arr.append(i.id)
     pt_arr = []
     question_count_arr = []
     attempt_percentage_arr = []
@@ -121,21 +122,27 @@ def new_homework():
     form = HomeworkForm()
     users = User.query.filter_by(account_type='User').all()
     users_arr = []
+    all_topics = []
+    all_courses = Course.query.all()
+    for course in all_courses:
+        topics = course.topics.split(';')
+        for topic in topics:
+            if topic.strip():
+                all_topics.append(topic)
+    form.topics.choices = all_topics
     for i in users:
         users_arr.append(i.username)
     if request.method == 'GET':
         form.deadline.data = date.today() + timedelta(days=7)
+        form.title.data = 'HW' + ' - '
     form.student.choices = users_arr
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.student.data).first()
-        if form.title.data == "":
-            default_title = form.student.data + ' HW' + str(Homework.query.filter_by(student_id=user.id).count()+1)
-        else:
-            default_title = form.title.data
-        homework = Homework(title=default_title, student_id=user.id, deadline=form.deadline.data,
+        title = (form.title.data).replace('HW', 'HW' + str(Homework.query.filter_by(student_id=user.id).count()+1))
+        homework = Homework(title=title, student_id=user.id, deadline=form.deadline.data, topics=form.topics.data,
                              author=current_user)
         db.session.add(homework)
-        activity = Activity(description=default_title+" has been added as homework!", student_id = user.id, author=current_user)
+        activity = Activity(description=title+" has been added!", student_id = user.id, author=current_user)
         db.session.add(activity)
         db.session.commit()
         flash('Your homework has been created!', 'success')
@@ -143,7 +150,20 @@ def new_homework():
     return render_template('create_homework.html', title='New Homework',
                            form=form, legend='New Homework')
 
+@homeworks.route('/get_topics/<student>', methods=['GET'])
+@login_required
+def get_topics(student):
+    # Logic to retrieve topics based on the selected student
+    user = User.query.filter_by(username=student).first()
+    course = Course.query.filter_by(student_id=user.id).first()
+    try:
+        topics = [topic for topic in course.topics.split(';') if topic.strip()]
+        return jsonify(topics=topics)
+    except:
+        return jsonify(topic=[])
+
 @homeworks.route("/homework/<int:homework_id>") #route based on homework id
+@login_required
 def homework(homework_id):
     homework = Homework.query.get_or_404(homework_id) #get data, but return error 404 if not available
     page = request.args.get('page', 1, type = int)
@@ -163,16 +183,27 @@ def update_homework(homework_id):
     users_arr = []
     for i in users:
         users_arr.append(i.username)
+    all_topics = []
+    all_courses = Course.query.all()
+    for course in all_courses:
+        topics = course.topics.split(';')
+        for topic in topics:
+            if topic.strip():
+                all_topics.append(topic)
+    form.topics.choices = all_topics
     form.student.choices = users_arr
     if form.validate_on_submit(): #if valid, display all these DB data on webpage
-        homework.title = form.title.data
+        user = User.query.filter_by(username=form.student.data).first()
+        homework.title = (form.title.data).replace('HW', 'HW' + str(Homework.query.filter_by(student_id=user.id).count()))
         homework.student_id = (User.query.filter_by(username=form.student.data).first()).id
         homework.deadline = form.deadline.data
+        homework.topics = form.topics.data
         db.session.commit()
         flash('Your homework has been updated!', 'success')
         return redirect(url_for('homeworks.my_homework', student="ALL")) #redirect back to homework page after updating
     elif request.method == 'GET':
         form.title.data = homework.title
+        form.topics.data = homework.topics
         form.deadline.data = homework.deadline
         form.student.data = (User.query.filter_by(id=homework.student_id).first()).username
 
@@ -198,48 +229,60 @@ def delete_homework(homework_id):
     return redirect(url_for('homeworks.my_homework', student="ALL"))
 
 # Questionbank Routes
-@homeworks.route("/questionbank/<string:grade>/<string:tags>/<string:difficulty>", methods=['GET', 'POST'])
+@homeworks.route("/questionbank/<string:grade>/<string:topics>/<string:difficulty>", methods=['GET', 'POST'])
 @login_required
-def questionbank(grade="ALL",tags="ALL",difficulty="ALL"):
+def questionbank(grade="ALL",topics="ALL",difficulty="ALL"):
     page = request.args.get('page', 1, type = int)
     form = QuestionForm()
-    tags_temp = TagsList.query.all()
-    form.tags.choices = ['ALL']
-    form.tags.choices += ([i.tag for i in tags_temp])
+    all_topics = ['ALL']
+    try:
+        course = Course.query.filter_by(student_id=current_user.id).first()
+        for topic in course.topics.split(';'):
+            if topic.strip():
+                all_topics.append(topic)
+    except:
+        all_topics = ['ALL']
+    if current_user.account_type == 'Admin':
+        courses = Course.query.all()
+        for course in courses:
+            for topic in course.topics.split(';'):
+                if topic.strip():
+                    all_topics.append(topic)
+    form.topics.choices = all_topics
     images = Questionbank.query.order_by(Questionbank.id.asc()).paginate(per_page=5, page=page)
     if request.method == 'GET':
         form.grade.data = grade
-        form.tags.data = tags
+        form.topics.data = topics
         form.difficulty.data = difficulty
         if grade == "ALL":
             grade = "%{}%".format("")
-        if tags == "ALL":
-            tags = "%{}%".format("")
+        if topics == "ALL":
+            topics = "%{}%".format("")
         else:
-            tags = "%{}%".format(tags)
+            topics = "%{}%".format(topics)
         if difficulty == "ALL":
             difficulty = "%{}%".format("")
-        images = Questionbank.query.filter(Questionbank.tags.like(tags),
+        images = Questionbank.query.filter(Questionbank.topics.like(topics),
                                         Questionbank.grade.like(grade),
                                         Questionbank.difficulty.like(difficulty)
                                         ).order_by(Questionbank.id.asc()).paginate(per_page=5, page=page)
         return render_template('questionbank.html', images=images, form=form,legend="Filters")
 
     if request.method == 'POST':
-        tags = "%{}%".format(form.tags.data)
+        topics = "%{}%".format(form.topics.data)
         grade = form.grade.data
         difficulty = form.difficulty.data
         if form.grade.data == "ALL":
             grade = "%{}%".format("")
-        if form.tags.data == "ALL":
-            tags = "%{}%".format("")
+        if form.topics.data == "ALL":
+            topics = "%{}%".format("")
         if form.difficulty.data == "ALL":
             difficulty = "%{}%".format("")
-        images = Questionbank.query.filter(Questionbank.tags.like(tags),
+        images = Questionbank.query.filter(Questionbank.topics.like(topics),
                                         Questionbank.grade.like(grade),
                                         Questionbank.difficulty.like(difficulty),
                                         ).order_by(Questionbank.id.asc()).paginate(per_page=5, page=1) #filtered hex list of questions
-        return redirect( url_for('homeworks.questionbank', grade=form.grade.data, tags=form.tags.data, difficulty = form.difficulty.data))
+        return redirect( url_for('homeworks.questionbank', grade=form.grade.data, topics=form.topics.data, difficulty = form.difficulty.data))
         #return render_template('questionbank.html', images=images, form=form,legend="Filters")
     return render_template('questionbank.html', images=images, form=form,legend="Filters")
 
@@ -247,19 +290,25 @@ def questionbank(grade="ALL",tags="ALL",difficulty="ALL"):
 @login_required
 def upload_questionbank():
     form = QuestionBankForm()
-    tags_temp = TagsList.query.all()
-    form.tags.choices = [i.tag for i in tags_temp]
+    all_topics = []
+    if current_user.account_type == 'Admin':
+        courses = Course.query.all()
+        for course in courses:
+            for topic in course.topics.split(';'):
+                if topic.strip():
+                    all_topics.append(topic)
+    form.topics.choices = all_topics
     if request.method == 'POST':
         if form.img.data == None:
             flash('Please choose image to upload!', 'danger')
             return redirect(url_for('homeworks.upload_questionbank'))
-        if form.tags.data == []:
-            flash('Please select tags!', 'danger')
+        if form.topics.data == []:
+            flash('Please select topics!', 'danger')
             return redirect(url_for('homeworks.upload_questionbank'))
         img = save_qn_picture(form.img.data)
-        tags_str = ','.join(form.tags.data)
+        topics_str = ','.join(form.topics.data)
         ans = (json.loads(request.form['action']))['ans_merged']
-        questionbank = Questionbank(grade=form.grade.data, tags=tags_str, img=img,
+        questionbank = Questionbank(grade=form.grade.data, topics=topics_str, img=img,
                                      difficulty=form.difficulty.data, answer=ans)
         db.session.add(questionbank)
         db.session.commit()
@@ -268,48 +317,30 @@ def upload_questionbank():
     elif request.method == 'GET':
         return render_template('upload_questionbank.html', title='New Upload', form=form,
                         legend='New Upload')
-
-@homeworks.route("/edit_tags", methods=['GET', 'POST'])
-@login_required
-def edit_tags():
-    tags_temp = TagsList.query.all()
-    form = TagForm()
-    form.tags.choices = ([i.tag for i in tags_temp])
-    if request.method == "POST":
-        tag = TagsList(tag=form.new_tag.data)
-        db.session.add(tag)
-        db.session.commit()
-        flash('Your tag has been added!', 'success')
-        return redirect(url_for('homeworks.edit_tags'))
-    if request.method == "GET":
-        return render_template('questionbank_tags.html', legend='Edit Tags', tags = tags_temp, form=form)
-
-@homeworks.route("/delete_tag/<int:tag_id>", methods=['GET', 'POST'])
-@login_required
-def delete_tag(tag_id):
-    delete_tag = TagsList.__table__.delete().where(TagsList.id == tag_id)
-    db.session.execute(delete_tag)
-    db.session.commit()
-    flash('Your tag has been deleted!', 'success')
-    return redirect(url_for('homeworks.edit_tags'))
     
 @homeworks.route("/questionbank/<int:questionbank_id>/update", methods=['GET', 'POST'])
 @login_required
 def update_questionbank(questionbank_id):
     qb = Questionbank.query.get_or_404(questionbank_id)
     form = QuestionBankForm()
-    tags_temp = TagsList.query.all()
-    form.tags.choices = ([i.tag for i in tags_temp])
+    all_topics = []
+    if current_user.account_type == 'Admin':
+        courses = Course.query.all()
+        for course in courses:
+            for topic in course.topics.split(';'):
+                if topic.strip():
+                    all_topics.append(topic)
+    form.topics.choices = all_topics
     if request.method == "GET":
         form.grade.data = qb.grade
-        form.tags.data = qb.tags
+        form.topics.data = qb.topics
         form.difficulty.data = qb.difficulty
         ans=qb.answer.split(';')
         img_preview = qb.img
         
     elif request.method == "POST":
         qb.grade = form.grade.data
-        qb.tags = ','.join(form.tags.data)
+        qb.topics = ','.join(form.topics.data)
         qb.difficulty = form.difficulty.data
         qb.answer = (json.loads(request.form['action']))['ans_merged']
         db.session.commit()
@@ -321,7 +352,7 @@ def update_questionbank(questionbank_id):
             question.qn_answer = qb.answer
             db.session.commit()
                 
-        return redirect(url_for('homeworks.questionbank', grade="ALL",tags="ALL",difficulty="ALL"))
+        return redirect(url_for('homeworks.questionbank', grade="ALL",topics="ALL",difficulty="ALL"))
     return render_template('upload_questionbank.html', title='Update Questionbank', form=form,
                         legend='Update Questionbank', img_preview=img_preview, ans=ans)
 
@@ -334,43 +365,48 @@ def delete_questionbank(questionbank_id):
     db.session.execute(delete_q)
     db.session.commit()
     flash('Your question has been deleted from the questionbank!', 'success')
-    return redirect(url_for('homeworks.questionbank', grade="ALL",tags="ALL",difficulty="ALL"))
+    return redirect(url_for('homeworks.questionbank', grade="ALL",topics="ALL",difficulty="ALL"))
 
 # Question Routes
-@homeworks.route("/homework/<int:homework_id>/<int:question_id>/update/<string:grade>/<string:tags>/<string:difficulty>/<string:load>", methods=['GET', 'POST']) #route based on homework id
+@homeworks.route("/homework/<int:homework_id>/<int:question_id>/update/<string:grade>/<string:topics>/<string:difficulty>/<string:load>", methods=['GET', 'POST']) #route based on homework id
 @login_required
-def update_question(homework_id, question_id, grade="ALL",tags="ALL",difficulty="ALL", load="not_loaded"):
+def update_question(homework_id, question_id, grade="ALL",topics="ALL",difficulty="ALL", load="not_loaded"):
     question = Question.query.get_or_404(question_id)
     homework = Homework.query.get_or_404(homework_id)
     page = request.args.get('page', 1, type = int)
     form = QuestionForm()
-    tags_temp = TagsList.query.all()
-    form.tags.choices = ['ALL']
-    form.tags.choices += ([i.tag for i in tags_temp])
+    all_topics = []
+    if current_user.account_type == 'Admin':
+        courses = Course.query.all()
+        for course in courses:
+            for topic in course.topics.split(';'):
+                if topic.strip():
+                    all_topics.append(topic)
+    form.topics.choices = all_topics
     if request.method == 'GET':
         if load == "not_loaded" :
             form.grade.data = question.grade
-            form.tags.data = question.tags
+            form.topics.data = question.topics
             form.difficulty.data = question.difficulty
             form.title.data = question.title
             images = Questionbank.query.filter(Questionbank.img==question.qn_img).paginate(per_page=1, page=1)
             return render_template('update_question.html',question_id=question_id,homework_id=homework.id,images=images,title='Update Question', load="not_loaded", form=form, legend = "Update Question")
         else:
             form.grade.data = grade
-            form.tags.data = tags
+            form.topics.data = topics
             form.difficulty.data = difficulty
             form.title.data = question.title
             if form.grade.data == "ALL":
                 grade = "%{}%".format("")
-            if form.tags.data == "ALL":
-                tags = "%{}%".format("")
+            if form.topics.data == "ALL":
+                topics = "%{}%".format("")
             else:
-                tags = "%{}%".format(tags)
+                topics = "%{}%".format(topics)
             if form.difficulty.data == "ALL":
                 difficulty = "%{}%".format("")
             images = Questionbank.query.filter(Questionbank.grade.like(grade),
                                         Questionbank.difficulty.like(difficulty),
-                                        Questionbank.tags.like(tags)).paginate(per_page=5, page=page)
+                                        Questionbank.topics.like(topics)).paginate(per_page=5, page=page)
             return render_template('update_question.html',question_id=question_id,homework_id=homework.id,images=images,title='Update Question', load="loaded",form=form, legend = "Update Question")
 
     if request.method == 'POST':
@@ -385,7 +421,7 @@ def update_question(homework_id, question_id, grade="ALL",tags="ALL",difficulty=
                     question.qn_img = qb.img
                 question.title = form.title.data
                 question.grade = qb.grade
-                question.tags = qb.tags
+                question.topics = qb.topics
                 question.difficulty = qb.difficulty
                 question.questionbank_id = qb.id
                 question.qn_answer=qb.answer
@@ -394,19 +430,19 @@ def update_question(homework_id, question_id, grade="ALL",tags="ALL",difficulty=
                 return redirect(url_for('homeworks.homework', homework_id=homework.id))      
             else:
                 grade = form.grade.data
-                tags = form.tags.data
+                topics = form.topics.data
                 difficulty = form.difficulty.data
                 if form.grade.data == "ALL":
                     grade = "%{}%".format("")
-                if form.tags.data == "ALL":
-                    tags = "%{}%".format("")
+                if form.topics.data == "ALL":
+                    topics = "%{}%".format("")
                 else:
-                    tags = "%{}%".format(tags)
+                    topics = "%{}%".format(topics)
                 if form.difficulty.data == "ALL":
                     difficulty = "%{}%".format("")
                 images = Questionbank.query.filter(Questionbank.grade.like(grade),
                                             Questionbank.difficulty.like(difficulty),
-                                            Questionbank.tags.like(tags)).paginate(per_page=5, page=1)
+                                            Questionbank.topics.like(topics)).paginate(per_page=5, page=1)
                 return render_template('update_question.html', title='Update Question', question_id=question_id, homework_id=homework.id, load="loaded" ,form=form, images=images, legend = "Update Question")
         except:
             pass
@@ -431,33 +467,38 @@ def delete_question(homework_id,question_id):
     flash('Your question has been deleted!', 'success')
     return redirect(url_for('homeworks.homework',homework_id=homework.id))
 
-@homeworks.route("/homework/<int:homework_id>/new_question/<string:grade>/<string:tags>/<string:difficulty>", methods=['GET', 'POST'])
+@homeworks.route("/homework/<int:homework_id>/new_question/<string:grade>/<string:topics>/<string:difficulty>", methods=['GET', 'POST'])
 @login_required
-def new_question(homework_id, grade="ALL",tags="ALL",difficulty="ALL"):
+def new_question(homework_id, grade="ALL",topics="ALL",difficulty="ALL"):
     page = request.args.get('page', 1, type = int)
     homework = Homework.query.get_or_404(homework_id)
     if homework.author != current_user: #only creator can add qn to HW
         abort(403)
     form = QuestionForm()
-    tags_temp = TagsList.query.all()
-    form.tags.choices = ['ALL']
-    form.tags.choices += ([i.tag for i in tags_temp])
+    all_topics = []
+    if current_user.account_type == 'Admin':
+        courses = Course.query.all()
+        for course in courses:
+            for topic in course.topics.split(';'):
+                if topic.strip():
+                    all_topics.append(topic)
+    form.topics.choices = all_topics
     images = Questionbank.query.order_by(Questionbank.id.asc()).paginate(per_page=5, page=page)
     if request.method == 'GET':
         form.grade.data = grade
-        form.tags.data = tags
+        form.topics.data = topics
         form.difficulty.data = difficulty
         if form.grade.data == "ALL":
             grade = "%{}%".format("")
-        if form.tags.data == "ALL":
-            tags = "%{}%".format("")
+        if form.topics.data == "ALL":
+            topics = "%{}%".format("")
         else:
-            tags = "%{}%".format(tags)
+            topics = "%{}%".format(topics)
         if form.difficulty.data == "ALL":
             difficulty = "%{}%".format("")
         images = Questionbank.query.filter(Questionbank.grade.like(grade),
                                     Questionbank.difficulty.like(difficulty),
-                                    Questionbank.tags.like(tags)).paginate(per_page=5, page=page)
+                                    Questionbank.topics.like(topics)).paginate(per_page=5, page=page)
         return render_template('new_question.html',homework_id=homework.id,images=images,title='New Question', form=form, legend = "New Question")
     
     if request.method == 'POST':
@@ -466,13 +507,13 @@ def new_question(homework_id, grade="ALL",tags="ALL",difficulty="ALL"):
             qb = Questionbank.query.filter(Questionbank.id==img_id).first()
             if qb is None:
                 flash('Please select your question before submitting!', 'danger')
-                return redirect(url_for('homeworks.new_question',homework_id=homework.id, grade=form.grade.data, tags=form.tags.data, difficulty = form.difficulty.data)) #redirect back to homework page after updating
+                return redirect(url_for('homeworks.new_question',homework_id=homework.id, grade=form.grade.data, topics=form.topics.data, difficulty = form.difficulty.data)) #redirect back to homework page after updating
             if form.title.data == "":
                 default_title = 'Question ' + str(Question.query.filter_by(homework_id=homework.id).count() + 1)
             else:
                 default_title = form.title.data
             question = Question(title=default_title, questionbank_id=qb.id, homework_id=homework_id, grade=qb.grade, qn_img=qb.img, qn_answer=qb.answer,
-                             tags=qb.tags, difficulty=qb.difficulty)
+                             topics=qb.topics, difficulty=qb.difficulty)
             db.session.add(question)
             
             # Add blank entry to Workings 
@@ -484,22 +525,22 @@ def new_question(homework_id, grade="ALL",tags="ALL",difficulty="ALL"):
             db.session.commit()
             
             flash('Your question has been added!', 'success')
-            return redirect(url_for('homeworks.new_question',homework_id=homework.id, grade=form.grade.data, tags=form.tags.data, difficulty = form.difficulty.data, page=page)) #redirect back to homework page after updating
+            return redirect(url_for('homeworks.new_question',homework_id=homework.id, grade=form.grade.data, topics=form.topics.data, difficulty = form.difficulty.data, page=page)) #redirect back to homework page after updating
         grade = form.grade.data
-        tags = form.tags.data
+        topics = form.topics.data
         difficulty = form.difficulty.data
         if form.grade.data == "ALL":
             grade = "%{}%".format("")
-        if form.tags.data == "ALL":
-            tags = "%{}%".format("")
+        if form.topics.data == "ALL":
+            topics = "%{}%".format("")
         else:
-            tags = "%{}%".format(tags)
+            topics = "%{}%".format(topics)
         if form.difficulty.data == "ALL":
             difficulty = "%{}%".format("")
         images = Questionbank.query.filter(Questionbank.grade.like(grade),
                                     Questionbank.difficulty.like(difficulty),
-                                    Questionbank.tags.like(tags)).paginate(per_page=5, page=1)
-        return redirect(url_for('homeworks.new_question',homework_id=homework.id, grade=form.grade.data, tags=form.tags.data, difficulty = form.difficulty.data)) #redirect back to homework page after updating
+                                    Questionbank.topics.like(topics)).paginate(per_page=5, page=1)
+        return redirect(url_for('homeworks.new_question',homework_id=homework.id, grade=form.grade.data, topics=form.topics.data, difficulty = form.difficulty.data)) #redirect back to homework page after updating
     return render_template('new_question.html', images=images, homework_id=homework_id, title='New Question', form=form, legend = "New Question")
 
 @homeworks.route("/homework/<int:homework_id>/<int:question_id>/solve", methods=['GET', 'POST']) #route based on homework id

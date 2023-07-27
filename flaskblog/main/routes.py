@@ -1,7 +1,7 @@
 from flask import render_template as real_render_template, Blueprint, url_for, flash, redirect, request
 from flask_login import login_required, current_user
 from flaskblog import db
-from flaskblog.models import Homework, Question, Working, Note, Activity, Changelog, Bug, Course, Lesson
+from flaskblog.models import Homework, Question, Working, Activity, Changelog, Bug, Course, Lesson, Exam
 from flaskblog.main.forms import ChangelogForm, BugForm
 import pandas as pd
 import datetime as datetime
@@ -40,43 +40,72 @@ def landing_page():
 @login_required
 def home():
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
-    if current_user.topics:
-        topics = current_user.topics.split(',')
-        checks = current_user.topics_check.split(',')
-    else:
-        topics = []
-        checks = []
     if current_user.account_type == 'Admin':
         homework = Homework.query.order_by(Homework.date_posted.desc()).first()
+        homework_due_month_calendar = homework.deadline.strftime("%b")
+        homework_due_day_calendar = homework.deadline.day
+        homework_due = homework.title[:4]
         lesson = Lesson.query.order_by(Lesson.date_posted.desc()).first()
-        note = Note.query.order_by(Note.date_posted.desc()).first()
-        homework_count = 0
-        question_count = 0
-        lesson_count = 0
+        homework_count = len(Homework.query.all())
+        question_count = len(Question.query.all())
+        lesson_count = len(Lesson.query.all())
         course_progress = 1
+        exam = None
     else:
         homework = Homework.query.filter_by(student_id=current_user.id).order_by(Homework.date_posted.desc()).first()
+        if homework:
+            homework_due_month_calendar = homework.deadline.strftime("%b")
+            homework_due_day_calendar = homework.deadline.day
+            homework_due = homework.title[:4]
+        else:
+            homework_due_month_calendar = ''
+            homework_due_day_calendar = ''
+            homework_due = ''
         homework_count = len(Homework.query.filter_by(student_id=current_user.id).order_by(Homework.date_posted.desc()).all())
         question_count = 0
         for id in Homework.query.filter_by(student_id=current_user.id).order_by(Homework.date_posted.desc()).all():
             question_count += len(Question.query.filter_by(homework_id=id.id).all())
         lesson = Lesson.query.filter_by(student_id=current_user.id).order_by(Lesson.date_posted.desc()).first()
         lesson_count = len(Lesson.query.filter_by(student_id=current_user.id).order_by(Lesson.date_posted.desc()).all())
-        note = Note.query.filter_by(student_id=current_user.id).order_by(Note.date_posted.desc()).first()
-        course_progress = Course.query.filter_by(student_id=current_user.id).first().checked.split(';')
-        topics = Course.query.filter_by(student_id=current_user.id).first().topics.split(';')
-        total_checks = sum(topic is not '' for topic in topics)*4
-        checks = sum(int(progress) for progress in (course_progress))
-        course_progress = (checks/total_checks)
+        try:
+            course_progress = Course.query.filter_by(student_id=current_user.id).first().checked.split(';')
+            topics = Course.query.filter_by(student_id=current_user.id).first().topics.split(';')
+            total_checks = sum(topic != '' for topic in topics)*4
+            checks = sum(int(progress) for progress in (course_progress))
+            course_progress = (checks/total_checks)
+        except:
+            course_progress = 0
+        exam = Exam.query.filter_by(student_id=current_user.id).first()
+    if exam == None:
+        exam_date1 = ''
+        exam_date2 = ''
+        exam_date3 = ''
+        exam_description1 = ''
+        exam_description2 = ''
+        exam_description3 = ''
+    else:
+        exam_date1 = exam.date1
+        exam_date2 = exam.date2
+        exam_date3 = exam.date3
+        exam_description1 = exam.description1
+        exam_description2 = exam.description2
+        exam_description3 = exam.description3
     if homework == None:
         homework = []
         id_arr = []
+        homework_num = ''
+        homework_title = ''
     else:
         id_arr = [homework.id]
-    if note == None:
-        note = []
+        homework_num = (homework.title.split('-'))[0]
+        homework_title = (homework.title.split('-'))[1]
     if lesson == None:
         lesson = []
+        lesson_num = ''
+        lesson_title = ''
+    else:
+        lesson_num = (lesson.title.split('-'))[0]
+        lesson_title = (lesson.title.split('-'))[1]
     date_now = datetime.datetime.now()
     try:
         homework_due_days = round((homework.deadline - date_now) / timedelta(days=1))
@@ -84,6 +113,10 @@ def home():
             homework_due_days = '-'
     except:
         homework_due_days = '-'
+    try:
+        countdown = abs((exam_date1 - date_now).days)
+    except:
+        countdown = 0
     pt_arr = []
     question_count_arr = []
     attempt_percentage_arr = []
@@ -112,9 +145,14 @@ def home():
             correct_percentage_arr.append(0)
     df = pd.DataFrame({'id': id_arr, 'pt': pt_arr, 'count': question_count_arr, 'attempt_percentage': attempt_percentage_arr,
      'correct_percentage': correct_percentage_arr, 'homework_due_days': homework_due_days})
-    return render_template('home.html', image_file=image_file, homework=homework, note=note,df=df, topics=topics, 
-                            checks=checks, homework_count=homework_count, question_count=question_count, lesson = lesson,
-                            lesson_count=lesson_count, course_progress=course_progress) 
+    return render_template('home.html', image_file=image_file, homework=homework, homework_num = homework_num,
+                            homework_title = homework_title, df=df, homework_count=homework_count, question_count=question_count, lesson = lesson, 
+                            lesson_num = lesson_num, lesson_title = lesson_title,
+                            lesson_count=lesson_count, course_progress=round(course_progress,3),homework_due=homework_due, 
+                            homework_due_day_calendar = homework_due_day_calendar, homework_due_month_calendar = homework_due_month_calendar,
+                            exam_date1=exam_date1,exam_date2=exam_date2,exam_date3=exam_date3,
+                            exam_description1=exam_description1,exam_description2=exam_description2,exam_description3=exam_description3,
+                            countdown=countdown)  
 
 @main.route("/activity_readall", methods=['POST']) #Both routes bring to the same page
 @login_required
@@ -141,7 +179,7 @@ def activity_readall():
 def changelog():
     page = request.args.get('page', 1, type = int)
     changelogs = Changelog.query.order_by(Changelog.date_posted.desc()).paginate(per_page=5, page=page)
-    return render_template('about.html', changelogs=changelogs)
+    return render_template('changelog.html', changelogs=changelogs)
 
 @main.route("/new_changelog", methods=['GET', 'POST']) #Creating a second route
 @login_required

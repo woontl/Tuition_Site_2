@@ -8,19 +8,20 @@ class HomeworkForm(FlaskForm):
     title = StringField('Title')
     student = SelectField('Student', coerce=str, validators=[DataRequired()])
     deadline = DateField('Deadline', validators=[DataRequired()])
+    topics = SelectField('Topics', coerce=str, validators=[DataRequired()])
     submit = SubmitField('Post')
 
 class QuestionForm(FlaskForm):
     title = StringField('Title')
     grade = SelectField('Grade', choices = ['ALL','IGCSE & O-Levels', 'IB & A-Levels'], validators=[DataRequired()])
-    tags = SelectField('Tags', coerce=str, validators=[DataRequired()])
+    topics = SelectField('Topics', coerce=str, validators=[DataRequired()])
     difficulty = SelectField('Difficulty', choices = ['ALL','Easy','Moderate','Hard','Extreme'], validators=[DataRequired()])
     load_questions = SubmitField('Load Questions')
     submit = SubmitField('Post')
 
 class QuestionBankForm(FlaskForm):
     grade = SelectField('Grade', choices = ['IGCSE & O-Levels', 'IB & A-Levels'], validators=[DataRequired()])
-    tags = SelectMultipleField('Tags', coerce=str, validators=[DataRequired()])
+    topics = SelectMultipleField('Topics', coerce=str, validators=[DataRequired()])
     difficulty = SelectField('Difficulty', choices = ['Easy','Moderate','Hard','Extreme'], validators=[DataRequired()])
     answer = StringField('Answer', validators=[DataRequired()])
     img = FileField('Click to Upload Question Image', validators=[FileRequired(), FileAllowed(['jpg', 'png','jpeg'])])
@@ -35,7 +36,3 @@ class HomeworkFilterForm(FlaskForm):
     student = SelectField('Student', coerce=str, validators=[DataRequired()])
     submit = SubmitField('Post')
     
-class TagForm(FlaskForm):
-    new_tag = StringField('New Tag')
-    tags = SelectField('Tags', coerce=str, validators=[DataRequired()])
-    submit = SubmitField('Add Tag')

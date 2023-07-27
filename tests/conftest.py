@@ -1,6 +1,6 @@
 import pytest
 from flaskblog import create_app
-from flaskblog.models import User, Homework, Questionbank, Question, Working, Note, Activity
+from flaskblog.models import User, Homework, Questionbank, Question, Working, Activity
 
 @pytest.fixture(scope='module')
 def test_client():
@@ -23,23 +23,18 @@ def new_homework():
 
 @pytest.fixture(scope='module')
 def new_questionbank():
-    questionbank = Questionbank(img='imgXX', grade='10', tags='tag1', difficulty='Hard', answer='answer1',) 
+    questionbank = Questionbank(img='imgXX', grade='10', topics='topic1', difficulty='Hard', answer='answer1',) 
     return questionbank
 
 @pytest.fixture(scope='module')
 def new_question():
-    question = Question(title='title1', homework_id='1', questionbank_id='1', grade='10', tags='tag1', difficulty='Hard', qn_img='img1', qn_answer='answer1') 
+    question = Question(title='title1', homework_id='1', questionbank_id='1', grade='10', topics='topic1', difficulty='Hard', qn_img='img1', qn_answer='answer1') 
     return question
 
 @pytest.fixture(scope='module')
 def new_working():
     working = Working(homework_id='1', question_id='1', workings='working1', final_ans='ans1', point='1', right_wrong='0;0;0') 
     return working
-
-@pytest.fixture(scope='module')
-def new_note():
-    note = Note(title='title1', student_id='1', workings='working1') 
-    return note
 
 @pytest.fixture(scope='module')
 def new_activity():

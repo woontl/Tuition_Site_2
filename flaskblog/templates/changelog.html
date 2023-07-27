@@ -1,0 +1,45 @@
+{% extends "layout.html" %} <!--inherit from parent html-->
+{% block javaScript %}
+
+{% endblock %}
+{% block content %} <!--block content here replaces block content in parent-->
+<div class="container">
+    <div class="row mx-0">
+        <div class="col-md-12 col-lg-12 col-xl-12">
+            <div class="d-flex align-items-center">
+                <h2 class="fw-bold my-auto">Changelog</h2>
+                {% if current_user.account_type == 'Admin' %}
+                <a class="btn btn-primary btn-icon ms-3" href="{{ url_for('main.new_changelog') }}"><i class="bi bi-file-earmark-plus align-middle"></i></a>
+                {% endif %}
+            </div>
+            <hr class="black-white">
+            {% for changelog in changelogs.items %}
+            <div class="p-3 aga_changelog my-3">
+                <div class="d-flex justify-content-between">
+                    <h4 class="my-auto">Version {{ changelog.version }}</h4> 
+                    <div class="d-flex">
+                        <h6 class="my-auto">Date Posted: {{ changelog.date_posted.strftime('%Y-%m-%d') }}</h6>
+                        {% if current_user.account_type == 'Admin' %}
+                            <a class="btn btn-warning btn-icon ms-3 my-auto" href="{{ url_for('main.update_changelog',changelog_id=changelog.id) }}"><i class="bi bi-pencil-square text-white align-middle"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+                <h6 style="white-space: pre-wrap; padding-top: 10px">{{changelog.description}}</h6>
+            </div>
+            {% endfor %}
+            {% for page_num in changelogs.iter_pages() %} <!--define how many pages to show on bottom both sides-->
+                {% if page_num %}
+                    {% if changelogs.page==page_num %} <!--different style for current page button-->
+                        <a class="btn btn-info mb-4" href="{{ url_for('main.changelog', page=page_num) }}">{{ page_num }}</a>
+                    {% else %}
+                        <a class="btn btn-outline-info mb-4" href="{{ url_for('main.changelog', page=page_num) }}">{{ page_num }}</a>
+                    {% endif %}
+                {% else %}
+                    ...
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+    
+{% endblock content %}

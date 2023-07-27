@@ -62,11 +62,11 @@
                             <div class="mt-4" style="width: auto">
                                 {% if homework %}
                                     <div class="aga_bubble mt-4">
-                                        <div class="d-flex align-items-center justify-content-center my-3">
+                                        <div class="d-flex align-items-center justify-content-center aga_bubble_div my-3">
                                             <i class="bi bi-question-circle fs-4 black-white my-auto align-middle"></i>
                                             <h5 class="my-auto ms-2">{{ df[df['id']==homework.id]['count'].tolist()[0] }} Questions</h5>
                                         </div>
-                                        <div class="d-flex align-items-center justify-content-center my-3">
+                                        <div class="d-flex align-items-center justify-content-center aga_bubble_div my-3">
                                             <i class="bi bi-check2-circle fs-4 black-white my-auto align-middle"></i>
                                             <h5 class="my-auto ms-2">{{ df[df['id']==homework.id]['correct_percentage'].tolist()[0] }}%</h5>
                                         </div>

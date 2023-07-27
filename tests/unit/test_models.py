@@ -30,7 +30,7 @@ def test_DB_new_questionbank(new_questionbank):
     """
     assert new_questionbank.img == 'imgXX'
     assert new_questionbank.grade == '10'
-    assert new_questionbank.tags == 'tag1'
+    assert new_questionbank.topics == 'topic1'
     assert new_questionbank.difficulty == 'Hard'
     assert new_questionbank.answer == 'answer1'
     
@@ -44,7 +44,7 @@ def test_DB_new_question(new_question):
     assert new_question.homework_id == '1'
     assert new_question.questionbank_id == '1'
     assert new_question.grade == '10'
-    assert new_question.tags == 'tag1'
+    assert new_question.topics == 'topic1'
     assert new_question.difficulty == 'Hard'
     assert new_question.qn_img == 'img1'
     assert new_question.qn_answer == 'answer1'
@@ -61,16 +61,6 @@ def test_DB_new_working(new_working):
     assert new_working.final_ans == 'ans1'
     assert new_working.point == '1'
     assert new_working.right_wrong == '0;0;0'
-
-def test_DB_new_note(new_note):
-    """
-    GIVEN a note model
-    WHEN a new note is created
-    THEN check the fields are defined correctly
-    """
-    assert new_note.title == 'title1'
-    assert new_note.student_id == '1'
-    assert new_note.workings == 'working1'
 
 def test_DB_new_activity(new_activity):
     """

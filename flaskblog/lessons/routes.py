@@ -1,7 +1,7 @@
 from flask import render_template as real_render_template, Blueprint, flash, redirect, url_for, request, abort, current_app, jsonify, session
 from flask_login import current_user, login_required
 from flaskblog import db
-from flaskblog.models import Changelog, Activity, User, Lesson
+from flaskblog.models import Changelog, Activity, User, Lesson, Course
 import datetime as datetime
 from flaskblog.lessons.forms import LessonFilterForm, LessonForm, LessonNotesForm
 import json
@@ -66,16 +66,20 @@ def new_lesson():
     for i in users:
         users_arr.append(i.username)
     form.student.choices = users_arr
-
+    all_topics = []
+    all_courses = Course.query.all()
+    for course in all_courses:
+        topics = course.topics.split(';')
+        for topic in topics:
+            if topic.strip():
+                all_topics.append(topic)
+    form.topics.choices = all_topics
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.student.data).first()
-        if form.title.data == "":
-            default_title = form.student.data + ' Lesson ' + str(Lesson.query.filter_by(student_id=user.id).count()+1)
-        else:
-            default_title = form.title.data
-        lesson = Lesson(title=default_title, student_id=user.id, author=current_user)
+        title = (form.title.data).replace('Lesson', 'Lesson ' + str(Lesson.query.filter_by(student_id=user.id).count()+1))
+        lesson = Lesson(title=title, student_id=user.id, author=current_user, topics=form.topics.data)
         db.session.add(lesson)
-        activity = Activity(description=default_title+" has been added as lesson!", student_id = user.id, author=current_user)
+        activity = Activity(description=title+" has been added!", student_id = user.id, author=current_user)
         db.session.add(activity)
         db.session.commit()
         flash('Your lesson has been created!', 'success')
@@ -83,15 +87,14 @@ def new_lesson():
     return render_template('create_lesson.html', title='New Lesson', form=form, legend='New Lesson')
 
 @lessons.route("/lesson/<int:lesson_id>", methods=['GET', 'POST']) #route based on lesson id
+@login_required
 def lesson(lesson_id):
     session['socketio_code'] = str(lesson_id)
     lesson = Lesson.query.get_or_404(lesson_id) #get data, but return error 404 if not available
     form = LessonNotesForm()
-    form.topics.choices = ['topic1', 'topic2']
     if form.validate_on_submit(): #if valid, display all these DB data on webpage
         lesson.notes = form.notes.data
         lesson.formulas = (json.loads(request.form['action']))['ans_merged']
-        lesson.topics = form.topics.data
         lesson.workings = form.workings.data
         db.session.commit()
         flash('Your lesson has been updated!', 'success')
@@ -108,7 +111,6 @@ def lesson(lesson_id):
             formulas = lesson.formulas.split(';')
         else: 
             formulas = []
-        form.topics.data = lesson.topics
     return render_template('lesson.html', lesson=lesson, formulas = formulas, form=form, workings_images=workings_images)
 
 @lessons.route("/lesson/<int:lesson_id>/update", methods=['GET', 'POST']) #route based on lesson id
@@ -123,9 +125,19 @@ def update_lesson(lesson_id):
     for i in users:
         users_arr.append(i.username)
     form.student.choices = users_arr
+    all_topics = []
+    all_courses = Course.query.all()
+    for course in all_courses:
+        topics = course.topics.split(';')
+        for topic in topics:
+            if topic.strip():
+                all_topics.append(topic)
+    form.topics.choices = all_topics
     if form.validate_on_submit(): #if valid, display all these DB data on webpage
-        lesson.title = form.title.data
+        user = User.query.filter_by(username=form.student.data).first()
+        lesson.title = (form.title.data).replace('Lesson', 'Lesson ' + str(Lesson.query.filter_by(student_id=user.id).count()))
         lesson.student_id = (User.query.filter_by(username=form.student.data).first()).id
+        lesson.topics = form.topics.data
         db.session.commit()
         flash('Your lesson has been updated!', 'success')
         return redirect(url_for('lessons.my_lesson', student="ALL")) #redirect back to lesson page after updating

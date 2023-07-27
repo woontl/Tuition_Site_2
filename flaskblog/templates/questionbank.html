@@ -9,7 +9,6 @@
                     <h2 class="fw-bold">Questionbank</h2>
                     {% if current_user.account_type == 'Admin' %}
                     <a class="btn btn-primary btn-icon ms-3 my-auto" href="{{ url_for('homeworks.upload_questionbank') }}"><i class="bi bi-file-earmark-plus align-middle"></i></a>
-                    <a class="btn btn-warning btn-icon ms-3 my-auto" href="{{ url_for('homeworks.edit_tags') }}"><i class="bi bi-pencil-square text-white align-middle"></i></a>
                     {% endif %}
                 </div>
                 <hr class="black-white">
@@ -31,16 +30,16 @@
                     </div>
                     <div class="col">
                         <div class="form-group">
-                            <h5 class="fw-bold">Tags</h5>
-                            {% if form.tags.errors %}
-                                {{ form.tags(class="form-control form-control-lg is-invalid") }}
+                            <h5 class="fw-bold">Topics</h5>
+                            {% if form.topics.errors %}
+                                {{ form.topics(class="form-control form-control-lg is-invalid") }}
                                 <div class="invalid-feedback">
-                                    {% for error in form.tags.errors %}
+                                    {% for error in form.topics.errors %}
                                         <span>{{ error }}</span>
                                     {% endfor %}
                                 </div>
                             {% else %}
-                                {{ form.tags(class="form-control form-control-lg") }}
+                                {{ form.topics(class="form-control form-control-lg") }}
                             {% endif %}
                         </div>
                     </div>
@@ -98,9 +97,9 @@
                 {% for page_num in images.iter_pages() %} <!--define how many pages to show on bottom both sides-->
                     {% if page_num %}
                         {% if images.page==page_num %} <!--different style for current page button-->
-                            <a class="btn btn-info mb-4" href="{{ url_for('homeworks.questionbank', page=page_num, grade=form.grade.data, tags=form.tags.data, difficulty = form.difficulty.data) }}">{{ page_num }}</a>
+                            <a class="btn btn-info mb-4" href="{{ url_for('homeworks.questionbank', page=page_num, grade=form.grade.data, topics=form.topics.data, difficulty = form.difficulty.data) }}">{{ page_num }}</a>
                         {% else %}
-                            <a class="btn btn-outline-info mb-4" href="{{ url_for('homeworks.questionbank', page=page_num, grade=form.grade.data, tags=form.tags.data, difficulty = form.difficulty.data) }}">{{ page_num }}</a>
+                            <a class="btn btn-outline-info mb-4" href="{{ url_for('homeworks.questionbank', page=page_num, grade=form.grade.data, topics=form.topics.data, difficulty = form.difficulty.data) }}">{{ page_num }}</a>
                         {% endif %}
                     {% else %}
                         ...

@@ -3,9 +3,10 @@ from flask_login import login_user, current_user, logout_user, login_required
 from flaskblog import db, bcrypt
 from flaskblog.models import User, Homework, Activity, Question, Working, Changelog
 from flaskblog.users.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
-                                   RequestResetForm, ResetPasswordForm, UserDateForm, UserTopicsForm)
-from flaskblog.users.utils import save_picture, send_reset_email, send_HW_alert
+                                   RequestResetForm, ResetPasswordForm, ContactForm)
+from flaskblog.users.utils import save_picture, send_reset_email, send_HW_alert, send_account_approval, send_enquiry_confirmation, send_enquiry_self
 import datetime as datetime
+from sqlalchemy import text
 
 users = Blueprint('users', __name__) #creating an instance, to be imported
 
@@ -30,19 +31,20 @@ def render_template(*args, **kwargs):
         return real_render_template(*args, **kwargs, version=version.version, dark_mode=dark_mode, activities=activities, 
                            activities_date_arr=activities_date_arr)
 
-@users.route("/register", methods=['GET', 'POST']) #Need to define methods here 
-def register():
+@users.route("/signup", methods=['GET', 'POST']) #Need to define methods here 
+def signup():
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username=form.username.data, email=form.email.data, password=hashed_password, account_type=form.account_type.data, grade=form.grade.data)
+        user = User(username=form.username.data, email=form.email.data, password=hashed_password, 
+                    account_type='User', grade=(form.grade.data)[6:], verified = 0, dark_mode = 'on')
         db.session.add(user)
         db.session.commit()
-        flash(f'Your account has been created! You are now able to log in', 'success') #one time message flashed on screen
-        return redirect(url_for('users.login')) #redirect to home if account created successfully
-    return render_template('register.html', title='Register', form=form)
+        flash(f'Your account has been created and is pending approval. An email will be sent out once approved!', 'success') #one time message flashed on screen
+        return redirect(url_for('main.landing_page')) #redirect to home if account created successfully
+    return render_template('signup.html', title='Sign Up', form=form)
 
 @users.route("/login", methods=['GET', 'POST'])
 def login():
@@ -58,12 +60,15 @@ def login():
         else:
             user = User.query.filter_by(username=email_or_username).first()
 
-        if user and bcrypt.check_password_hash(user.password, form.password.data): #Check for email and password hash
+        if user.verified == 0:
+            flash('Login unsuccessful. Account is still pending approval!', 'danger')
+        
+        elif user and bcrypt.check_password_hash(user.password, form.password.data): #Check for email and password hash
             login_user(user, remember=form.remember.data) #Logins user + remember module
             next_page = request.args.get('next')
             return redirect(next_page) if next_page else redirect(url_for('main.home')) #redirect if next page exist, if not redirect to home
         else:
-            flash('Login Unsuccessful. Please check email and password', 'danger')
+            flash('Login unsuccessful. Please check email and password!', 'danger')
     return render_template('login.html', title='Login', form=form)
 
 @users.route("/logout")
@@ -134,27 +139,46 @@ def delete_user(user_id):
     flash(name + ' has been deleted!', 'success')
     return redirect(url_for('users.admin'))
 
-@users.route("/settings", methods=['GET', 'POST'])
+@users.route("/settings/<string:username>", methods=['GET', 'POST'])
 @login_required #Requires login to view this route
-def settings():
+def settings(username):
     form = UpdateAccountForm()
     if form.validate_on_submit():
+        if username == 'ALL':
+            user = current_user
+        else:
+            user = User.query.filter_by(username = username).first()
         if form.picture.data:
             picture_file = save_picture(form.picture.data)
-            current_user.image_file = picture_file
-        current_user.dark_mode = request.form.get('dark_mode')
-        current_user.username = form.username.data
-        current_user.email = form.email.data
-        current_user.grade = form.grade.data
+            user.image_file = picture_file
+        user.dark_mode = request.form.get('dark_mode')
+
+        # Use the text() function to create a SQL expression with the REPLACE function
+        old_name = user.username
+        new_name = form.username.data
+        update_query = text("UPDATE activity SET description = REPLACE(description, :old_name, :new_name)")
+        db.session.execute(update_query, {"old_name": old_name, "new_name": new_name})
+        update_query = text("UPDATE lesson SET title = REPLACE(title, :old_name, :new_name)")
+        db.session.execute(update_query, {"old_name": old_name, "new_name": new_name})
+        update_query = text("UPDATE homework SET title = REPLACE(title, :old_name, :new_name)")
+        db.session.execute(update_query, {"old_name": old_name, "new_name": new_name})
+
+        user.username = form.username.data
+        user.email = form.email.data
+        user.grade = form.grade.data
         db.session.commit()
         flash('Your account has been updated!', 'success')
-        return redirect(url_for('users.settings'))
+        return redirect(url_for('users.settings', username = username))
     elif request.method == 'GET':
-        form.username.data = current_user.username
-        form.email.data = current_user.email
-        form.grade.data = current_user.grade
-    image_file = url_for('static', filename='profile_pics/' + current_user.image_file) #Define image_file variable with file path + jpg 
-    return render_template('settings.html', image_file=image_file, form=form)
+        if username == 'ALL':
+            user = current_user
+        else:
+            user = User.query.filter_by(username = username).first()
+        form.username.data = user.username
+        form.email.data = user.email
+        form.grade.data = user.grade
+    image_file = url_for('static', filename='profile_pics/' + user.image_file) #Define image_file variable with file path + jpg 
+    return render_template('settings.html', image_file=image_file, form=form, user=user)
 
 @users.route("/reset_password", methods=['GET', 'POST']) #To reset password
 def reset_request():
@@ -185,64 +209,6 @@ def reset_token(token):
         return redirect(url_for('users.login')) #redirect to home if password updated successfully
     return render_template('reset_token.html', title='Reset Password', form=form)
 
-@users.route("/user_dates/<string:username>", methods=['GET', 'POST'])
-@login_required
-def user_dates(username):
-    form = UserDateForm()
-    user = User.query.filter_by(username=username).first()
-    if request.method == 'GET':
-        pass
-        form.description1.data = user.description1
-        form.date1.data = user.date1
-        form.time1.data = user.time1
-        form.description2.data = user.description2
-        form.date2.data = user.date2
-        form.time2.data = user.time2
-        form.description3.data = user.description3
-        form.date3.data = user.date3
-        form.time3.data = user.time3
-        form.description4.data = user.description4
-        form.date4.data = user.date4
-        form.time4.data = user.time4
-    elif request.method == 'POST':
-        user.description1 = form.description1.data
-        user.date1 = form.date1.data
-        user.time1 = form.time1.data
-        user.description2 = form.description2.data
-        user.date2 = form.date2.data
-        user.time2 = form.time2.data
-        user.description3 = form.description3.data
-        user.date3 = form.date3.data
-        user.time3 = form.time3.data
-        user.description4 = form.description4.data
-        user.date4 = form.date4.data
-        user.time4 = form.time4.data
-        db.session.commit()
-        flash(f'Your dates have been updated!', 'success')
-        return redirect(url_for('main.home'))
-    return render_template('user_dates.html', title='Dates', form=form)
-
-@users.route("/user_topics/<string:username>", methods=['GET', 'POST'])
-@login_required
-def user_topics(username):
-    form = UserTopicsForm()
-    user = User.query.filter_by(username=username).first()
-    if request.method == 'GET':
-        if user.topics:
-            topics_arr = user.topics.split(',')
-            checks_arr = user.topics_check.split(',')
-        else:
-            topics_arr = []
-            checks_arr = []
-        
-    elif request.method == 'POST':
-        user.topics = ((request.form['action']).split(';'))[0]
-        user.topics_check = ((request.form['action']).split(';'))[1]
-        db.session.commit()
-        flash(f'Your topics have been updated!', 'success')
-        return redirect(url_for('main.home'))
-    return render_template('user_topics.html', title='Dates', form=form, topics_arr=topics_arr, checks_arr=checks_arr)
-
 @users.route("/HW_alert/<string:username>", methods=['GET', 'POST'])
 @login_required
 def HW_alert(username):
@@ -250,3 +216,32 @@ def HW_alert(username):
     send_HW_alert(user)
     flash(f'HW alert has been sent to ' + user.username +'!', 'success')
     return redirect(url_for('users.admin'))
+
+@users.route("/verify/<string:username>", methods=['GET', 'POST'])
+@login_required
+def verify(username):
+    user = User.query.filter_by(username=username).first()
+    user.verified = 1
+    db.session.commit()
+    send_account_approval(user)
+    flash(f'Account approval email has been sent to ' + user.username +'!', 'success')
+    return redirect(url_for('users.admin'))
+
+@users.route("/contact", methods=['GET', 'POST']) #Need to define methods here 
+def contact():
+    form = ContactForm()
+    if form.validate_on_submit():
+        name = form.name.data
+        age = form.age.data
+        number = form.number.data
+        email = form.email.data
+        school = form.school.data
+        grade = form.grade.data
+        syllabus = form.syllabus.data
+        content = form.enquiry.data
+        send_enquiry_confirmation(name, email)
+        send_enquiry_self(name, age, number, email, school, grade, syllabus, content)
+        db.session.commit()
+        flash(f'Your enquiry has been received! Our team will reach out to you in 1-3 business days!', 'success') #one time message flashed on screen
+        return redirect(url_for('users.contact'))
+    return render_template('contact.html', title='Contact Us', form=form)

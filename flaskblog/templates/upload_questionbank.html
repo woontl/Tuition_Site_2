@@ -50,16 +50,16 @@
                     </div>
                     <div class="col">
                         <div class="form-group">
-                            <h5 class="fw-bold">Tags</h5>
-                            {% if form.tags.errors %}
-                                {{ form.tags(class="form-control form-control-lg is-invalid") }}
+                            <h5 class="fw-bold">Topics</h5>
+                            {% if form.topics.errors %}
+                                {{ form.topics(class="form-control form-control-lg is-invalid") }}
                                 <div class="invalid-feedback">
-                                    {% for error in form.tags.errors %}
+                                    {% for error in form.topics.errors %}
                                         <span>{{ error }}</span>
                                     {% endfor %}
                                 </div>
                             {% else %}
-                                {{ form.tags(class="form-control form-control-lg") }}
+                                {{ form.topics(class="form-control form-control-lg", size=7) }}
                             {% endif %}
                         </div>
                     </div>

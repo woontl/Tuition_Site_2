@@ -1,0 +1,133 @@
+{% extends "layout.html" %} 
+{% block javaScript %}
+{% endblock %}
+{% block content %} 
+<form method="POST" action=""novalidate enctype="multipart/form-data"> <!--post form via the route created-->
+    {{ form.hidden_tag() }}
+    <div class="container">
+        <div class="row mx-0">
+            <div class="col-md-12 col-lg-12 col-xl-12">
+                <div class="d-flex">
+                    <h2 class="fw-bold my-auto">My Exams</h2>
+                </div>
+                <hr class="black-white">
+                {% if current_user.account_type == 'Admin' %}
+                    <h5 class="fw-bold" style="padding-top: 20px;">Student</h5>
+                    {% if form.student.errors %}
+                        {{ form.student(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.student.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.student(class="form-control form-control-lg mt-1") }}
+                    {% endif %}
+                    <div class="my-4 text-center">
+                        <input type="submit" class="btn btn-outline-info" type="reset" name="action" value="Load Exams"/>
+                    </div>
+                {% endif %}
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group" style="padding-top: 20px;">
+                            <h5 class="fw-bold">Exam 1</h5>
+                            {% if form.description1.errors %} <!--if got error, print error-->
+                                {{ form.description1(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.description1.errors %} 
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.description1(class="form-control form-control-lg") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group" style="padding-top: 20px;">
+                            <h5 class="fw-bold">Date</h5>
+                            {% if form.date1.errors %} <!--if got error, print error-->
+                                {{ form.date1(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.date1.errors %} 
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.date1(class="form-control form-control-lg", value = date1.strftime('%Y-%m-%d') if date1 else '') }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group" style="padding-top: 20px;">
+                            <h5 class="fw-bold">Exam 2</h5>
+                            {% if form.description2.errors %} <!--if got error, print error-->
+                                {{ form.description2(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.description2.errors %} 
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.description2(class="form-control form-control-lg") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group" style="padding-top: 20px;">
+                            <h5 class="fw-bold">Date</h5>
+                            {% if form.date2.errors %} <!--if got error, print error-->
+                                {{ form.date2(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.date2.errors %} 
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.date2(class="form-control form-control-lg", value = date2.strftime('%Y-%m-%d') if date2 else '') }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group" style="padding-top: 20px;">
+                            <h5 class="fw-bold">Exam 3</h5>
+                            {% if form.description3.errors %} <!--if got error, print error-->
+                                {{ form.description3(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.description3.errors %} 
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.description3(class="form-control form-control-lg") }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group" style="padding-top: 20px;">
+                            <h5 class="fw-bold">Date</h5>
+                            {% if form.date3.errors %} <!--if got error, print error-->
+                                {{ form.date3(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.date3.errors %} 
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.date3(class="form-control form-control-lg", value = date3.strftime('%Y-%m-%d') if date3 else '') }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" style="padding-top: 40px;">
+                <button onclick="course_arr()" type="submit" class="btn btn-primary" id="save_course" name="action" value="">Save</button>
+            </div>
+        </div>    
+    </div>
+</form>
+{% endblock content %}

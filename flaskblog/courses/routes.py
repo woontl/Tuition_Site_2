@@ -43,9 +43,13 @@ def course():
         math_topics = []
         checked = []
     elif request.method == 'GET':
-        course = Course.query.filter_by(student_id = current_user.id).first()
-        math_topics = course.topics.split(';')
-        checked = course.checked.split(';')
+        try:
+            course = Course.query.filter_by(student_id = current_user.id).first()
+            math_topics = course.topics.split(';')
+            checked = course.checked.split(';')
+        except:
+            math_topics = []
+            checked = []
 
     if request.method == 'POST':
         if (request.form['action']) != "Load Course":
@@ -86,5 +90,4 @@ def course():
             for i in users:
                 users_arr.append(i.username)
             form.student.choices = users_arr
-        print(checked)
     return render_template('course.html', math_topics=math_topics, checked=checked, form=form)

@@ -94,10 +94,10 @@
                 </div>
                 {% for activity in activities %}
                 <div class="d-flex justify-content-between">
-                  <img class="rounded-circle article-img border border-white ms-4 mt-3" width="60px" height="60px" src="{{ url_for('static', filename='profile_pics/' + activity.author.image_file) }}">
-                  <div class="me-auto ms-4 mt-3">
-                    <h4 class="ms-1">Homework</h4>
-                    <h6 class="ms-1">{{ activity.description }}</h6>
+                  <img class="rounded-circle article-img border border-white ms-4 my-3" width="60px" height="60px" src="{{ url_for('static', filename='profile_pics/' + activity.author.image_file) }}">
+                  <div class="me-auto ms-4 my-3">
+                    <!-- <h4 class="ms-1">Homework</h4> -->
+                    <h6 class="my-auto">{{ activity.description }}</h6>
                   </div>
                   <div class="me-4 mt-3">
                     <h6 class="ms-4">~{{ (activities_date_arr[loop.index-1]) }}D</h6>
@@ -125,39 +125,60 @@
           <div class="offcanvas-body">
             <div class="navbar-nav flex-column">
               <a class="nav-item nav-link nav-white-hover mb-4 position-relative" href="{{ url_for('main.home') }}">
-                <h5 class="hover-blue">
-                  <i class="bi bi-grid fs-4 me-4"></i>Overview
-                </h5>
+                <div class="d-flex hover-blue">
+                  <i class="bi bi-grid fs-4 me-4 black-white my-auto"></i>
+                  <h5 class="my-auto">Overview</h5>
+                </div>
               </a>
               <a class="nav-item nav-link nav-white-hover mb-4 position-relative" href="{{ url_for('homeworks.my_homework', student='ALL') }}">
-                <h5 class="hover-blue">
-                  <i class="bi bi-book fs-4 me-4"></i>My Homework
-                </h5>
+                <div class="d-flex hover-blue">
+                  <i class="bi bi-book fs-4 me-4 black-white my-auto"></i>
+                  <h5 class="my-auto">My Homework</h5>
+                </div>
               </a>
               <a class="nav-item nav-link nav-white-hover mb-4 position-relative" href="{{ url_for('lessons.my_lesson', student='ALL') }}">
-                <h5 class="hover-blue">
-                  <i class="bi bi-pencil fs-4 me-4"></i>My Lessons
-                </h5>
+                <div class="d-flex hover-blue">
+                  <i class="bi bi-pencil fs-4 me-4 black-white my-auto"></i>
+                  <h5 class="my-auto">My Lessons</h5>
+                </div>
               </a>
               <a class="nav-item nav-link nav-white-hover mb-4 position-relative" href="{{ url_for('courses.course') }}">
-                <h5 class="hover-blue">
-                  <i class="bi bi-graph-up fs-4 me-4"></i>My Course
-                </h5>
+                <div class="d-flex hover-blue">
+                  <i class="bi bi-graph-up fs-4 me-4 black-white my-auto"></i>
+                  <h5 class="my-auto">My Course</h5>
+                </div>
               </a>
-              <a class="nav-item nav-link nav-white-hover mb-4 position-relative" href="{{ url_for('homeworks.questionbank', grade='ALL', tags='ALL', difficulty='ALL') }}">
-                <h5 class="hover-blue">
-                  <i class="bi bi-bookmark-check fs-4 me-4"></i>Questionbank
-                </h5>
+              <a class="nav-item nav-link nav-white-hover mb-4 position-relative" href="{{ url_for('exams.exam') }}">
+                <div class="d-flex hover-blue">
+                  <i class="bi bi-calendar-event fs-4 me-4 black-white my-auto"></i>
+                  <h5 class="my-auto">My Exams</h5>
+                </div>
               </a>
-              <a class="nav-item nav-link nav-white-hover mb-4 position-relative" href="{{ url_for('users.settings') }}">
-                <h5 class="hover-blue">
-                  <i class="bi bi-gear fs-4 me-4"></i>Settings
-                </h5>
+              <a class="nav-item nav-link nav-white-hover mb-4 position-relative" href="{{ url_for('homeworks.questionbank', grade='ALL', topics='ALL', difficulty='ALL') }}">
+                <div class="d-flex hover-blue">
+                  <i class="bi bi-bookmark-check fs-4 me-4 black-white my-auto"></i>
+                  <h5 class="my-auto">Questionbank</h5>
+                </div>
               </a>
+              <a class="nav-item nav-link nav-white-hover mb-4 position-relative" href="{{ url_for('users.settings', username='ALL') }}">
+                <div class="d-flex hover-blue">
+                  <i class="bi bi-gear fs-4 me-4 black-white my-auto"></i>
+                  <h5 class="my-auto">Settings</h5>
+                </div>
+              </a>
+              {% if current_user.account_type == 'Admin' %}
+              <a class="nav-item nav-link nav-white-hover mb-4 position-relative" href="{{ url_for('users.admin') }}">
+                <div class="d-flex hover-blue">
+                  <i class="bi bi-wrench fs-4 me-4 black-white my-auto"></i>
+                  <h5 class="my-auto">Admin</h5>
+                </div>
+              </a>
+              {% endif %}
               <a class="nav-item nav-link nav-white-hover mb-4 position-relative" href="{{ url_for('users.logout') }}">
-                <h5 class="hover-blue">
-                  <i class="bi bi-key fs-4 me-4"></i>Log Out
-                </h5>
+                <div class="d-flex hover-blue">
+                  <i class="bi bi-key fs-4 me-4 black-white my-auto"></i>
+                  <h5 class="my-auto">Log Out</h5>
+                </div>
               </a>
               <img class="img-fluid my-auto mx-auto" style="width: auto; height: auto;" src="{{ url_for('static', filename='icons/sidenav-main.png') }}">
             </div>
@@ -192,7 +213,7 @@
         </div>   
         <div class="d-flex flex-column mt-3">
           <h6>Copyright - Math In The Sky 2023</h6>
-          <h6>Version 2.0.0</h6>
+          <h6>Version {{ version }}</h6>
         </div>
       </div>   
       <div class="col">
@@ -200,14 +221,15 @@
           <div class="col">
               <h3 class="fw-bold my-3">General</h3>
               <a class="nav-item nav-link my-3" href="{{ url_for('main.landing_page') }}"><h6 class="hover-blue">Home</h6></a>
-              <a class="nav-item nav-link my-3" href="{{ url_for('users.admin') }}"><h6 class="hover-blue">About</h6></a>
-              <a class="nav-item nav-link my-3" href="{{ url_for('users.admin') }}"><h6 class="hover-blue">Testimonials</h6></a>
-              <a class="nav-item nav-link my-3" href="{{ url_for('users.admin') }}"><h6 class="hover-blue">FAQs</h6></a>
+              <a class="nav-item nav-link my-3" href="{{ url_for('main.landing_page') }}"><h6 class="hover-blue">About</h6></a>
+              <a class="nav-item nav-link my-3" href="{{ url_for('main.landing_page') }}"><h6 class="hover-blue">Testimonials</h6></a>
+              <a class="nav-item nav-link my-3" href="{{ url_for('main.landing_page') }}"><h6 class="hover-blue">FAQs</h6></a>
+              <a class="nav-item nav-link my-3" href="{{ url_for('main.changelog') }}"><h6 class="hover-blue">Changelog</h6></a>
           </div>
           <div class="col">
             <h3 class="fw-bold my-3">Contact</h3>
-            <a class="nav-item nav-link my-3" href="{{ url_for('users.admin') }}"><h6 class="hover-blue">Email</h6></a>
-            <a class="nav-item nav-link my-3" href="{{ url_for('users.admin') }}"><h6 class="hover-blue">LinkedIn</h6></a>
+            <a class="nav-item nav-link my-3" href="{{ url_for('users.contact') }}"><h6 class="hover-blue">Email</h6></a>
+            <!-- <a class="nav-item nav-link my-3" href="{{ url_for('main.landing_page') }}"><h6 class="hover-blue">LinkedIn</h6></a> -->
           </div>
         </div>
       </div>

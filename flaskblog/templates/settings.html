@@ -13,11 +13,11 @@
                 <hr class="black-white">
                 <div style="padding-top: 10px;">
                     <div class="d-flex">
-                        <img class="rounded-circle article-img mx-auto my-3 border border-white" height="120px" width="120px" src="{{ url_for('static', filename='profile_pics/' + current_user.image_file) }}">
+                        <img class="rounded-circle article-img mx-auto my-3 border border-white" height="120px" width="120px" src="{{ url_for('static', filename='profile_pics/' + user.image_file) }}">
                     </div>
                     <div class="text-center">
-                        <h5 class="fw-bold">{{ current_user.username }}</h5>
-                        <h5 class="fw-bold">Grade: {{ current_user.grade }}</h5>
+                        <h5 class="fw-bold">{{ user.username }}</h5>
+                        <h5 class="fw-bold">Grade: {{ user.grade }}</h5>
                     </div>
                 </div>
                 <div class="form-group" style="padding-top: 40px;">

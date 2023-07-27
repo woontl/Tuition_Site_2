@@ -11,12 +11,12 @@ class LessonFilterForm(FlaskForm):
 class LessonForm(FlaskForm):
     title = StringField('Title')
     student = SelectField('Student', coerce=str, validators=[DataRequired()])
+    topics = SelectField('Topics', coerce=str, validators=[DataRequired()])
     submit = SubmitField('Post')
 
 class LessonNotesForm(FlaskForm):
     workings = HiddenField('Workings')
     notes = TextAreaField('Summary Notes')
     formulas = TextAreaField('Formulas')
-    topics = SelectField('Topics', coerce=str)
     workings = HiddenField('Workings')
     submit = SubmitField('Post')

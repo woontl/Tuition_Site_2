@@ -248,8 +248,14 @@ To update production with changed config files
 How to download file from remote to local? (PROD)
 1) scp woontl@139.177.187.179:Tuition_Site_2/flaskblog/site.db /Users/tianli.woon/Documents
 
+How to download file from remote to local? (DEV)
+1) scp woontl@139.162.6.224:Tuition_Site_2/flaskblog/site.db /Users/tianli.woon/Documents
+
 How to download folder from remote to local? (PROD)
 1) scp -r woontl@139.177.187.179:Tuition_Site_2/flaskblog/static /Users/tianli.woon/Documents
+
+How to download folder from remote to local? (DEV)
+1) scp -r woontl@139.162.6.224:Tuition_Site_2/flaskblog/static /Users/tianli.woon/Documents
 
 How to upload file from local to remote? (DEV)
 1) scp site.db woontl@139.162.6.224:Tuition_Site_2/flaskblog/
@@ -273,3 +279,6 @@ dev ssh woontl@139.162.6.224
 prod ssh woontl@139.177.187.179
 user ssh password: Flamer@96
 root passowrd: Flamer@20121996
+
+donotreply.mathinthesky@gmail.com
+qtedygxlqvgljvut
