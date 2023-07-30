@@ -1,4 +1,13 @@
 {% extends "layout.html" %} <!--inherit from parent html-->
+{% block javaScript %}
+<script>
+  function hw_qn_num(hw, qn) {
+      var deleteButton = document.getElementById('deleteButton');
+      deleteButton.href = deleteButton.href.replace('99', qn);
+      deleteButton.href = deleteButton.href.replace('111', hw);
+  }
+</script>
+{% endblock %}
 {% block content %} <!--block content here replaces block content in parent-->
 <div class="container">
   <div class="row mx-0">
@@ -42,7 +51,7 @@
               <a class="btn btn-success btn-icon" href="{{ url_for('homeworks.solve_question',homework_id=homework.id, question_id=question.id) }}"><i class="bi bi-check-square text-white align-middle"></i></a>
               {% if current_user.account_type == 'Admin' %}
               <a class="btn btn-warning btn-icon mt-3" href="{{ url_for('homeworks.update_question',homework_id=homework.id, question_id=question.id, grade='ALL', topics='ALL', difficulty='ALL', load='not_loaded') }}"><i class="bi bi-pencil-square text-white align-middle"></i></a>
-              <button type="button" class="btn btn-danger btn-icon mt-3" data-bs-toggle="modal" data-bs-target="#deleteQuestion"><i class="bi bi-trash align-middle"></i></button>    
+              <button type="button" onclick="hw_qn_num('{{ homework.id }}', '{{ question.id }}')" class="btn btn-danger btn-icon mt-3" data-bs-toggle="modal" data-bs-target="#deleteQuestion"><i class="bi bi-trash align-middle"></i></button>    
               {% endif %}
             </div>
             <!--Modal-->
@@ -54,7 +63,7 @@
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-footer">
-                      <a type="button" class="btn btn-danger" href="{{ url_for('homeworks.delete_question', homework_id=homework.id, question_id=question.id) }}">Delete</a>
+                      <a type="button" class="btn btn-danger" id="deleteButton" href="{{ url_for('homeworks.delete_question', homework_id='111', question_id='99') }}">Delete</a>
                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                   </div>

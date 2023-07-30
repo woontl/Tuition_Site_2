@@ -43,7 +43,7 @@ def home():
     if current_user.account_type == 'Admin':
         homework = Homework.query.order_by(Homework.date_posted.desc()).first()
         homework_due_month_calendar = homework.deadline.strftime("%b")
-        homework_due_day_calendar = homework.deadline.day
+        homework_due_day_calendar = str(homework.deadline.day).zfill(2)
         homework_due = homework.title[:4]
         lesson = Lesson.query.order_by(Lesson.date_posted.desc()).first()
         homework_count = len(Homework.query.all())
@@ -55,7 +55,7 @@ def home():
         homework = Homework.query.filter_by(student_id=current_user.id).order_by(Homework.date_posted.desc()).first()
         if homework:
             homework_due_month_calendar = homework.deadline.strftime("%b")
-            homework_due_day_calendar = homework.deadline.day
+            homework_due_day_calendar = str(homework.deadline.day).zfill(2)
             homework_due = homework.title[:4]
         else:
             homework_due_month_calendar = ''

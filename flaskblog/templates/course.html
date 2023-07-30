@@ -85,9 +85,9 @@
                         {% for i in range(4) %}
                         <div class="col-2 my-auto checkbox-container">
                             {% if checked[checked_count.value] == 1 %}
-                            <input type="checkbox" class="checkbox" name="checkboxes[]" checked value="{{ topic }}-{{ i }}">
+                            <input type="checkbox" class="checkbox" name="checkboxes[]" checked value="{{ topic }}-{{ i }}" style="width: 20px; height: 20px">
                             {% else %}
-                            <input type="checkbox" class="checkbox" name="checkboxes[]" value="{{ topic }}-{{ i }}">
+                            <input type="checkbox" class="checkbox" name="checkboxes[]" value="{{ topic }}-{{ i }}" style="width: 20px; height: 20px">
                             {% endif %}
                             {% set checked_count.value = checked_count.value + 1 %}
                         </div>
