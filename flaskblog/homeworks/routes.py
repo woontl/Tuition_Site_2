@@ -572,7 +572,6 @@ def solve_question(homework_id, question_id):
             else:
                 point.append(1)
         right_wrong = ';'.join(map(str,point))
-        # working.workings = form.workings.data      not needed due to auto_save, if need, need to jsonloads
         final_ans = (request.form['action'])
         working.final_ans = final_ans
         working.point = sum(point)
@@ -646,7 +645,8 @@ def socket_connect():
 def stroke(data):
     join_room(session['socketio_code'])
     emit('stroke', data, broadcast=True, include_self=False, to=session['socketio_code'])
-    emit('save', broadcast=True, include_self=True, to=session['socketio_code'])
+    # auto_save_canvas(data)
+    emit('save', broadcast=False, include_self=True, to=session['socketio_code'])
 
 @socketio.on('strokes')
 def strokes(data):
@@ -657,10 +657,12 @@ def strokes(data):
 def delete(data):
     join_room(session['socketio_code'])
     emit('delete', data, broadcast=True, include_self=True, to=session['socketio_code'])
-    emit('save', broadcast=True, include_self=True, to=session['socketio_code'])
+    # auto_save_canvas(data)
+    emit('save', broadcast=False, include_self=True, to=session['socketio_code'])
 
 @socketio.on('clear')
 def clear():
     join_room(session['socketio_code'])
     emit('clear', broadcast=True, include_self=False, to=session['socketio_code'])
-    emit('save', broadcast=True, include_self=True, to=session['socketio_code'])
+    # auto_save_canvas(data)
+    emit('save', broadcast=False, include_self=True, to=session['socketio_code'])

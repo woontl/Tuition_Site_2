@@ -198,7 +198,7 @@ function onTouchEnd(e) {
         strokeHistory.push({ vectors: currentStroke, colour: penColour, thickness: penWidth})
         actionHistory.push(currentStroke)
         currentStroke = [];
-        redraw(scale);
+        // redraw(scale);
         undoButton.disabled = false;
     }
     panning = false;
@@ -342,7 +342,7 @@ function onMouseUp(e) {
         strokeHistory.push({ vectors: currentStroke, colour: penColour, thickness: penWidth})
         actionHistory.push(currentStroke)
         currentStroke = [];
-        redraw(scale);
+        // redraw(scale);
         undoButton.disabled = false;
     }
     canvas.style.cursor = 'crosshair';
@@ -671,20 +671,10 @@ var submitBtn = document.getElementById("ans");
 submitBtn.addEventListener("click", saveURL)
 function saveURL() {
     let data = JSON.stringify(strokeHistory);
-    let jsonData = {
-        key: 'workings',
-        value: data
-    };
-    document.getElementById('workings').value = jsonData
     socket.emit('save', data)
 }
 function saveImages() {
     let data = JSON.stringify(imageDataArray);
-    let jsonData = {
-        key: 'workings_images',
-        value: data
-    };
-    document.getElementById('workings').value = jsonData
     socket.emit('save_images', data)
 }
 // load image
