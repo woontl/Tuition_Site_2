@@ -475,7 +475,7 @@ def new_question(homework_id, grade="ALL",topics="ALL",difficulty="ALL"):
     if homework.author != current_user: #only creator can add qn to HW
         abort(403)
     form = QuestionForm()
-    all_topics = []
+    all_topics = ['ALL']
     if current_user.account_type == 'Admin':
         courses = Course.query.all()
         for course in courses:
@@ -645,7 +645,6 @@ def socket_connect():
 def stroke(data):
     join_room(session['socketio_code'])
     emit('stroke', data, broadcast=True, include_self=False, to=session['socketio_code'])
-    # auto_save_canvas(data)
     emit('save', broadcast=False, include_self=True, to=session['socketio_code'])
 
 @socketio.on('strokes')
@@ -656,13 +655,11 @@ def strokes(data):
 @socketio.on('delete')
 def delete(data):
     join_room(session['socketio_code'])
-    emit('delete', data, broadcast=True, include_self=True, to=session['socketio_code'])
-    # auto_save_canvas(data)
+    emit('delete', data, broadcast=True, include_self=False, to=session['socketio_code'])
     emit('save', broadcast=False, include_self=True, to=session['socketio_code'])
 
 @socketio.on('clear')
 def clear():
     join_room(session['socketio_code'])
     emit('clear', broadcast=True, include_self=False, to=session['socketio_code'])
-    # auto_save_canvas(data)
     emit('save', broadcast=False, include_self=True, to=session['socketio_code'])
