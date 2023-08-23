@@ -113,13 +113,19 @@ window.onscroll = function() {
 };
 
 document.getElementById("open-whiteboard-btn").addEventListener("click", function() {
-  state = true; // Set state to active when the button is clicked
-  window.scrollTo(0, 0);
+    state = true; // Set state to active when the button is clicked
+    window.scrollTo(0, 0);
+
+    // Disable scrolling
+    document.body.style.overflow = "hidden";
 });
 
 document.getElementById("whiteboard-close-btn").addEventListener("click", function() {
     state = false; // Set state to active when the button is clicked
     window.scrollTo(0, 0);
+
+    // To re-enable scrolling
+    document.body.style.overflow = "auto";
 });
 
 // Mouse Event Handlers
