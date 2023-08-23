@@ -5,6 +5,19 @@ Bug Fixes:
 
 
 --------------------------------------------------------------------------------------------------------------------------------------
+
+Version 2.0.1
+New Features:
+1) Added >25 topics for Courses
+
+Bug Fixes:
+1) Removed 'Admin' option in settings
+2) Shifted checkbox to left for adding questions to Homework 
+3) Fixed an answer match error for e^tan(x)
+4) Fixed a 404 error when adding questions to Homework
+5) Fixed top nav bar, to be centered properly when on S-M screens
+
+--------------------------------------------------------------------------------------------------------------------------------------
 Version 2.0.0
 New Features:
 1) New design overhaul using Bootstrap V5.3

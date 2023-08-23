@@ -108,13 +108,13 @@ var state = false; // Initial state is inactive
 
 window.onscroll = function() {
   if (state) {
-    window.scrollTo(0, 0);
+    window.scroll({ top: 0, behavior: 'smooth' });;
   }
 };
 
 document.getElementById("open-whiteboard-btn").addEventListener("click", function() {
     state = true; // Set state to active when the button is clicked
-    window.scrollTo(0, 0);
+    window.scroll({ top: 0, behavior: 'smooth' });;
 
     // Disable scrolling
     document.body.style.overflow = "hidden";
@@ -122,7 +122,7 @@ document.getElementById("open-whiteboard-btn").addEventListener("click", functio
 
 document.getElementById("whiteboard-close-btn").addEventListener("click", function() {
     state = false; // Set state to active when the button is clicked
-    window.scrollTo(0, 0);
+    window.scroll({ top: 0, behavior: 'smooth' });;
 
     // To re-enable scrolling
     document.body.style.overflow = "auto";
