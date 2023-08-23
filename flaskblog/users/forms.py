@@ -46,7 +46,7 @@ class UpdateAccountForm(FlaskForm):
     email = StringField('Email',
                         validators=[DataRequired(), #Must enter email
                         Email()]) #Checks if email is legit
-    grade = SelectField('Grade', choices=[6,7,8,9,10,11,12,'Admin'])
+    grade = SelectField('Grade', choices=[6,7,8,9,10,11,12])
     picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png','jpeg'])])
     
     submit = SubmitField('Update')

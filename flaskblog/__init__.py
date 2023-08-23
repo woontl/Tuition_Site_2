@@ -27,7 +27,13 @@ def create_app(config_class=Config):
     app.config.from_object(Config)
     
     session.init_app(app)
-    socketio.init_app(app, cors_allowed_origins="*", debug=True)
+    socketio.init_app(
+        app,
+        cors_allowed_origins="*",
+        debug=True,
+        max_http_buffer_size=100 * 1024 * 1024,  # 100 MB
+        ping_timeout=300,  # 5 minutes in seconds
+    )
     db.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)

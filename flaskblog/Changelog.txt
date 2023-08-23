@@ -1,4 +1,4 @@
-Version 1.0.2
+Version 2.0.
 New Features:
 
 Bug Fixes:
@@ -6,8 +6,50 @@ Bug Fixes:
 
 --------------------------------------------------------------------------------------------------------------------------------------
 Version 2.0.0
+New Features:
+1) New design overhaul using Bootstrap V5.3
+- Added dark mode & light mode
+- Added landing page
+
+2) New Home page
+- Alerts notification with read all
+- Side Nav for quick access links
+- Quick access to latest Homework and Lesson
+- Overall learning progress based on Course
+- Overall statistics
+- Countdown to next exam
+- List of important dates
+
+3) Homework
+- Now lists 5 questions per page for easier browsing
+
+4) Course
+- Allows users to view their current syllabus
+- Directly links to progression percentage on home page
+- Topics defined in here links to their available topics to choose from in Questionbank
+
+5) Lesson
+- Users can note key formulas and notes during lessons, with an infinite whiteboard
+- Whiteboard allows for image pasting with Ctrl V
+
+6) Solving
+- Keyboard updated to be more streamlined
+- Users can also check individual answers before submission
+- Whiteboard allows for image pasting with Ctrl V
+
+7) Exams
+- User can input key exam dates, which will appear in their homepage with a countdown
+
+8) General
+- Users can now login with their username or email
+- Admin can view the settings page of each user
+
+Bug Fixes:
+- Fixed whiteboard offset issues
+
+Deployment Changes:
 Add read_tag column to Activity DB
-Add dark_mode tag to User DB
+Add dark_mode tag to User DB, all to be on
 Remove checked column in Questionbank, Question
 Add new Course Table
 CREATE TABLE "course" (
@@ -52,9 +94,6 @@ CREATE TABLE "exam" (
 )
 Add verified column to User, add 1 to existing users
 Change environ variables to new
-
-
-
 
 --------------------------------------------------------------------------------------------------------------------------------------
 

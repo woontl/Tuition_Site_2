@@ -80,11 +80,11 @@
                 {% if images %}
                 {% for image in images.items %}
                 <div class="d-flex" style="padding-top: 40px;">
-                    <div class="media" style="width: 100%">
-                        <img class="img-fluid" src="{{ url_for('static', filename='questionbank/' + image.img) }}" style="width: 95%; height: auto;">
-                    </div>
-                    <div class="form-check my-auto">
+                    <div class="form-check my-auto mx-4">
                         <input class="form-check-input" type="radio" value="{{ image.id }}" name="flexRadioQB">
+                    </div>
+                    <div class="media" style="width: 100%"> 
+                        <img class="img-fluid" src="{{ url_for('static', filename='questionbank/' + image.img) }}" style="width: 100%; height: auto;">
                     </div>
                 </div> 
                 {% endfor %}

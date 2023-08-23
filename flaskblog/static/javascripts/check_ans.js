@@ -5,7 +5,6 @@ function removeBackspace(str) {
 function check_ans(correct_ans, id, id2) {
     var answerSpan = document.getElementById(id)
     var answerMathField = (MQ.StaticMath(answerSpan)).latex()
-    console.log(answerMathField)
     // Remove { }
     answerMathField = answerMathField.replace(/{|}/g, '');
 
@@ -14,7 +13,7 @@ function check_ans(correct_ans, id, id2) {
     
     // Remove \ and the next character if its a f
     answerMathField = answerMathField.replace(/\\(.)/g, (match, nextChar) => {
-        if (['f', 'r', 'v', 'b'].includes(nextChar)) {
+        if (['f', 'r', 'v', 'b', 't'].includes(nextChar)) {
           return ''; // Remove both \ and the next character ('f', 'r', or 'v')
         } else {
           return nextChar; // Remove only the backslash (\)
