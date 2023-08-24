@@ -106,26 +106,26 @@ document.getElementById("whiteboard-reset-zoom-btn").addEventListener("click", (
 
 var state = false; // Initial state is inactive
 
-window.onscroll = function() {
-  if (state) {
-    window.scroll({ top: 0, behavior: 'smooth' });;
-  }
-};
+// window.onscroll = function() {
+//   if (state) {
+//     window.scroll(0, 0);
+//   }
+// };
 
 document.getElementById("open-whiteboard-btn").addEventListener("click", function() {
     state = true; // Set state to active when the button is clicked
-    window.scroll({ top: 0, behavior: 'smooth' });;
+    window.scroll(0, 0);
 
     // Disable scrolling
-    document.body.style.overflow = "hidden";
+    // document.body.style.overflow = "hidden";
 });
 
 document.getElementById("whiteboard-close-btn").addEventListener("click", function() {
     state = false; // Set state to active when the button is clicked
-    window.scroll({ top: 0, behavior: 'smooth' });;
+    window.scroll(0, 0);
 
     // To re-enable scrolling
-    document.body.style.overflow = "auto";
+    // document.body.style.overflow = "auto";
 });
 
 // Mouse Event Handlers
