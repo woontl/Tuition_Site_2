@@ -658,8 +658,8 @@ function throttle(callback, delay) {
 }
 
 // https://stackoverflow.com/a/30832210/10159640 Saving strokes as JSON
-var submitBtn = document.getElementById("ans");
-submitBtn.addEventListener("click", saveURL)
+// var submitBtn = document.getElementById("ans");
+// submitBtn.addEventListener("click", saveURL)
 function saveURL() {
     let data = JSON.stringify(strokeHistory);
     socket.emit('save', data)
@@ -672,7 +672,7 @@ function saveImages() {
 function load() {   
     data = JSON.parse(document.getElementById('workings').value)
     onStrokesEvent({data:data});
-    emitStrokes(data);
+    // emitStrokes(data);
 }
 window.addEventListener('load', load)
 

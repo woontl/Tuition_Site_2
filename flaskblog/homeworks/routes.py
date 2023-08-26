@@ -591,20 +591,48 @@ def solve_question(homework_id, question_id):
                            final_ans=final_ans, right_wrong=right_wrong, check_ans=check_ans, homework_id=homework_id, question_id=question_id, 
                            workings_images = workings_images)
 
-@socketio.on('save')
+# @socketio.on('save')
 def auto_save_canvas(data):
     match = re.match(r'(\d+)/(\d+)', session['socketio_code'])
     if match:
         homework_id = int(match.group(1))
         question_id = int(match.group(2))
         working = Working.query.filter(Working.homework_id==homework_id, Working.question_id==question_id).first()
-        working.workings = data
+        existing_list = json.loads(working.workings)
+        if data == 'clear':
+            working.workings = '[]'
+        elif data == 'undo':
+            existing_list.pop()
+            working.workings = json.dumps(existing_list)
+        else:
+            existing_list.append(data['data'])
+            working.workings = json.dumps(existing_list)
         db.session.commit()
     else:
         lesson_id = session['socketio_code']
         lesson = Lesson.query.filter(Lesson.id==lesson_id).first()
-        lesson.workings = data
+        existing_list = json.loads(lesson.workings)
+        if data == 'clear':
+            lesson.workings = '[]'
+        elif data == 'undo':
+            existing_list.pop()
+            lesson.workings = json.dumps(existing_list)
+        else:
+            existing_list.append(data['data'])
+            lesson.workings = json.dumps(existing_list)
         db.session.commit()
+    # match = re.match(r'(\d+)/(\d+)', session['socketio_code'])
+    # if match:
+    #     homework_id = int(match.group(1))
+    #     question_id = int(match.group(2))
+    #     working = Working.query.filter(Working.homework_id==homework_id, Working.question_id==question_id).first()
+    #     working.workings = data
+    #     db.session.commit()
+    # else:
+    #     lesson_id = session['socketio_code']
+    #     lesson = Lesson.query.filter(Lesson.id==lesson_id).first()
+    #     lesson.workings = data
+    #     db.session.commit()
 
 @socketio.on('save_images')
 def auto_save_canvas_images(data):
@@ -645,7 +673,8 @@ def socket_connect():
 def stroke(data):
     join_room(session['socketio_code'])
     emit('stroke', data, broadcast=True, include_self=False, to=session['socketio_code'])
-    emit('save', broadcast=False, include_self=True, to=session['socketio_code'])
+    # emit('save', broadcast=False, include_self=True, to=session['socketio_code'])
+    auto_save_canvas(data)
 
 @socketio.on('strokes')
 def strokes(data):
@@ -656,10 +685,12 @@ def strokes(data):
 def delete(data):
     join_room(session['socketio_code'])
     emit('delete', data, broadcast=True, include_self=False, to=session['socketio_code'])
-    emit('save', broadcast=False, include_self=True, to=session['socketio_code'])
+    # emit('save', broadcast=False, include_self=True, to=session['socketio_code'])
+    auto_save_canvas('undo')
 
 @socketio.on('clear')
 def clear():
     join_room(session['socketio_code'])
     emit('clear', broadcast=True, include_self=False, to=session['socketio_code'])
-    emit('save', broadcast=False, include_self=True, to=session['socketio_code'])
+    # emit('save', broadcast=False, include_self=True, to=session['socketio_code'])
+    auto_save_canvas('clear')
