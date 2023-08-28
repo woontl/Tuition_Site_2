@@ -104,28 +104,13 @@ document.getElementById("whiteboard-reset-zoom-btn").addEventListener("click", (
     }
 );
 
-var state = false; // Initial state is inactive
-
-window.onscroll = function() {
-  if (state) {
-    window.scrollTo(0, 0);
-  }
-};
 
 document.getElementById("open-whiteboard-btn").addEventListener("click", function() {
-    state = true; // Set state to active when the button is clicked
-    window.scrollTo(0, 0);
-
-    // Disable scrolling
-    document.body.style.overflow = "hidden";
+    window.scroll(0, 0);
 });
 
 document.getElementById("whiteboard-close-btn").addEventListener("click", function() {
-    state = false; // Set state to active when the button is clicked
-    window.scrollTo(0, 0);
-
-    // To re-enable scrolling
-    document.body.style.overflow = "auto";
+    window.scroll(0, 0);
 });
 
 // Mouse Event Handlers
@@ -673,8 +658,8 @@ function throttle(callback, delay) {
 }
 
 // https://stackoverflow.com/a/30832210/10159640 Saving strokes as JSON
-var submitBtn = document.getElementById("ans");
-submitBtn.addEventListener("click", saveURL)
+// var submitBtn = document.getElementById("ans");
+// submitBtn.addEventListener("click", saveURL)
 function saveURL() {
     let data = JSON.stringify(strokeHistory);
     socket.emit('save', data)
@@ -687,7 +672,7 @@ function saveImages() {
 function load() {   
     data = JSON.parse(document.getElementById('workings').value)
     onStrokesEvent({data:data});
-    emitStrokes(data);
+    // emitStrokes(data);
 }
 window.addEventListener('load', load)
 
