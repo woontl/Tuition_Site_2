@@ -109,7 +109,7 @@ document.getElementById("open-whiteboard-btn").addEventListener("click", functio
     window.scrollTo(0,0)
 });
 
-const triggerScrollPoint = 100; // Change this value as needed
+const triggerScrollPoint = 200; // Change this value as needed
 let lastScrollPosition = window.scrollY || window.pageYOffset;
 
 window.addEventListener('scroll', () => {
