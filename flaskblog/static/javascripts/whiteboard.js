@@ -106,13 +106,23 @@ document.getElementById("whiteboard-reset-zoom-btn").addEventListener("click", (
 
 
 document.getElementById("open-whiteboard-btn").addEventListener("click", function() {
-    var topElement = document.querySelector("header");
-    topElement.scrollIntoView();  
+    window.scrollTo(0,0)
 });
 
-document.getElementById("whiteboard-close-btn").addEventListener("click", function() {
-    var topElement = document.querySelector("header");
-    topElement.scrollIntoView();
+const triggerScrollPoint = 100; // Change this value as needed
+let lastScrollPosition = window.scrollY || window.pageYOffset;
+
+window.addEventListener('scroll', () => {
+  const currentScroll = window.scrollY || window.pageYOffset;
+
+  if (currentScroll < triggerScrollPoint && lastScrollPosition > triggerScrollPoint) {
+    window.scrollTo({
+      top: 0,
+      behavior: 'auto' // You can also use 'auto' for instant scroll
+    });
+  }
+
+  lastScrollPosition = currentScroll;
 });
 
 // Mouse Event Handlers
