@@ -106,12 +106,12 @@ document.getElementById("whiteboard-reset-zoom-btn").addEventListener("click", (
 
 
 document.getElementById("open-whiteboard-btn").addEventListener("click", function() {
-    var topElement = document.body; // You can replace this with the actual top element of your page
+    var topElement = document.querySelector("header");
     topElement.scrollIntoView();  
 });
 
 document.getElementById("whiteboard-close-btn").addEventListener("click", function() {
-    var topElement = document.body; // You can replace this with the actual top element of your page
+    var topElement = document.querySelector("header");
     topElement.scrollIntoView();
 });
 
