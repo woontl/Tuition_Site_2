@@ -5,6 +5,14 @@ Bug Fixes:
 
 
 --------------------------------------------------------------------------------------------------------------------------------------
+Version 2.0.2
+New Features:
+
+Bug Fixes:
+1) Fixed offset on whiteboard issue
+2) Fixed whiteboard lag due to large message transfer on socketio
+
+--------------------------------------------------------------------------------------------------------------------------------------
 
 Version 2.0.1
 New Features:

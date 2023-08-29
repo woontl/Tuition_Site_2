@@ -106,11 +106,13 @@ document.getElementById("whiteboard-reset-zoom-btn").addEventListener("click", (
 
 
 document.getElementById("open-whiteboard-btn").addEventListener("click", function() {
-    window.scroll(0, 0);
+    var topElement = document.getElementById("top-element");
+    topElement.scrollIntoView();    
 });
 
 document.getElementById("whiteboard-close-btn").addEventListener("click", function() {
-    window.scroll(0, 0);
+    var topElement = document.getElementById("top-element");
+    topElement.scrollIntoView();
 });
 
 // Mouse Event Handlers
